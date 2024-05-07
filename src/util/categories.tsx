@@ -1,0 +1,22 @@
+export default [
+  'Money',
+  'Women',
+  'Science',
+  'Real Estate',
+  'Social Media',
+  'Tech',
+  'Fashion',
+  'Home Decor',
+  'Design',
+  'Gaming',
+  'Gambling',
+  'Sports',
+  'Cars',
+  'Art',
+  'Nature',
+  'Photography',
+  'Philosophy',
+  'Code',
+  'Research',
+  'Crypto'
+]
