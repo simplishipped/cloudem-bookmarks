@@ -1,6 +1,7 @@
 import { Bookmark } from "../components/molecules/types"
 import {Nftmark} from "../components/molecules/types";
 import axios from 'axios';
+import supabase from "./supabase";
 const url = 'http://localhost:9000/bookmark';
 
 
@@ -10,13 +11,19 @@ const addBookmark = async (bookmark: Bookmark) => {
 }
 
 const getBookmarks = async () => {
-  const response = await axios.post(url);
-  return response.data;
+  console.log('yo')
+  const response = await supabase.from('bookmarks').select('*').eq('id', 1);
+  console.log(response)
 }
 
-const getBookmarksByUser = async (userId: string) => {
-  const response = await axios.get(url+'s/user', { params: { userId } });
-  return response.data;
+const getBookmarksByUser = async (userId: number) => {
+  const { data, error }  = await supabase.from('bookmarks').select('*').eq('user_id', userId);
+  if(data) {
+    return data;
+  } else {
+    return false;
+  }
+
 }
 
 

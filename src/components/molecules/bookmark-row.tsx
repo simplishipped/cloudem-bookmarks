@@ -11,14 +11,14 @@ export const BookmarkRow: Component<Bookmark> = (props) => {
   return (
     <div class=" py-2 mt-2 px-2 font-bold border-solid border-2 fill-textLight dark:fill-textDark border-textLight dark:border-textDark text-textLight dark:text-textDark rounded-md">
       <div class="flex justify-between items-center">
-        <div class="text-primaryButtonLight dark:text-primaryButtonDark">{props.NAME}</div>
+        <div class="text-primaryButtonLight dark:text-primaryButtonDark">{props.name}</div>
         <div class="flex items-center">
-          <a href={props.URL} target="_blank">
+          <a href={props.url} target="_blank">
             <FiLink2  size={20} class="mr-4 cursor-pointer" />
           </a>
           <BsClipboard2CheckFill
             size={16}
-            onClick={() => navigator.clipboard.writeText(props.URL)}
+            onClick={() => navigator.clipboard.writeText(props.url)}
             class="mr-2 cursor-pointer"
           />
           <RiArrowsArrowDropDownFill
@@ -30,7 +30,7 @@ export const BookmarkRow: Component<Bookmark> = (props) => {
       </div>
       {dropdown() ? 
       <div class="dropdown flex justify-between items-center mt-1 ">
-        <div class="border-b-2 border-b-primaryButtonLight dark:border-b-primaryButtonDark pb-1">{props.URL}</div>
+        <div class="border-b-2 border-b-primaryButtonLight dark:border-b-primaryButtonDark pb-1">{props.url}</div>
         {/* <BiSolidMagicWand class="cursor-pointer mr-1" size="20" /> */}
       </div> : false}
     </div>

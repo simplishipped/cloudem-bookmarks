@@ -17,7 +17,7 @@ import { useNavigate } from "@solidjs/router";
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 const Home: Component = () => {
-  const categories = [{ label: 'Kinky', value: 'Kinky' }, { label: 'Default', value: 'Default' }];
+  const categories = [{ label: 'Crypto', value: 'Crypto' }, { label: 'Default', value: 'Default' }];
   const collections = [{ label: 'NFT Research 2023', value: 'NFT Research 2023' }, { label: 'Inception', value: 'Inception' }];
   const navigate = useNavigate();
 
@@ -36,15 +36,14 @@ const Home: Component = () => {
   const getUserBookmarks = async () => {
     if (props.bookmarks().length === 0) {
       props.setLoading('bookmarks', true);
-      const marks = await bookmarksApi.getBookmarksByUser('652d5eb3d7e492b02c050f70');
+      const marks = await bookmarksApi.getBookmarksByUser(1);
       props.setLoading('bookmarks', false);
-      const parsedMarks = marks.map((mark: string) => JSON.parse(mark));
+      if(marks) {
+        props.setBookmarks(marks);
+      }
 
-      const collections = parsedMarks.filter((mark: Bookmark) => mark.IS_COLLECTION);
-      const bookmarks = parsedMarks.filter((mark: Bookmark) => !mark.IS_COLLECTION);
-
-      props.setBookmarks(bookmarks);
-      props.setCollections(collections);
+      // props.setBookmarks(bookmarks);
+      // props.setCollections(collections);
     }
   }
 
@@ -78,7 +77,7 @@ const Home: Component = () => {
           {props.marksView() === 'categories' ? <>
             <Select value={props.category()} setValue={props.setCategory} name="Category" options={categories} />
             <div class="mt-2">
-              <RowList filterKey="CATEGORY" RowComponent={BookmarkRow} filter={props.category()} list={props.bookmarks()} />
+              <RowList filterKey="category" RowComponent={BookmarkRow} filter={props.category()} list={props.bookmarks()} />
             </div>
           </> :
             <>
@@ -90,7 +89,7 @@ const Home: Component = () => {
                 </div>
               </div>
               <div class="mt-2">
-                <RowList filterKey="COLLECTION" RowComponent={BookmarkRow} filter={props.collection()} list={props.collections()} />
+                <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.collection()} list={props.collections()} />
               </div>
             </>}
         </Show>

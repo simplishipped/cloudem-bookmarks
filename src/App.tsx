@@ -10,8 +10,10 @@ import Networks from "./components/views/settings/networks";
 import AddNftMark from "./components/views/add-bookmark";
 import Market from "./components/views/market";
 import Mint from "./components/views/mint";
+import supabase from './api/supabase.jsx';
 
 const App: Component = () => {
+
   return (
     <StoreProvider>
       <Router>

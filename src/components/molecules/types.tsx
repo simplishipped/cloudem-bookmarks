@@ -1,7 +1,7 @@
 
 export interface Bookmark {
-  NAME: string
-  URL: string
+  name: string
+  url: string
   ID?: string,
   CATEGORY?: string
   COLLECTION?: string
