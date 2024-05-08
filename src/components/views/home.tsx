@@ -38,7 +38,7 @@ const Home: Component = () => {
       props.setLoading('bookmarks', true);
       const marks = await bookmarksApi.getBookmarksByUser(1);
       props.setLoading('bookmarks', false);
-      if(marks) {
+      if (marks) {
         props.setBookmarks(marks);
       }
 
@@ -53,12 +53,10 @@ const Home: Component = () => {
   })
 
   const setMarkToMintAndNavToMintPage = () => {
-    const collection = props.bookmarks().filter((bk) => {
-      return bk.IS_COLLECTION && bk.COLLECTION === props.collection();
-    });
+    const collection = props.bookmarks();
     const nftmark = {
-      BOOKMARKS: collection,
-      CATEGORY: props.collection()
+      bookmarks: collection,
+      collection_name: props.collection()
     }
     props.setMarkToMint(nftmark);
     navigate('/mint')
@@ -68,28 +66,29 @@ const Home: Component = () => {
     <Show when={connected()} fallback={<Login connected={connected} setConnected={setConnected} />}>
       <div class="px-6 relative">
         <div class="w-full p-1 flex">
-          <div onClick={() => props.setMarksView('categories')}
-            class={`w-1/2 mx-1 ${props.marksView() === 'categories' ? 'border-b-4' : ''} cursor-pointer border-b-primaryButtonLight dark:border-b-primaryButtonDark rounded-b-md dark:text-textDark text-textLight flex justify-center`}>Categories</div>
           <div onClick={() => props.setMarksView('collections')}
             class={`w-1/2 mx-1 ${props.marksView() === 'collections' ? 'border-b-4' : ''} cursor-pointer border-b-primaryButtonLight dark:border-b-primaryButtonDark rounded-b-md dark:text-textDark text-textLight flex justify-center`}>Collections</div>
+          <div onClick={() => props.setMarksView('nfts')}
+            class={`w-1/2 mx-1 ${props.marksView() === 'nfts' ? 'border-b-4' : ''} cursor-pointer border-b-primaryButtonLight dark:border-b-primaryButtonDark rounded-b-md dark:text-textDark text-textLight flex justify-center`}>NFTs</div>
         </div>
         <Show when={!props.loading().bookmarks} fallback={<Loader />}>
-          {props.marksView() === 'categories' ? <>
-            <Select value={props.category()} setValue={props.setCategory} name="Category" options={categories} />
+          {props.marksView() === 'collections' ? <>
+            <div class="flex items-center">
+              <div class="w-10/12">
+                <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />  </div>
+              <div title="Mint collection to NFT!" onClick={setMarkToMintAndNavToMintPage} class="w-2/12 flex items-center mt-1 justify-center cursor-pointer hover:animate-spin">
+                <BiSolidMagicWand size="30" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
+              </div>
+            </div>
+
             <div class="mt-2">
-              <RowList filterKey="category" RowComponent={BookmarkRow} filter={props.category()} list={props.bookmarks()} />
+              <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.collection()} list={props.bookmarks()} />
             </div>
           </> :
             <>
-              <div class="flex items-center">
-                <div class="w-10/12">
-                  <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={collections} /></div>
-                <div title="Mint collection to NFT!" onClick={setMarkToMintAndNavToMintPage} class="w-2/12 flex items-center mt-1 justify-center cursor-pointer hover:animate-spin">
-                  <BiSolidMagicWand size="30" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
-                </div>
-              </div>
+              <Select value={props.nftmarkName()} setValue={props.setCollection} name="Collection" options={collections} />
               <div class="mt-2">
-                <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.collection()} list={props.collections()} />
+                <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftsmarks()} />
               </div>
             </>}
         </Show>
