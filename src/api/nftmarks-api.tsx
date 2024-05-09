@@ -1,25 +1,27 @@
 import { Nftmark } from "../components/molecules/types"
+import supabase from "./supabase";
 import axios from 'axios';
-const url = 'http://localhost:9000/nftmarks';
 
-const addNftmark = async (nftmark: Nftmark) => {
-  const response = await axios.post(url, nftmark);
-  return response;
+export const mintCollectionToNft = async (nftmark: Nftmark) => {
+  const { data, error } = await supabase.from('nftmarks').insert(nftmark);
+  if (data) {
+    return data
+  } else {
+    return false;
+  }
 }
 
-const getNftmarks = async () => {
-  const response = await axios.get(url);
-  return response.data;
+export const getNftmarks = async () => {
+
 }
 
-const getNftmarksByUser = async (userId: string) => {
-  const response = await axios.get(url+'s/user', { params: { userId } });
-  return response.data;
+export const getNftmarksByUser = async (userId: string) => {
+
 }
 
 
-export default {
-  addNftmark,
-  getNftmarksByUser,
-  getNftmarks
-}
+// export default {
+//   mintCollectionToNft,
+//   // getNftmarksByUser,
+//   // getNftmarks
+// }

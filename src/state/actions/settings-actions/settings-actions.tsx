@@ -1,4 +1,4 @@
-import { useSelector } from "../../store";
+import { useSelector } from "../../../store";
 
 const useSettings = () => {
   const { app } = useSelector();

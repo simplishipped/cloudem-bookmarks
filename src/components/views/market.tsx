@@ -1,8 +1,8 @@
 import { Component, createEffect, Show, onMount } from "solid-js";
 import Select from "../atoms/select";
-import useContent from "../../actions/content-actions/content-actions";
+import useContent from "../../state/actions/content-actions/content-actions";
 import { ethers } from 'ethers';
-import nftmarksApi from "../../api/nftmarks-api";
+import {getNftmarks} from "../../api/nftmarks-api";
 import Loader from "../atoms/loader/loader";
 import { BoxList } from "../organisms/box-list";
 import NftmarkBox from "../molecules/nftmark-box";
@@ -18,7 +18,7 @@ const Market: Component = () => {
   const getNftmarks = async () => {
     if(props.nftmarks().length === 0) {
       props.setLoading('nftmarks', true);
-      const marks = await nftmarksApi.getNftmarks();
+      const marks = await getNftmarks();
       props.setLoading('nftmarks', false);
       const parsedMarks = marks.map((mark: string) => JSON.parse(mark));
       props.setNftmarks(parsedMarks)

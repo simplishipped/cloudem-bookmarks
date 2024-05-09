@@ -2,16 +2,21 @@ import { Component, createSignal } from "solid-js";
 import Input from '../atoms/input';
 import Select from "../atoms/select";
 import Categories from '../../util/categories';
-import { ImImage } from 'solid-icons/im'
-import Tooltip from "../atoms/tooltip";
+import { ImImage } from 'solid-icons/im';
+import useContent from "../../state/actions/content-actions/content-actions";
+import { mintCollectionToNft  } from "../../api/nftmarks-api";
+// import Tooltip from "../atoms/tooltip";
 
-const Mint: Component<{}> = (props) => {
+const Mint: Component<{}> = () => {
 
   const [name, setName] = createSignal('');
-  const [cost, setCost] = createSignal('');
+  const [price, setPrice] = createSignal('');
   const [category, setCategory] = createSignal('');
   const [nftImage, setNftImage] = createSignal<File | null>(null);
   const [nftImageUrl, setNftImageUrl] = createSignal('');
+  const props = useContent();
+
+
 
   const setNftImageToState = (e: Event) => {
     const element = e.target as HTMLInputElement
@@ -26,6 +31,19 @@ const Mint: Component<{}> = (props) => {
   const selectOps = options.map(op => ({ label: op, value: op }));
 
 
+  const mint = () => {
+    if (props.markToMint()) {
+      let nft = {
+        ...props.markToMint(),
+        user_id: 1,
+        name: name(),
+        price: Number(price()),
+        category: category(),
+      }
+      mintCollectionToNft(nft);
+    }
+  }
+
   return (
     <div class="px-6 py-4 relative text-textLight dark:text-textDark">
       <Select value={category()} setValue={setCategory} name="Category" options={selectOps} />
@@ -35,7 +53,7 @@ const Mint: Component<{}> = (props) => {
       </div>
 
       <div class="mt-2">
-        <Input type="number" name="cost" value={cost} setValue={setCost} placeholder="$" />
+        <Input type="number" name="price" value={price} setValue={setPrice} placeholder="$" />
       </div>
       {nftImage() ?
         <img class="w-full mt-2 rounded-md" src={nftImageUrl()}></img>
@@ -49,12 +67,10 @@ const Mint: Component<{}> = (props) => {
         </div>
       }
       <div class="relative">
-        <button id="nft-mark" title="Mint to NFT!" class={`dark:border-textDark 
+        <button onClick={mint} id="nft-mark" title="Mint to NFT!" class={`dark:border-textDark 
     dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-2 font-bold w-full items-center rounded-md text-center 
     hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight`} name="NFTmarkName" >Mint</button>
       </div>
-
-
     </div>
   );
 };

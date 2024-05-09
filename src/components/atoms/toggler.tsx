@@ -1,5 +1,5 @@
 import { Component, createSignal, Setter } from "solid-js";
-import useTheme from "../../actions/theme-actions/theme-actions";
+import useTheme from "../../state/actions/theme-actions/theme-actions";
 
 export interface TogglerValue {
   enabled: boolean

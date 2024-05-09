@@ -1,19 +1,20 @@
-import { useSelector } from "../../store";
-import nftmarksApi from "../../api/nftmarks-api";
-import { Bookmark, Nftmark } from "../../components/molecules/types";
-import bookmarksApi from "../../api/bookmarks-api";
+import { useSelector } from "../../../store";
+import nftmarksApi from "../../../api/nftmarks-api";
+import { Bookmark, Nftmark } from "../../../components/molecules/types";
+import bookmarksApi from "../../../api/bookmarks-api";
 
 const useContent = () => {
   const { app } = useSelector();
   const setState = app.setState;
   const nftmarks = () => app.state.nftmarks;
-  const category = () => app.state.category
   const bookmarks = () => app.state.bookmarks;
   const loading = () => app.state.loading;
   const marksView = () => app.state.marksView;
   const collection = () => app.state.collection;
-  const collections = () => app.state.collections;
+  // const collections = () => app.state.collections;
   const markToMint = () => app.state.markToMint;
+  const nftmarkName = () => app.state.nftmarkName;
+  const nft_category = () => app.state.nft_category;
 
   const setLoading = (type: string, bool: Boolean) => {
     setState(() => {
@@ -24,9 +25,8 @@ const useContent = () => {
     try {
       const response = await bookmarksApi.addBookmark(bookmark);
       if(type === 'collections') {
-        console.log(bookmark)
         setState(() => {
-          return {...app.state, collections: [bookmark, ...app.state.collections]}
+          return {...app.state, collections: [bookmark, ...app.state.collection]}
         })
       } else {
         setState(() => {
@@ -87,7 +87,6 @@ const useContent = () => {
 
 
   return {
-    category,
     setCategory,
     nftmarks,
     setBookmarks,
@@ -99,10 +98,12 @@ const useContent = () => {
     setMarksView,
     marksView,
     collection,
-    collections,
     setCollection,
     setCollections,
-    setMarkToMint
+    setMarkToMint,
+    nftmarkName,
+    nft_category,
+    markToMint
   };
 };
 

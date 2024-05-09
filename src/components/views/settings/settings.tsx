@@ -5,7 +5,7 @@ import {
   FaSolidSun,
   FaRegularCircleQuestion} from "solid-icons/fa";
 import {} from "solid-icons/fa";
-import useTheme from "../../../actions/theme-actions/theme-actions";
+import useTheme from "../../../state/actions/theme-actions/theme-actions";
 import SettingsNavRow from "../../molecules/settings-nav-row";
 import SettingsBoolRow from "../../molecules/settings-bool-row";
 

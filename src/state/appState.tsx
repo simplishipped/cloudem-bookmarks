@@ -17,11 +17,11 @@ interface Blockchain {
   connected: boolean
   chain: string
 }
-
+let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
 let nft_category: string = 'Default';
-let collection: string = 'Inception';
+let collection: string = 'Crypto';
 let blockchain: Blockchain = {
   connected: false,
   chain: 'ethereum'
@@ -30,6 +30,7 @@ let blockchain: Blockchain = {
 const [state, setState] = createStore({
   theme,
   nftmarks,
+  nftmarkName,
   bookmarks,
   nft_category,
   collection,

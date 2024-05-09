@@ -2,16 +2,18 @@
 export interface Bookmark {
   name: string
   url: string
-  id: string
+  id?: number
   collection: string
-  user_id: string
+  user_id: number
 }
 
 export interface Nftmark {
-  name?: string
-  bookmarks: Bookmark[]
-  id?: string
-  collection?: string
-  user_id?: string
-  chain_addr?: string
+  name: string
+  bookmarks?: any[]
+  id?: number
+  category: string
+  user_id: number
+  chain_addr?: string,
+  image?: any,
+  price: number
 }

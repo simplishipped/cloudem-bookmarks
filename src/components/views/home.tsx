@@ -1,10 +1,10 @@
 import { Component, createEffect, Show, onMount, createSignal } from "solid-js";
 import { RowList } from "../organisms/row-list";
 import Select from "../atoms/select";
-import useContent from "../../actions/content-actions/content-actions";
+import useContent from "../../state/actions/content-actions/content-actions";
 import Login from "./login";
 import { ethers } from 'ethers';
-import useSettings from "../../actions/settings-actions/settings-actions";
+import useSettings from "../../state/actions/settings-actions/settings-actions";
 import bookmarksApi from "../../api/bookmarks-api";
 import Loader from "../atoms/loader/loader";
 import { BookmarkRow } from "../molecules/bookmark-row";
@@ -12,7 +12,6 @@ import { TbFaceIdError } from 'solid-icons/tb'
 import { BiSolidMagicWand } from 'solid-icons/bi'
 import { Bookmark } from "../molecules/types";
 import { useNavigate } from "@solidjs/router";
-
 
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
@@ -56,7 +55,9 @@ const Home: Component = () => {
     const collection = props.bookmarks();
     const nftmark = {
       bookmarks: collection,
-      collection_name: props.collection()
+      name: props.collection(),
+      user_id: 1,
+      category: props.nft_category()
     }
     props.setMarkToMint(nftmark);
     navigate('/mint')
@@ -88,7 +89,7 @@ const Home: Component = () => {
             <>
               <Select value={props.nftmarkName()} setValue={props.setCollection} name="Collection" options={collections} />
               <div class="mt-2">
-                <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftsmarks()} />
+                <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftmarks()} />
               </div>
             </>}
         </Show>
