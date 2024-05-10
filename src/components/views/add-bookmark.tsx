@@ -4,7 +4,7 @@ import Select from "../atoms/select";
 import Input from '../atoms/input';
 import useContent from "../../state/actions/content-actions/content-actions";
 
-const AddNftMark: Component<{}> = () => {
+const AddBookmark: Component<{}> = () => {
   const categories = [{ label: 'Kinky', value: 'kinky' }, { label: 'Default', value: 'default' }];
   const collections = [{ label: 'NFT Research 2023', value: 'NFT Research 2023' }, { label: 'Default', value: 'Default' }];
 
@@ -26,7 +26,7 @@ const AddNftMark: Component<{}> = () => {
 
   return (
     <div class="px-6 text-textLight dark:text-textDark">
-      {props.marksView() === 'categories' ? <Select value={props.collection()} setValue={props.setCategory} name="Category" options={categories} />
+      {props.marksView() === 'collections' ? <Select value={props.collection()} setValue={props.setCategory} name="Category" options={categories} />
         : <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={collections} />
       }
       <div class="mt-4">
@@ -43,5 +43,5 @@ const AddNftMark: Component<{}> = () => {
     </div>);
 };
 
-export default AddNftMark;
+export default AddBookmark;
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGE4NzY4NDhBNDMzOEYxNEFENzQ4YzJBMTE1OUJGN0Q2ZTg4NDkwNTMiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcwMTQ1OTgxNTM2OSwibmFtZSI6Im5mdG1hcmtzIn0.pcVrreBzvp5h6UaOzo1Of4RWJ7oX8aDfq7p0r4o9aGQ

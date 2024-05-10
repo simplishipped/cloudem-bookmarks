@@ -5,6 +5,7 @@ export interface Bookmark {
   id?: number
   collection: string
   user_id: number
+  checked?: boolean
 }
 
 export interface Nftmark {
@@ -15,5 +16,6 @@ export interface Nftmark {
   user_id: number
   chain_addr?: string,
   image?: any,
-  price: number
+  price: number,
+  checked?: boolean
 }

@@ -16,31 +16,58 @@ const useContent = () => {
   const nft_category = () => app.state.nft_category;
   const failed = () => app.state.failed;
 
+
+
+  const setBookmarkChecked = (id: number | undefined, bool: boolean) => {
+    setState(() => {
+      return {
+        ...app.state,
+        bookmarks: app.state.bookmarks.map(b => {
+          if (b.id === id) {
+            return { ...b, checked: bool }
+          }
+          return b
+        })
+      }
+    })
+  }
+
+  const setAllBookmarksChecked = () => {
+    setState(() => {
+      return {
+        ...app.state,
+        bookmarks: app.state.bookmarks.map(b => {
+          return { ...b, checked: true }
+        })
+      }
+    })
+  }
+
   const setLoading = (type: string, bool: Boolean) => {
     setState(() => {
-      return { ...app.state, loading: {...app.state.loading, [type]: bool } }    
+      return { ...app.state, loading: { ...app.state.loading, [type]: bool } }
     })
   }
 
   const setLoadFailed = (type: string, bool: Boolean) => {
     setState(() => {
-      return { ...app.state, failed: {...app.state.failed, [type]: bool } }    
+      return { ...app.state, failed: { ...app.state.failed, [type]: bool } }
     })
   }
 
   const addBookmark = async (bookmark: Bookmark, type: string) => {
     try {
       await bookmarksApi.addBookmark(bookmark);
-      if(type === 'collections') {
+      if (type === 'collections') {
         setState(() => {
-          return {...app.state, collections: [bookmark, ...app.state.collection]}
+          return { ...app.state, collections: [bookmark, ...app.state.collection] }
         })
       } else {
         setState(() => {
           return { ...app.state, bookmarks: [bookmark, ...app.state.bookmarks] }
         })
       }
- 
+
     } catch (err) {
 
     }
@@ -57,14 +84,14 @@ const useContent = () => {
       return { ...app.state, collection }
     })
   }
-  
+
   const setBookmarks = (bookmarks: Bookmark[]) => {
     setState(() => {
       return { ...app.state, bookmarks }
     })
   }
 
-    
+
   const setCollections = (collections: Bookmark[]) => {
     setState(() => {
       return { ...app.state, collections }
@@ -80,13 +107,13 @@ const useContent = () => {
 
   const setMarksView = (view: string) => {
     setState(() => {
-      return {...app.state, marksView: view}
+      return { ...app.state, marksView: view }
     })
   }
 
   const setMarkToMint = (nftmark: Nftmark) => {
     setState(() => {
-      return {...app.state, markToMint: nftmark}
+      return { ...app.state, markToMint: nftmark }
     })
   }
 
@@ -112,7 +139,9 @@ const useContent = () => {
     nft_category,
     markToMint,
     setLoadFailed,
-    failed
+    failed,
+    setBookmarkChecked,
+    setAllBookmarksChecked
   };
 };
 

@@ -3,28 +3,34 @@ import { BsClipboard2CheckFill } from 'solid-icons/bs'
 import { FiLink2 } from 'solid-icons/fi'
 import { RiArrowsArrowDropDownFill } from 'solid-icons/ri'
 import { Bookmark } from "./types";
-import { BiSolidMagicWand } from 'solid-icons/bi'
-import { TiDelete } from 'solid-icons/ti'
 import Checkbox from "../atoms/checkbox/checkbox";
+import useContent from "../../state/actions/content-actions/content-actions";
 
-export const BookmarkRow: Component<Bookmark> = (props) => {
+interface BookmarkProps {
+  row: Bookmark
+}
+
+export const BookmarkRow: Component<BookmarkProps> = (props) => {
   const [dropdown, setDropdown] = createSignal(false);
+  const { setBookmarkChecked, setAllBookmarksChecked  }= useContent();
+
+
 
   return (
     <div class=" py-2 mt-2 px-2 font-bold border-solid border-2 fill-textLight dark:fill-textDark border-textLight dark:border-textDark text-textLight dark:text-textDark rounded-md">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
-          <Checkbox />
-          <div class="text-primaryButtonLight dark:text-primaryButtonDark ml-2">{props.name}</div>
+          <Checkbox check={setBookmarkChecked} row={props.row} />
+          <div class="text-primaryButtonLight dark:text-primaryButtonDark ml-2">{props.row.name}</div>
 
         </div>
         <div class="flex items-center">
-          <a href={props.url} target="_blank">
+          <a href={props.row.url} target="_blank">
             <FiLink2 size={20} class="mr-2 cursor-pointer" />
           </a>
           {/* <BsClipboard2CheckFill
             size={16}
-            onClick={() => navigator.clipboard.writeText(props.url)}
+            onClick={() => navigator.clipboard.writeText(props.row().url)}
             class="mr-2 cursor-pointer"
           /> */}
           <RiArrowsArrowDropDownFill
@@ -37,7 +43,7 @@ export const BookmarkRow: Component<Bookmark> = (props) => {
       </div>
       {dropdown() ?
         <div class="dropdown flex justify-between items-center mt-1 ">
-          <div class="border-b-2 border-b-primaryButtonLight dark:border-b-primaryButtonDark pb-1">{props.url}</div>
+          <div class="border-b-2 border-b-primaryButtonLight dark:border-b-primaryButtonDark pb-1">{props.row.url}</div>
 
         </div> : false}
     </div>

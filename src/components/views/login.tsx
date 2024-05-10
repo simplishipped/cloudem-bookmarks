@@ -16,7 +16,6 @@ const Login: Component<LoginProps> = () => {
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [signUp, setSignUp] = createSignal(false);
   const { setConnected, blockchain } = useSettings();
-  console.log(blockchain().connected)
 
   const [errorMsg, setErrorMsg] = createSignal('');
 
