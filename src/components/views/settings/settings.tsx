@@ -1,4 +1,4 @@
-import { Component, createEffect } from "solid-js";
+import { Component } from "solid-js";
 import {
   FaSolidNetworkWired,
   FaRegularMoon,
@@ -21,13 +21,10 @@ const Settings: Component<{}> = (props) => {
   const { theme, setTheme } = useTheme();
   const { landingView, setLandingView } = useSettings();
 
-  createEffect(() => {
-    console.log(landingView() ? 'Open Bookmarks' : 'Open Add Bookmark')
-  })
   return (
     <div onClick={() => console.log(landingView())} class={`text-textLight dark:text-textDark px-6 pt-2 transition-colors`}>
       <SettingsBoolRow IconTrue={FaRegularMoon} IconFalse={FaSolidSun} titles={["Dark Theme", "Light Theme"]} setter={setTheme} value={theme} />
-      <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Starts App Into List', 'Starts App Into Adding']} setter={setLandingView} value={landingView} />
+      <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Starts App Into Adding', 'Starts App Into List']} setter={setLandingView} value={landingView} />
       <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       <SettingsNavRow navTo={'url'} title="Help" Icon={FaRegularCircleQuestion} />
       <SettingsNavRow navTo={'url'} title="Export Data" Icon={ImCloudDownload} />

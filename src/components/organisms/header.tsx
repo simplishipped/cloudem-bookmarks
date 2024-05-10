@@ -3,16 +3,22 @@ import { FaSolidUserAstronaut } from "solid-icons/fa";
 import { TbCurrencyDollar } from "solid-icons/tb";
 import { IoChevronBack } from 'solid-icons/io'
 import { A, useLocation } from "@solidjs/router";
-import { createEffect, on } from "solid-js";
+import { createEffect, on, createSignal } from "solid-js";
 import { BiRegularStoreAlt } from 'solid-icons/bi'
 
 const Header = () => {
-  const location = useLocation()
+  const location = useLocation();
+  const [pathBack, setPathBack] = createSignal('');
+
 
   createEffect(on(
     () => location.pathname,
-    () => { }
+    () => { 
+      let path = location.pathname.split('/').filter(s => s.length > 0);
+      setPathBack(path.splice(0, path.length - 1).join('/'));
+    }
   ));
+
 
   return (
     <div class="flex justify-between p-4 items-center text-textLight dark:text-textDark">
@@ -31,7 +37,7 @@ const Header = () => {
 
       <div class="cursor-pointer">
         {location.pathname.includes('/account') ?
-          <A href="/" title="Back">
+          <A href={pathBack()} title="Back">
             <IoChevronBack  size="23" />
           </A>
           : (
