@@ -12,26 +12,30 @@ import { TbFaceIdError } from 'solid-icons/tb'
 import { BiSolidMagicWand } from 'solid-icons/bi'
 import { Bookmark } from "../molecules/types";
 import { useNavigate } from "@solidjs/router";
+import supabase from "../../api/supabase";
 
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 const Home: Component = () => {
+  
   const categories = [{ label: 'Crypto', value: 'Crypto' }, { label: 'Default', value: 'Default' }];
   const collections = [{ label: 'NFT Research 2023', value: 'NFT Research 2023' }, { label: 'Inception', value: 'Inception' }];
   const navigate = useNavigate();
 
   const props = useContent();
-  const { setConnected, connected } = useSettings();
+  const { setConnected, blockchain } = useSettings();
 
 
   const isConnected = async () => {
     const accounts = await provider.send('eth_accounts', []);
-    if (accounts.length) {
+    const { data } = await supabase.auth.getUser()
+    if (accounts.length || (data && data.user)) {
       setConnected(true)
     } else {
       setConnected(false);
     }
   }
+
   const getUserBookmarks = async () => {
     if (props.bookmarks().length === 0) {
       props.setLoading('bookmarks', true);
@@ -57,14 +61,15 @@ const Home: Component = () => {
       bookmarks: collection,
       name: props.collection(),
       user_id: 1,
-      category: props.nft_category()
+      category: props.nft_category(),
+      price: 0
     }
     props.setMarkToMint(nftmark);
     navigate('/mint')
   }
 
   return (
-    <Show when={connected()} fallback={<Login connected={connected} setConnected={setConnected} />}>
+    <Show when={blockchain().connected} fallback={<Login />}>
       <div class="px-6 relative">
         <div class="w-full p-1 flex">
           <div onClick={() => props.setMarksView('collections')}

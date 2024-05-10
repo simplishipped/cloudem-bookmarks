@@ -17,6 +17,8 @@ interface Blockchain {
   connected: boolean
   chain: string
 }
+
+let landingView: boolean = true;
 let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
@@ -35,13 +37,16 @@ const [state, setState] = createStore({
   nft_category,
   collection,
   blockchain,
+  landingView,
   failed: {
     nftmarks: null,
-    bookmarks: null
+    bookmarks: null,
+    mint: null
   },
   loading: {
     nftmarks: null,
-    bookmarks: null
+    bookmarks: null,
+    mint: null
   },
   marksView: 'collections',
   markToMint: {}

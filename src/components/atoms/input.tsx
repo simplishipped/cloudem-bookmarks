@@ -13,7 +13,7 @@ const Select: Component<InputProps> = ({ name, value, setValue, placeholder, typ
   return (
     <input type={type} placeholder={placeholder} class={`dark:border-textDark border-textLight border-2 border-solid
     dark:bg-primaryDark bg-primaryLight focus:bg-secondaryLight dark:focus:bg-secondaryDark p-2 flex font-bold w-full rounded-md 
-    hover:dark:bg-secondaryDark hover:bg-secondaryLight`} name={name} value={value()} onChange={(e) => setValue((e.target as HTMLInputElement).value)}></input>
+    hover:dark:bg-secondaryDark hover:bg-secondaryLight dark:text-textDark text-textLight dark:autofill:bg-primaryDark autofill:bg-primaryLight`} name={name} value={value()} onChange={(e) => setValue((e.target as HTMLInputElement).value)} />
   )
 };
 

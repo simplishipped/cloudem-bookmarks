@@ -1,5 +1,4 @@
 import { useSelector } from "../../../store";
-import nftmarksApi from "../../../api/nftmarks-api";
 import { Bookmark, Nftmark } from "../../../components/molecules/types";
 import bookmarksApi from "../../../api/bookmarks-api";
 
@@ -15,15 +14,23 @@ const useContent = () => {
   const markToMint = () => app.state.markToMint;
   const nftmarkName = () => app.state.nftmarkName;
   const nft_category = () => app.state.nft_category;
+  const failed = () => app.state.failed;
 
   const setLoading = (type: string, bool: Boolean) => {
     setState(() => {
       return { ...app.state, loading: {...app.state.loading, [type]: bool } }    
     })
   }
+
+  const setLoadFailed = (type: string, bool: Boolean) => {
+    setState(() => {
+      return { ...app.state, failed: {...app.state.failed, [type]: bool } }    
+    })
+  }
+
   const addBookmark = async (bookmark: Bookmark, type: string) => {
     try {
-      const response = await bookmarksApi.addBookmark(bookmark);
+      await bookmarksApi.addBookmark(bookmark);
       if(type === 'collections') {
         setState(() => {
           return {...app.state, collections: [bookmark, ...app.state.collection]}
@@ -103,7 +110,9 @@ const useContent = () => {
     setMarkToMint,
     nftmarkName,
     nft_category,
-    markToMint
+    markToMint,
+    setLoadFailed,
+    failed
   };
 };
 

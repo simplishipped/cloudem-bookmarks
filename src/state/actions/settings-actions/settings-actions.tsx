@@ -4,7 +4,8 @@ const useSettings = () => {
   const { app } = useSelector();
   const setState = app.setState;
   const setBlockchain = app.setBlockchain
-  const connected = () => app.state.blockchain.connected
+  const blockchain = () => app.state.blockchain
+  const landingView = () => app.state.landingView
 
   const setConnected = (connected: boolean) => {
     setState(() => {
@@ -14,10 +15,20 @@ const useSettings = () => {
     })
   }
 
+  const setLandingView = (landingView: boolean) => {
+    setState(() => {
+      return {
+       ...app.state, landingView
+      }
+    })
+  }
+
   return {
     setConnected,
     setBlockchain,
-    connected
+    blockchain,
+    landingView,
+    setLandingView  
   };
 };
 
