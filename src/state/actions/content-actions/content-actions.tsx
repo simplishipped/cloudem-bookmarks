@@ -15,19 +15,24 @@ const useContent = () => {
   const nftmarkName = () => app.state.nftmarkName;
   const nft_category = () => app.state.nft_category;
   const failed = () => app.state.failed;
+  const bookmarksChecked = () => app.state.bookmarksChecked;
+
 
 
 
   const setBookmarkChecked = (id: number | undefined, bool: boolean) => {
     setState(() => {
+      let bookmarks = app.state.bookmarks.map(b => {
+        if (b.id === id) {
+          return { ...b, checked: bool }
+        }
+        return b
+      })
+
       return {
         ...app.state,
-        bookmarks: app.state.bookmarks.map(b => {
-          if (b.id === id) {
-            return { ...b, checked: bool }
-          }
-          return b
-        })
+        bookmarks,
+        bookmarksChecked: bookmarks.some(b => b.checked)
       }
     })
   }
@@ -68,6 +73,21 @@ const useContent = () => {
         })
       }
 
+    } catch (err) {
+
+    }
+  }
+
+  const deleteBookmarks = async () => {
+    try {
+      let deleteIds = app.state.bookmarks.filter(b => b.checked).map(b => b.id);
+      if (deleteIds.length > 0) {
+        // @ts-ignore
+        await bookmarksApi.deleteBookmarks(deleteIds);
+      }
+      setState(() => {
+        return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !deleteIds.includes(b.id)) }
+      })
     } catch (err) {
 
     }
@@ -141,7 +161,9 @@ const useContent = () => {
     setLoadFailed,
     failed,
     setBookmarkChecked,
-    setAllBookmarksChecked
+    setAllBookmarksChecked,
+    bookmarksChecked,
+    deleteBookmarks
   };
 };
 

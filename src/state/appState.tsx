@@ -1,6 +1,7 @@
 import { createStore } from "solid-js/store";
 import { Bookmark, Nftmark } from '../components/molecules/types';
 import nftMarksApi from "../api/bookmarks-api";
+import { User } from "../components/organisms/types";
 let theme: boolean = true;
 
 if ("theme" in localStorage) {
@@ -18,18 +19,24 @@ interface Blockchain {
   chain: string
 }
 
+let user: User = {
+  email:'',
+  blockchain_enabled: false
+}
 let landingView: boolean = true;
 let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
 let nft_category: string = 'Default';
 let collection: string = 'Crypto';
+let bookmarksChecked: boolean = false;
 let blockchain: Blockchain = {
   connected: false,
   chain: 'ethereum'
 }
 
 const [state, setState] = createStore({
+  user,
   theme,
   nftmarks,
   nftmarkName,
@@ -49,7 +56,8 @@ const [state, setState] = createStore({
     mint: null
   },
   marksView: 'collections',
-  markToMint: {}
+  markToMint: {},
+  bookmarksChecked
 });
 
 export const useAppState = () => {

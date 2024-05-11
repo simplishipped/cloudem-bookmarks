@@ -29,7 +29,7 @@ const Select: Component<SelectProps> = (props) => {
   }
 
   let choicesMap =
-    <div style={{ height: 'calc(100vh - 230px)', 'z-index': 50 }} class="absolute flex-col overflow-auto w-10/12 px-3 ml-2 pb-3 mt-2 rounded-md dark:bg-secondaryDark bg-secondaryLight border-textLight dark:border-textDark text-textLight dark:text-textDark border-2">
+    <div style={{ height: 'calc(100vh - 230px)', 'z-index': 50, transform: 'translateX(-50%)'  }} class="left-1/2 absolute flex-col overflow-auto w-10/12 px-3 pb-3 mt-2 rounded-md dark:bg-secondaryDark bg-secondaryLight border-textLight dark:border-textDark text-textLight dark:text-textDark border-2">
       {props.options.map((choice: any) => {
         return ChoiceElement(choice.value, choice.label)
       })}

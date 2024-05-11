@@ -13,17 +13,18 @@ import { BiSolidMagicWand } from 'solid-icons/bi'
 import { Bookmark } from "../molecules/types";
 import { useNavigate } from "@solidjs/router";
 import supabase from "../../api/supabase";
-
+import { OcTrash2 } from 'solid-icons/oc'
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 const Home: Component = () => {
-  
+
   const categories = [{ label: 'Crypto', value: 'Crypto' }, { label: 'Default', value: 'Default' }];
   const collections = [{ label: 'NFT Research 2023', value: 'NFT Research 2023' }, { label: 'Inception', value: 'Inception' }];
   const navigate = useNavigate();
 
   const props = useContent();
   const { setConnected, blockchain } = useSettings();
+  const [trashButton, showTrashButton] = createSignal(false);
 
 
   const isConnected = async () => {
@@ -80,8 +81,13 @@ const Home: Component = () => {
         <Show when={!props.loading().bookmarks} fallback={<Loader />}>
           {props.marksView() === 'collections' ? <>
             <div class="flex items-center">
-              <div class="w-10/12">
-                <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />  </div>
+              {props.bookmarksChecked() ? <div onClick={props.deleteBookmarks} title="Delete bookmarks."  class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
+                <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
+              </div> : false}
+
+              <div class={`${props.bookmarksChecked() ? 'w-8/12' : 'w-10/12'} transition-all`}>
+                <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />
+              </div>
               <div title="Mint collection to NFT!" onClick={setMarkToMintAndNavToMintPage} class="w-2/12 flex items-center mt-1 justify-center cursor-pointer hover:animate-spin">
                 <BiSolidMagicWand size="30" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
               </div>

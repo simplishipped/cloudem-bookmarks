@@ -14,6 +14,15 @@ const addBookmark = async (bookmark: Bookmark) => {
   }
 }
 
+const deleteBookmarks = async (ids: number[]) => {
+  const { data, error }  = await supabase.from('bookmarks').delete().eq('id', ids);
+  if(data) {
+    return data;
+  } else {
+    return false;
+  }
+}
+
 const getBookmarks = async () => {
   const response = await supabase.from('bookmarks').select('*').eq('id', 1);
   console.log(response)
@@ -33,5 +42,6 @@ const getBookmarksByUser = async (userId: number) => {
 export default {
   addBookmark,
   getBookmarksByUser,
-  getBookmarks
+  getBookmarks,
+  deleteBookmarks
 }

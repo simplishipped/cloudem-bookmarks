@@ -5,3 +5,8 @@ export interface ListProps {
   filter?: string
   filterKey?: string
 };
+
+export interface User {
+  email: string
+  blockchain_enabled: boolean
+}
