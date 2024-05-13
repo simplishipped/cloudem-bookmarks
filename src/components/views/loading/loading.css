@@ -1,0 +1,15 @@
+@keyframes slideUpFromBottom {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.slide-up-from-bottom {
+  animation: slideUpFromBottom .7s ease-out forwards;
+  transform: translateY(100%);
+  position: absolute;
+  left: 0;
+}

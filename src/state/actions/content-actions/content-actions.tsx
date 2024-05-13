@@ -16,9 +16,16 @@ const useContent = () => {
   const nft_category = () => app.state.nft_category;
   const failed = () => app.state.failed;
   const bookmarksChecked = () => app.state.bookmarksChecked;
+  const user = () => app.state.user;
 
 
 
+
+  const setUser = (user: any) => {
+    setState(() => {
+      return { ...app.state, user }
+    })
+  }
 
   const setBookmarkChecked = (id: number | undefined, bool: boolean) => {
     setState(() => {
@@ -163,7 +170,9 @@ const useContent = () => {
     setBookmarkChecked,
     setAllBookmarksChecked,
     bookmarksChecked,
-    deleteBookmarks
+    deleteBookmarks,
+    user,
+    setUser
   };
 };
 

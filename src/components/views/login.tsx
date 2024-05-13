@@ -3,6 +3,8 @@ import { ethers } from 'ethers';
 import Input from "../atoms/input";
 import supabase from "../../api/supabase";
 import useSettings from "../../state/actions/settings-actions/settings-actions";
+import useContent from "../../state/actions/content-actions/content-actions";
+import Loading from "./loading/loading";
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 interface LoginProps {
@@ -10,12 +12,14 @@ interface LoginProps {
 }
 
 const Login: Component<LoginProps> = () => {
-  const [error, setError] = createSignal('');
+  const [error, setError]: [() => null | string, Setter<null | string>] = createSignal(null);
   const [email, setEmail] = createSignal('');
   const [password, setPassword] = createSignal('');
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [signUp, setSignUp] = createSignal(false);
   const { setConnected, blockchain } = useSettings();
+  const { setUser, user } = useContent();
+  const [loading, setLoading] = createSignal(false);
 
   const [errorMsg, setErrorMsg] = createSignal('');
 
@@ -31,16 +35,17 @@ const Login: Component<LoginProps> = () => {
 
         if (users && users.length > 0) {
           setConnected(true);
+          setUser(users[0]);
         } else {
           const { data, error } = await supabase
             .from('users')
-            .insert([{walletaddr_arb: accounts[0]}]);
-
-            if(data) {
-              setConnected(true);
-            } else {
-              setError('Failed to save user to database');
-            }
+            .insert([{ walletaddr_arb: accounts[0] }]);
+          console.log(data)
+          if (data) {
+            setConnected(true);
+          } else {
+            setError('Failed to save user to database');
+          }
         }
 
         setConnected(true);
@@ -72,20 +77,23 @@ const Login: Component<LoginProps> = () => {
 
   async function signInWithEmail() {
     if (email() && password()) {
+      setLoading(true);
       const { error, data } = await supabase.auth.signInWithPassword({
         email: email(),
         password: password(),
       })
-      setConnected(true);
       if (error) {
-        setError('Failed to sign in with email');
+        setError('Credentials are incorrect');
+      } else {
+        setConnected(true);
       }
+      setLoading(false)
     }
   }
 
   return (
     <div class="px-6">
-      {error().length > 0 ? <div class=" bg-red-500 p-4">{error()}</div> : false}
+      {error() ? <div class=" bg-red-500 p-4 rounded-md flex items-center justify-center dark:text-white text-black">{error()}</div> : false}
       <button onClick={connect} class="px-4 py-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-6
         font-bold w-full items-center rounded-md text-center hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight">Connect Wallet</button>
 
@@ -120,6 +128,7 @@ const Login: Component<LoginProps> = () => {
       }>
         <h1 onClick={() => setSignUp(false)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-white text-textLight text-md">Sign In</h1>
       </Show>
+      {loading() ? <Loading /> : false}
 
     </div>
   );

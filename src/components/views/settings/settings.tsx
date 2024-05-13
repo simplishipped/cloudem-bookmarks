@@ -14,13 +14,17 @@ import { ImCloudDownload } from 'solid-icons/im'
 import { AiOutlineBlock } from 'solid-icons/ai'
 import { RiMediaPlayListAddFill } from 'solid-icons/ri'
 import useSettings from "../../../state/actions/settings-actions/settings-actions";
+import useContent from "../../../state/actions/content-actions/content-actions";
 // import { ethers } from 'ethers';
 // const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
-const Settings: Component<{}> = (props) => {
+const Settings: Component<{}> = () => {
   const { theme, setTheme } = useTheme();
   const { landingView, setLandingView } = useSettings();
+  const props = useContent();
+
+  console.log(props.user())
 
   return (
     <div onClick={() => console.log(landingView())} class={`text-textLight dark:text-textDark px-6 pt-2 transition-colors`}>
@@ -28,7 +32,7 @@ const Settings: Component<{}> = (props) => {
       <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Starts App Into Adding', 'Starts App Into List']} setter={setLandingView} value={landingView} />
       <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       <SettingsNavRow navTo={'url'} title="Export Data" Icon={ImCloudDownload} />
-
+      
       <SettingsNavRow navTo={'url'} title="Help" Icon={FaRegularCircleQuestion} />
 
       

@@ -14,6 +14,7 @@ import { Bookmark } from "../molecules/types";
 import { useNavigate } from "@solidjs/router";
 import supabase from "../../api/supabase";
 import { OcTrash2 } from 'solid-icons/oc'
+import userApi from '../../api/user-api';
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 const Home: Component = () => {
@@ -23,17 +24,19 @@ const Home: Component = () => {
   const navigate = useNavigate();
 
   const props = useContent();
-  const { setConnected, blockchain } = useSettings();
-  const [trashButton, showTrashButton] = createSignal(false);
+  const settingsProps = useSettings();
 
 
   const isConnected = async () => {
     const accounts = await provider.send('eth_accounts', []);
     const { data } = await supabase.auth.getUser()
     if (accounts.length || (data && data.user)) {
-      setConnected(true)
+      //@ts-ignore
+      const user:User[] = await userApi.getUser(data.user.email);
+      settingsProps.setConnected(true);
+      props.setUser(user[0]);
     } else {
-      setConnected(false);
+      settingsProps.setConnected(false);
     }
   }
 
@@ -70,7 +73,7 @@ const Home: Component = () => {
   }
 
   return (
-    <Show when={blockchain().connected} fallback={<Login />}>
+    <Show when={settingsProps.blockchain().connected} fallback={<Login />}>
       <div class="px-6 relative">
         <div class="w-full p-1 flex">
           <div onClick={() => props.setMarksView('collections')}
@@ -81,7 +84,7 @@ const Home: Component = () => {
         <Show when={!props.loading().bookmarks} fallback={<Loader />}>
           {props.marksView() === 'collections' ? <>
             <div class="flex items-center">
-              {props.bookmarksChecked() ? <div onClick={props.deleteBookmarks} title="Delete bookmarks."  class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
+              {props.bookmarksChecked() ? <div onClick={props.deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
                 <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
               </div> : false}
 
@@ -106,6 +109,8 @@ const Home: Component = () => {
         </Show>
       </div>
     </Show>
+
+
   );
 };
 
