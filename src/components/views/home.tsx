@@ -62,13 +62,13 @@ const Home: Component = () => {
             </div>
 
             <div class="mt-2">
-              <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.collection()} list={props.bookmarks()} search={props.search()} />
+              <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks()} search={props.search} />
             </div>
           </> :
             <>
               <Select value={props.nftmarkName()} setValue={props.setCollection} name="Collection" options={collections} />
               <div class="mt-2">
-                <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftmarks()} search={props.search()} />
+                {/* <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftmarks()} search={props.search()} /> */}
               </div>
             </>}
         </Show>
