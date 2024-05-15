@@ -1,6 +1,6 @@
 import { Component, createEffect, Show, onMount } from "solid-js";
 import Select from "../atoms/select";
-import useContent from "../../state/actions/content-actions/content-actions";
+import useContent from "../../state/actions/content-actions";
 import { ethers } from 'ethers';
 import {getNftmarks} from "../../api/nftmarks-api";
 import Loader from "../atoms/loader/loader";

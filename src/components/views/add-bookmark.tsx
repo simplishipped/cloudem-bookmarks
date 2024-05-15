@@ -1,8 +1,8 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createEffect, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import Select from "../atoms/select";
 import Input from '../atoms/input';
-import useContent from "../../state/actions/content-actions/content-actions";
+import useContent from "../../state/actions/content-actions";
 
 const AddBookmark: Component<{}> = () => {
   const categories = [{ label: 'Kinky', value: 'kinky' }, { label: 'Default', value: 'default' }];

@@ -2,58 +2,23 @@ import { Accessor, Component, Setter, createEffect, createSignal, onMount, Show 
 import { ethers } from 'ethers';
 import Input from "../atoms/input";
 import supabase from "../../api/supabase";
-import useSettings from "../../state/actions/settings-actions/settings-actions";
-import useContent from "../../state/actions/content-actions/content-actions";
+import useSettings from "../../state/actions/settings-actions";
+import useContent from "../../state/actions/content-actions";
 import Loading from "./loading/loading";
+import useUser from "../../state/actions/user-actions";
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
-interface LoginProps {
 
-}
-
-const Login: Component<LoginProps> = () => {
+const Login: Component<{}> = () => {
   const [error, setError]: [() => null | string, Setter<null | string>] = createSignal(null);
   const [email, setEmail] = createSignal('');
   const [password, setPassword] = createSignal('');
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [signUp, setSignUp] = createSignal(false);
-  const { setConnected, blockchain } = useSettings();
-  const { setUser, user } = useContent();
-  const [loading, setLoading] = createSignal(false);
+  const { setConnected } = useSettings();
+  const { globalLoader, setGlobalLoader } = useContent();
+  const { connect, setAuthed, authed } = useUser();
 
-  const [errorMsg, setErrorMsg] = createSignal('');
-
-  const connect = async () => {
-    if ((window as any).ethereum) {
-      try {
-        await provider.send("eth_requestAccounts", []);
-        const accounts = await provider.send("eth_requestAccounts", []);
-        let { data: users, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('walletaddr_arb', accounts[0]);
-
-        if (users && users.length > 0) {
-          setConnected(true);
-          setUser(users[0]);
-        } else {
-          const { data, error } = await supabase
-            .from('users')
-            .insert([{ walletaddr_arb: accounts[0] }]);
-          console.log(data)
-          if (data) {
-            setConnected(true);
-          } else {
-            setError('Failed to save user to database');
-          }
-        }
-
-        setConnected(true);
-      } catch (err) {
-        setError('Please install crypto wallet');
-      }
-    }
-  }
 
   async function signUpNewUser() {
     if (email() && password() && confirmPassword()) {
@@ -69,7 +34,7 @@ const Login: Component<LoginProps> = () => {
           setError('Failed to sign up with email');
         }
       } else {
-        setErrorMsg('Passwords do not match');
+        setError('Passwords do not match');
       }
     }
   }
@@ -77,7 +42,7 @@ const Login: Component<LoginProps> = () => {
 
   async function signInWithEmail() {
     if (email() && password()) {
-      setLoading(true);
+      setGlobalLoader(true);
       const { error, data } = await supabase.auth.signInWithPassword({
         email: email(),
         password: password(),
@@ -85,9 +50,9 @@ const Login: Component<LoginProps> = () => {
       if (error) {
         setError('Credentials are incorrect');
       } else {
-        setConnected(true);
+        setAuthed(true);
       }
-      setLoading(false)
+      setGlobalLoader(false)
     }
   }
 
@@ -128,7 +93,7 @@ const Login: Component<LoginProps> = () => {
       }>
         <h1 onClick={() => setSignUp(false)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-white text-textLight text-md">Sign In</h1>
       </Show>
-      {loading() ? <Loading /> : false}
+      {globalLoader() ? <Loading /> : false}
 
     </div>
   );

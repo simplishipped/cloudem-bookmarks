@@ -14,26 +14,25 @@ if ("theme" in localStorage) {
   }
 }
 
-interface Blockchain {
-  connected: boolean
-  chain: string
-}
 
 let user: User = {
   email:'',
-  blockchain_enabled: false
+  blockchain_enabled: false,
+  id: null
 }
 let landingView: boolean = true;
 let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
-let nft_category: string = 'Default';
-let collection: string = 'Crypto';
+let nftCategory: string = 'Default';
+let collection: string = 'crypto';
 let bookmarksChecked: boolean = false;
-let blockchain: Blockchain = {
-  connected: false,
-  chain: 'ethereum'
-}
+let globalLoader: boolean = false;
+let chainName: string = 'ethereum';
+let connectedToBlockchain: boolean = false;
+let blockchainEnabled: boolean = false;
+let authed: boolean = false;
+let search: string = '';
 
 const [state, setState] = createStore({
   user,
@@ -41,14 +40,15 @@ const [state, setState] = createStore({
   nftmarks,
   nftmarkName,
   bookmarks,
-  nft_category,
+  nftCategory,
   collection,
-  blockchain,
+  // blockchain,
   landingView,
   failed: {
     nftmarks: null,
     bookmarks: null,
-    mint: null
+    mint: null,
+    login: null
   },
   loading: {
     nftmarks: null,
@@ -57,7 +57,13 @@ const [state, setState] = createStore({
   },
   marksView: 'collections',
   markToMint: {},
-  bookmarksChecked
+  bookmarksChecked,
+  globalLoader,
+  chainName,
+  connectedToBlockchain,
+  blockchainEnabled,
+  authed,
+  search
 });
 
 export const useAppState = () => {
@@ -73,13 +79,7 @@ export const useAppState = () => {
     });
   };
 
-  const setBlockchain = (chain: string) => {
-    setState(() => {
-      return {
-        ...state, blockchain: { ...state.blockchain, chain }
-      }
-    })
-  }
 
-  return { state, setState, setTheme, setBlockchain };
+
+  return { state, setState, setTheme };
 };

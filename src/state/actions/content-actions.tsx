@@ -1,6 +1,6 @@
-import { useSelector } from "../../../store";
-import { Bookmark, Nftmark } from "../../../components/molecules/types";
-import bookmarksApi from "../../../api/bookmarks-api";
+import { useSelector } from "../../store";
+import { Bookmark, Nftmark } from "../../components/molecules/types";
+import bookmarksApi from "../../api/bookmarks-api";
 
 const useContent = () => {
   const { app } = useSelector();
@@ -13,17 +13,24 @@ const useContent = () => {
   // const collections = () => app.state.collections;
   const markToMint = () => app.state.markToMint;
   const nftmarkName = () => app.state.nftmarkName;
-  const nft_category = () => app.state.nft_category;
+  const nftCategory = () => app.state.nftCategory;
   const failed = () => app.state.failed;
   const bookmarksChecked = () => app.state.bookmarksChecked;
-  const user = () => app.state.user;
+  const globalLoader = () => app.state.globalLoader;
+  const search = () => app.state.search;
 
 
 
 
-  const setUser = (user: any) => {
+  const setSearch = (search: string) => {
     setState(() => {
-      return { ...app.state, user }
+      return { ...app.state, search }
+    })
+  }
+
+  const setGlobalLoader = (bool: boolean) => {
+    setState(() => {
+      return { ...app.state, globalLoader: bool }
     })
   }
 
@@ -100,6 +107,32 @@ const useContent = () => {
     }
   }
 
+  const setMarkToMintAndNavToMintPage = () => {
+    const nftmark = {
+      bookmarks: bookmarks().filter(b => b.collection === app.state.collection),
+      name: app.state.collection,
+      userId: app.state.user.id,
+      category: nftCategory()
+    }
+    setState(() => {
+      return { ...app.state, markToMint: nftmark }
+    })
+    // props.setMarkToMint(nftmark);
+  }
+
+  const getUserBookmarks = async () => {
+    if (bookmarks().length === 0) {
+      setLoading('bookmarks', true);
+      const marks = await bookmarksApi.getBookmarksByUser(1);
+      setLoading('bookmarks', false);
+      if (marks) {
+        setState(() => {
+          return { ...app.state, bookmarks: marks }
+        })
+      }
+    }
+  }
+
   const setCategory = (category: string) => {
     setState(() => {
       return { ...app.state, category }
@@ -163,7 +196,7 @@ const useContent = () => {
     setCollections,
     setMarkToMint,
     nftmarkName,
-    nft_category,
+    nftCategory,
     markToMint,
     setLoadFailed,
     failed,
@@ -171,8 +204,12 @@ const useContent = () => {
     setAllBookmarksChecked,
     bookmarksChecked,
     deleteBookmarks,
-    user,
-    setUser
+    globalLoader,
+    setGlobalLoader,
+    setMarkToMintAndNavToMintPage,
+    getUserBookmarks,
+    search,
+    setSearch
   };
 };
 

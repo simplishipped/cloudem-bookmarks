@@ -3,7 +3,7 @@ import Input from '../atoms/input';
 import Select from "../atoms/select";
 import Categories from '../../util/categories';
 import { ImImage } from 'solid-icons/im';
-import useContent from "../../state/actions/content-actions/content-actions";
+import useContent from "../../state/actions/content-actions";
 import { mintCollectionToNft } from "../../api/nftmarks-api";
 import { BsHandThumbsUpFill } from 'solid-icons/bs';
 import Loader from "../atoms/loader/loader";

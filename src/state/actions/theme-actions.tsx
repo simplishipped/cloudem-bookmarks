@@ -1,4 +1,4 @@
-import { useSelector } from "../../../store";
+import { useSelector } from "../../store";
 
 const useTheme = () => {
   const { app } = useSelector();
