@@ -35,6 +35,7 @@ const useContent = () => {
   }
 
   const setBookmarkChecked = (id: number | undefined, bool: boolean) => {
+    console.log('wtf', id, bool)
     setState(() => {
       let bookmarks = app.state.bookmarks.map(b => {
         if (b.id === id) {

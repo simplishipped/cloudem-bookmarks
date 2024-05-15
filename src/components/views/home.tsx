@@ -1,4 +1,4 @@
-import { Component, Show, createEffect, onMount } from "solid-js";
+import { Component, Show, createEffect, onMount, on } from "solid-js";
 import { RowList } from "../organisms/row-list";
 import Select from "../atoms/select";
 import useContent from "../../state/actions/content-actions";
@@ -32,6 +32,9 @@ const Home: Component = () => {
   })
 
 
+  createEffect(on(props.bookmarksChecked, (checked: any) => {
+    // console.log(props.bookmarksChecked, checked);
+  }))
   return (
     <Show when={userProps.authed()} fallback={<Login />}>
       <div class="px-6 relative">
@@ -51,7 +54,7 @@ const Home: Component = () => {
                 <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
               </div> : false}
 
-              <div class={`${props.bookmarksChecked() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
+              <div class={`${props.bookmarksChecked() && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
                 <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />
               </div>
               <Show when={settingsProps.blockchainEnabled()}>
@@ -62,7 +65,7 @@ const Home: Component = () => {
             </div>
 
             <div class="mt-2">
-              <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks()} search={props.search} />
+              <RowList hasCheckboxes={true} filterKey="collection" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks()} search={props.search} />
             </div>
           </> :
             <>

@@ -51,11 +51,11 @@ const Header = () => {
       </Show>
    
       <div class="flex justify-between p-4 items-center text-textLight dark:text-textDark">
-        <Show when={settingsProps.blockchainEnabled() && settingsProps.connectedToBlockchain()}>
+        {/* <Show when={settingsProps.blockchainEnabled() && settingsProps.connectedToBlockchain()}>
           <div class="cursor-pointer">
             <TbCurrencyDollar size="28" />
           </div>
-        </Show>
+        </Show> */}
         <div class="cursor-pointer z-30" onClick={() => setShowSearch(showSearch() ? false : true)}>
           <FiSearch size="26" />
         </div>

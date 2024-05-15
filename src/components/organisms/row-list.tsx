@@ -2,21 +2,24 @@ import { Component, For, Index, JSXElement, Show, createEffect, createSignal, on
 import { Dynamic } from "solid-js/web"
 import { FaRegularFaceSadTear } from 'solid-icons/fa'
 import { Bookmark } from "../molecules/types";
+import useContent from "../../state/actions/content-actions";
 export interface ListProps {
   list: any[]
   RowComponent: any
   filter: () => string
   filterKey: string
   search: () => string
+  hasCheckboxes?: boolean
 };
 
 export const RowList: Component<ListProps> = (props) => {
 
   const [rows, setRows]: [() => JSXElement[], (rows: Bookmark[]) => void] = createSignal([]);
+  const contentProps = useContent()
 
   function filterRows() {
     const list = props.list.filter(
-      (row) => row[props.filterKey].toLowerCase() === props.filter().toLowerCase() && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
+      (row) => row[props.filterKey].toLowerCase() === props.filter()?.toLowerCase() && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
 
     return list;
   }
@@ -31,6 +34,12 @@ export const RowList: Component<ListProps> = (props) => {
     setRows(list)
   })
 
+  createEffect(on(contentProps.bookmarksChecked, () => {
+    if (props.hasCheckboxes) {
+      const list = filterRows()
+      setRows(list)
+    }
+  }, { defer: true }))
 
 
 
