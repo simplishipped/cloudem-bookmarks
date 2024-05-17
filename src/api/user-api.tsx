@@ -1,7 +1,8 @@
 import supabase from "./supabase";
 
-export const getUser = async (email: string) => {
-  const { data, error } = await supabase.from('users').select('*').eq('email', email);
+
+const getAuth = async () => {
+  const { data, error } = await supabase.auth.getUser();
   if (data) {
     return data
   } else {
@@ -9,7 +10,40 @@ export const getUser = async (email: string) => {
   }
 }
 
+const createUser = async (user: any) => {
+  const { data, error } = await supabase.from('users').insert(user).select('*');
+  if (data) {
+    return data[0]
+  } else {
+    return false;
+  }
+}
+export const getUser = async (email: string) => {
+  const { data, error } = await supabase.from('users').select('*').eq('email', email);
+  if (data) {
+    return data[0]
+  } else {
+    return false;
+  }
+}
 
+export const getUSerByWalletAddr = async (walletaddr: string) => {
+  const { data, error } = await supabase.from('users').select('*').eq('walletaddr_arb', walletaddr);
+  if (data) {
+    return data[0]
+  } else {
+    return false;
+  }
+}
+
+const updateUser = async (id: number, user: any) => {
+  const { data, error } = await supabase.from('users').update(user).eq('id', id).select();
+  if (data) {
+    return data
+  } else {
+    return false;
+  }
+}
 const disableBlockchain = async (id: number) => {
   const { data, error } = await supabase.from('users').update({ 'blockchain_enabled': false }).eq('id', id).select();
   console.log(data)
@@ -20,7 +54,13 @@ const disableBlockchain = async (id: number) => {
   }
 }
 
+
+
 export default {
   getUser,
-  disableBlockchain
+  disableBlockchain,
+  updateUser,
+  getAuth,
+  getUSerByWalletAddr,
+  createUser
 }

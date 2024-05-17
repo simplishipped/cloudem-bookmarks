@@ -14,12 +14,9 @@ const AddBookmark: Component<{}> = () => {
   const [nftMark, setNftMark] = createSignal(window.location.href);
   // const [category, setCategory] = createSignal('Category');
 
-  const createNftMark = () => {
-    if (props.marksView() === 'collections') {
-      props.addBookmark({ name: name(), url: nftMark(), collection: props.collection() === 'Collection' ? 'Default' : props.collection(), user_id: 1 }, 'categories');
-    } else {
-      // props.addBookmark({ IS_COLLECTION: true, NAME: name(), URL: nftMark(), COLLECTION: props.collection() === 'Inception' ? 'Inception' : props.category(), USERID: '652d5eb3d7e492b02c050f70' }, 'collections');
-    }
+  const addBookmark = () => {
+    //@ts-ignore
+    props.addBookmark({ name: name(), url: nftMark(), collection: props.collection() === 'Default' ? 'Default' : props.collection(), user_id: 1 });
     navigate('/')
   }
 
@@ -38,7 +35,7 @@ const AddBookmark: Component<{}> = () => {
       <div class="mt-4">
         <button id="nft-mark" class={`dark:border-textDark 
     dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-2 font-bold w-full items-center rounded-md text-center 
-    hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight`} name="NFTmarkName" onClick={createNftMark}>Save</button>
+    hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight`} name="NFTmarkName" onClick={addBookmark}>Save</button>
       </div>
     </div>);
 };

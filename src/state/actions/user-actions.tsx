@@ -1,6 +1,6 @@
 import { useSelector } from "../../store";
 import { ethers } from "ethers";
-import supabase from "../../api/supabase";
+import userApi, { getUSerByWalletAddr } from "../../api/user-api";
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
@@ -9,6 +9,16 @@ const useUser = () => {
   const user = () => app.state.user;
   const setState = app.setState;
   const authed = () => app.state.authed;
+
+
+  const updateUser = async (user: any) => {
+    const data = await userApi.updateUser(user.id, user);
+    if (data) {
+      return data
+    } else {
+      return false;
+    }
+  }
 
   const setUser = (user: any) => {
     setState(() => {
@@ -23,16 +33,12 @@ const useUser = () => {
   }
 
   const identifyUser = async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (data && data.user) {
+    const data = await userApi.getAuth()
+    if (data && data.user && data.user.email) {
 
-      let { data: users, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', data.user.email);
-
-      if (users && users.length > 0) {
-        const user = users[0];
+      let user = await userApi.getUser(data.user.email)
+  
+      if (user) {
         if (user.blockchain_enabled) {
           const accounts = await provider.send('eth_accounts', []);
           setState(() => {
@@ -81,12 +87,9 @@ const useUser = () => {
     } else {
       const accounts = await provider.send('eth_accounts', []);
       if (accounts.length > 0) {
-        let { data: users, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('walletaddr_arb', accounts[0]);
-        if (users && users.length > 0) {
-          const user = users[0];
+        const user = await userApi.getUser(accounts[0])
+   
+        if (user) {
           setState(() => {
             return { ...app.state, user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
           })
@@ -99,25 +102,21 @@ const useUser = () => {
     if ((window as any).ethereum) {
       try {
         const accounts = await provider.send("eth_requestAccounts", []);
-        let { data: users, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('walletaddr_arb', accounts[0]);
+        const user = await getUSerByWalletAddr(accounts[0])
 
-        if (users && users.length > 0) {
+
+        if (user) {
           setState(() => {
-            return { ...app.state, user: users[0], connectedToBlockchain: true, blockchainEnabled: true, authed: true }
+            return { ...app.state, user: user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
           })
-          setUser(users[0]);
+          setUser(user);
         } else {
-          const { data, error } = await supabase
-            .from('users')
-            .insert([{ walletaddr_arb: accounts[0] }])
-            .select();
-          if (data) {
+          const user = await userApi.createUser(accounts[0])
+       
+          if (user) {
             setState(() => {
               //@ts-ignore
-              return { ...app.state, user: data.users[0], connectedToBlockchain: true, blockchainEnabled: true, authed: true }
+              return { ...app.state, user: data.user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
             })
           } else {
             // setError('Failed to save user to database');
@@ -139,7 +138,8 @@ const useUser = () => {
     identifyUser,
     authed,
     connect,
-    setAuthed
+    setAuthed,
+    updateUser
   };
 };
 

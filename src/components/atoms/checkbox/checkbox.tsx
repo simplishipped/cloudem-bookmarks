@@ -1,21 +1,27 @@
-import { Component } from "solid-js";
+import { Component, createEffect, on } from "solid-js";
 import './checkbox.css';
 import { Bookmark } from "../../molecules/types";
 
 
 interface CheckboxProps {
-  row: Bookmark
-  check: (id: number| undefined, checked: boolean) => void;
+  row: () => Bookmark
+  check: (id: number, checked: boolean, row: any) => void;
 }
 
 const Checkbox: Component<CheckboxProps> = (props) => {
   const handleCheck = () => { 
-    props.check(props.row.id, !props.row.checked);
+    let checked = props.row().checked ? false : true;
+    props.check(props.row().id, checked, props.row);
   };
+
+  createEffect(on(props.row, () => {
+  }, { defer: true }))
+
+
   return (
     <div class="checkbox-wrapper -mt-1">
-      <input onChange={handleCheck} checked={props.row.checked} id={'cbx'+props.row.id} type="checkbox" />
-      <label class="cbx border-2 dark:border-textDark" for={'cbx'+props.row.id}></label>
+      <input onChange={handleCheck} checked={props.row().checked} id={'cbx'+props.row().id} type="checkbox" />
+      <label class="cbx border-2 dark:border-textDark" for={'cbx'+props.row().id}></label>
     </div>
   );
 };

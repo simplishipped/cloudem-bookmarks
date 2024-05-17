@@ -1,15 +1,15 @@
-import { Component, For, Index, JSXElement, Show, createEffect, createSignal, on, onMount } from "solid-js";
+import { Component, For, Index, JSXElement, Show, ValidComponent, createEffect, createSignal, on, onMount } from "solid-js";
 import { Dynamic } from "solid-js/web"
 import { FaRegularFaceSadTear } from 'solid-icons/fa'
 import { Bookmark } from "../molecules/types";
 import useContent from "../../state/actions/content-actions";
 export interface ListProps {
-  list: any[]
-  RowComponent: any
+  list: () => Bookmark[]
+  RowComponent: ValidComponent
   filter: () => string
   filterKey: string
   search: () => string
-  hasCheckboxes?: boolean
+  checkedBookmarks?: () => number[]
 };
 
 export const RowList: Component<ListProps> = (props) => {
@@ -18,8 +18,9 @@ export const RowList: Component<ListProps> = (props) => {
   const contentProps = useContent()
 
   function filterRows() {
-    const list = props.list.filter(
-      (row) => row[props.filterKey].toLowerCase() === props.filter()?.toLowerCase() && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
+    const list = props.list().filter(
+      //@ts-ignore
+      (row: Bookmark) => row[props.filterKey].toLowerCase() === props.filter()?.toLowerCase() && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
 
     return list;
   }
@@ -30,16 +31,25 @@ export const RowList: Component<ListProps> = (props) => {
   }, { defer: true }));
 
   onMount(() => {
-    const list = filterRows()
+    const list = filterRows();
     setRows(list)
   })
 
-  createEffect(on(contentProps.bookmarksChecked, () => {
-    if (props.hasCheckboxes) {
-      const list = filterRows()
+  createEffect(on(contentProps.checkedBookmarks, (bks) => {
+    if (props.checkedBookmarks) {
+      const list = props.list().map((row) => {
+        row.checked = bks.includes(row.id)
+        return row
+      })
+      
       setRows(list)
     }
-  }, { defer: true }))
+  }, { defer: true }));
+
+
+  createEffect(on(props.list, (list) => {
+    setRows(list)
+  }, { defer: true }));
 
 
 
@@ -53,7 +63,7 @@ export const RowList: Component<ListProps> = (props) => {
         <Index each={rows()}>
           {(row) => {
             return (
-              <Dynamic component={props.RowComponent} row={row()} />
+              <Dynamic component={props.RowComponent} row={row} />
             )
           }
           }

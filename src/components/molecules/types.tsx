@@ -2,7 +2,7 @@
 export interface Bookmark {
   name: string
   url: string
-  id?: number
+  id: number
   collection: string
   user_id: number
   checked?: boolean
@@ -11,7 +11,7 @@ export interface Bookmark {
 export interface Nftmark {
   name: string
   bookmarks?: any[]
-  id?: number
+  id: number
   category: string
   user_id: number
   chain_addr?: string,

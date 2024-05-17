@@ -6,16 +6,16 @@ import supabase from "./supabase";
 
 
 const addBookmark = async (bookmark: Bookmark) => {
-  const { data, error }  = await supabase.from('bookmarks').insert(bookmark);
+  const { data, error }  = await supabase.from('bookmarks').insert(bookmark).select('*');;
   if(data) {
-    return data
+    return data[0]
   } else { 
     return false;
   }
 }
 
 const deleteBookmarks = async (ids: number[]) => {
-  const { data, error }  = await supabase.from('bookmarks').delete().eq('id', ids);
+  const { data, error }  = await supabase.from('bookmarks').delete().in('id', ids);
   if(data) {
     return data;
   } else {

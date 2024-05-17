@@ -15,11 +15,9 @@ const useContent = () => {
   const nftmarkName = () => app.state.nftmarkName;
   const nftCategory = () => app.state.nftCategory;
   const failed = () => app.state.failed;
-  const bookmarksChecked = () => app.state.bookmarksChecked;
   const globalLoader = () => app.state.globalLoader;
   const search = () => app.state.search;
-
-
+  const checkedBookmarks = () => app.state.checkedBookmarks;
 
 
   const setSearch = (search: string) => {
@@ -34,23 +32,23 @@ const useContent = () => {
     })
   }
 
-  const setBookmarkChecked = (id: number | undefined, bool: boolean) => {
-    console.log('wtf', id, bool)
-    setState(() => {
-      let bookmarks = app.state.bookmarks.map(b => {
-        if (b.id === id) {
-          return { ...b, checked: bool }
-        }
-        return b
-      })
+  const setBookmarkChecked = (id: number, bool: boolean, row: any) => {
+    let clone = app.state.checkedBookmarks.slice();
 
+    if (clone.includes(id)) {
+      clone.splice(clone.indexOf(id), 1);
+    } else {
+      clone.push(id);
+    }
+
+    setState(() => {
       return {
         ...app.state,
-        bookmarks,
-        bookmarksChecked: bookmarks.some(b => b.checked)
+        checkedBookmarks: clone
       }
     })
   }
+
 
   const setAllBookmarksChecked = () => {
     setState(() => {
@@ -75,18 +73,12 @@ const useContent = () => {
     })
   }
 
-  const addBookmark = async (bookmark: Bookmark, type: string) => {
+  const addBookmark = async (bookmark: Bookmark) => {
     try {
-      await bookmarksApi.addBookmark(bookmark);
-      if (type === 'collections') {
-        setState(() => {
-          return { ...app.state, collections: [bookmark, ...app.state.collection] }
-        })
-      } else {
-        setState(() => {
-          return { ...app.state, bookmarks: [bookmark, ...app.state.bookmarks] }
-        })
-      }
+      const bk = await bookmarksApi.addBookmark(bookmark);
+      setState(() => {
+        return { ...app.state, bookmarks: [bk, ...app.state.bookmarks] }
+      })
 
     } catch (err) {
 
@@ -95,13 +87,12 @@ const useContent = () => {
 
   const deleteBookmarks = async () => {
     try {
-      let deleteIds = app.state.bookmarks.filter(b => b.checked).map(b => b.id);
-      if (deleteIds.length > 0) {
+      if (app.state.checkedBookmarks.length > 0) {
         // @ts-ignore
-        await bookmarksApi.deleteBookmarks(deleteIds);
+        await bookmarksApi.deleteBookmarks(app.state.checkedBookmarks);
       }
       setState(() => {
-        return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !deleteIds.includes(b.id)) }
+        return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !app.state.checkedBookmarks.includes(b.id)), checkedBookmarks: [] }
       })
     } catch (err) {
 
@@ -203,14 +194,14 @@ const useContent = () => {
     failed,
     setBookmarkChecked,
     setAllBookmarksChecked,
-    bookmarksChecked,
     deleteBookmarks,
     globalLoader,
     setGlobalLoader,
     setMarkToMintAndNavToMintPage,
     getUserBookmarks,
     search,
-    setSearch
+    setSearch,
+    checkedBookmarks
   };
 };
 

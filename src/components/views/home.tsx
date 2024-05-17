@@ -31,10 +31,8 @@ const Home: Component = () => {
     props.getUserBookmarks();
   })
 
+  
 
-  createEffect(on(props.bookmarksChecked, (checked: any) => {
-    // console.log(props.bookmarksChecked, checked);
-  }))
   return (
     <Show when={userProps.authed()} fallback={<Login />}>
       <div class="px-6 relative">
@@ -50,11 +48,11 @@ const Home: Component = () => {
         <Show when={!props.loading().bookmarks} fallback={<Loader />}>
           {props.marksView() === 'collections' ? <>
             <div class="flex items-center">
-              {props.bookmarksChecked() ? <div onClick={props.deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
+              {props.checkedBookmarks().length > 0 ? <div onClick={props.deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
                 <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
               </div> : false}
 
-              <div class={`${props.bookmarksChecked() && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
+              <div class={`${props.checkedBookmarks().length > 0 && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
                 <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />
               </div>
               <Show when={settingsProps.blockchainEnabled()}>
@@ -65,7 +63,7 @@ const Home: Component = () => {
             </div>
 
             <div class="mt-2">
-              <RowList hasCheckboxes={true} filterKey="collection" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks()} search={props.search} />
+              <RowList checkedBookmarks={props.checkedBookmarks} filterKey="collection" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks} search={props.search} />
             </div>
           </> :
             <>
