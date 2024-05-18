@@ -9,6 +9,14 @@ const useUser = () => {
   const user = () => app.state.user;
   const setState = app.setState;
   const authed = () => app.state.authed;
+  const initRender = () => app.state.initRender;
+
+
+  const setInitRender = (bool: boolean) => {
+    setState(() => {
+      return { ...app.state, initRender: bool }
+    })
+  }
 
 
   const updateUser = async (user: any) => {
@@ -32,12 +40,18 @@ const useUser = () => {
     })
   }
 
+  const setStartView = (startView: boolean) => {
+    setState(() => {
+      return { ...app.state, startView }
+    })
+  }
+
   const identifyUser = async () => {
     const data = await userApi.getAuth()
     if (data && data.user && data.user.email) {
 
       let user = await userApi.getUser(data.user.email)
-  
+
       if (user) {
         if (user.blockchain_enabled) {
           const accounts = await provider.send('eth_accounts', []);
@@ -78,6 +92,7 @@ const useUser = () => {
             return { ...app.state, user, connectedToBlockchain: false, authed: true, blockchainEnabled: false }
           })
         }
+        setStartView(user.start_view);
       } else {
         //@ts-ignore
         setState(() => {
@@ -88,7 +103,7 @@ const useUser = () => {
       const accounts = await provider.send('eth_accounts', []);
       if (accounts.length > 0) {
         const user = await userApi.getUser(accounts[0])
-   
+
         if (user) {
           setState(() => {
             return { ...app.state, user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
@@ -112,7 +127,7 @@ const useUser = () => {
           setUser(user);
         } else {
           const user = await userApi.createUser(accounts[0])
-       
+
           if (user) {
             setState(() => {
               //@ts-ignore
@@ -123,14 +138,14 @@ const useUser = () => {
           }
         }
 
-     
+
       } catch (err) {
         // setError('Please install crypto wallet');
       }
     }
   }
 
-  
+
 
   return {
     user,
@@ -139,7 +154,10 @@ const useUser = () => {
     authed,
     connect,
     setAuthed,
-    updateUser
+    updateUser,
+    initRender,
+    setInitRender
+    
   };
 };
 

@@ -18,6 +18,7 @@ const useContent = () => {
   const globalLoader = () => app.state.globalLoader;
   const search = () => app.state.search;
   const checkedBookmarks = () => app.state.checkedBookmarks;
+  const startView = () => app.state.startView;
 
 
   const setSearch = (search: string) => {
@@ -171,7 +172,6 @@ const useContent = () => {
 
   // const setLoading = app.setLoading;
 
-
   return {
     setCategory,
     nftmarks,
@@ -201,7 +201,9 @@ const useContent = () => {
     getUserBookmarks,
     search,
     setSearch,
-    checkedBookmarks
+    checkedBookmarks,
+    startView,
+
   };
 };
 

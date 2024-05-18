@@ -5,20 +5,25 @@ import Header from "./components/organisms/header";
 import Settings from "./components/views/settings/settings";
 import Home from "./components/views/home";
 import { Router, Route, Routes } from "@solidjs/router";
-import { Show } from "solid-js";
+import { Show, onMount } from "solid-js";
 import { StoreProvider } from "./store";
 import Networks from "./components/views/settings/networks";
-import AddNftMark from "./components/views/add-bookmark";
+import AddBookmark from "./components/views/add-bookmark";
 import Market from "./components/views/market";
 import Mint from "./components/views/mint";
-import supabase from './api/supabase.jsx';
 import Loading from "./components/views/loading/loading";
 import useContent from "./state/actions/content-actions";
 import useUser from "./state/actions/user-actions";
+import Login from "./components/views/login";
 const App: Component = () => {
 
   const { globalLoader } = useContent();
-  const { authed } = useUser();
+  const userProps = useUser();
+  onMount(() => {
+    userProps.identifyUser();
+    userProps.initRender();
+  })
+
 
   return (
     <StoreProvider>
@@ -30,11 +35,11 @@ const App: Component = () => {
           >
             <Header />
             <Routes>
-              <Route path="/" component={Home} />
-              <Show when={authed()}>
+              <Show when={userProps.authed()} fallback={<Login />}>
+                <Route path="/" component={Home} />
+                <Route path="add-bookmark" component={AddBookmark} />
                 <Route path="/account" component={Settings} />
                 <Route path="/account/networks" component={Networks} />
-                <Route path="/add-nft-mark" component={AddNftMark} />
                 <Route path="/market" component={Market} />
                 <Route path="/mint" component={Mint} />
               </Show>

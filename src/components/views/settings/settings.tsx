@@ -25,17 +25,16 @@ const Settings: Component<{}> = () => {
   return (
     <div class={`text-textLight dark:text-textDark px-6 pt-2 transition-colors`}>
       <SettingsBoolRow IconTrue={FaRegularMoon} IconFalse={FaSolidSun} titles={["Dark Theme", "Light Theme"]} setter={setTheme} value={theme} />
-      <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Starts App Into Adding', 'Starts App Into List']} setter={settingsProps.setLandingView} value={settingsProps.landingView} />
+      <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Start App Into Adding', 'Start App Into List']} setter={settingsProps.setStartView} value={settingsProps.startView} />
       <SettingsBoolRow IconTrue={ImBlocked} IconFalse={AiOutlineBlock} titles={['Enable Blockchain', 'Disable Blockchain']} setter={settingsProps.enableBlockchain} value={settingsProps.blockchainEnabled} />
       <Show when={settingsProps.blockchainEnabled()}>
         <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       </Show>
-      <SettingsNavRow navTo={'url'} title="Export Data" Icon={ImCloudDownload} />
+      <SettingsNavRow navTo={'url'} title="Export/Import" Icon={ImCloudDownload} />
       <SettingsNavRow navTo={'url'} title="Help" Icon={FaRegularCircleQuestion} />
 
-
-      {/* <button class="px-4 py-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-6
-        font-bold w-full items-center rounded-md text-center hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight">Log Out</button> */}
+      <button onClick={settingsProps.exportBookmarks} class="px-4 py-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-6
+        font-bold w-full items-center rounded-md text-center hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight">Export Bookmarks</button>
     </div>
   );
 };

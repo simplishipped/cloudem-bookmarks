@@ -27,54 +27,55 @@ const Home: Component = () => {
     navigate('/mint')
   }
   onMount(() => {
-    userProps.identifyUser();
     props.getUserBookmarks();
+    if(userProps.user() && userProps.user().start_view && !userProps.initRender()) {
+      navigate('/add-bookmark');
+      userProps.setInitRender(true);
+    }
   })
 
-  
+
 
   return (
-    <Show when={userProps.authed()} fallback={<Login />}>
-      <div class="px-6 relative">
-        <Show when={settingsProps.blockchainEnabled() && settingsProps.connectedToBlockchain()}>
-          <div class="w-full p-1 flex">
-            <div onClick={() => props.setMarksView('collections')}
-              class={`w-1/2 mx-1 ${props.marksView() === 'collections' ? 'border-b-4' : ''} cursor-pointer border-b-primaryButtonLight dark:border-b-primaryButtonDark rounded-b-md dark:text-textDark text-textLight flex justify-center`}>Collections</div>
-            <div onClick={() => props.setMarksView('nfts')}
-              class={`w-1/2 mx-1 ${props.marksView() === 'nfts' ? 'border-b-4' : ''} cursor-pointer border-b-primaryButtonLight dark:border-b-primaryButtonDark rounded-b-md dark:text-textDark text-textLight flex justify-center`}>NFTs</div>
+    <div class="px-6 relative">
+      <Show when={settingsProps.blockchainEnabled() && settingsProps.connectedToBlockchain()}>
+        <div class="w-full p-1 flex">
+          <div onClick={() => props.setMarksView('collections')}
+            class={`w-1/2 mx-1 ${props.marksView() === 'collections' ? 'border-b-4' : ''} cursor-pointer border-b-primaryButtonLight dark:border-b-primaryButtonDark rounded-b-md dark:text-textDark text-textLight flex justify-center`}>Collections</div>
+          <div onClick={() => props.setMarksView('nfts')}
+            class={`w-1/2 mx-1 ${props.marksView() === 'nfts' ? 'border-b-4' : ''} cursor-pointer border-b-primaryButtonLight dark:border-b-primaryButtonDark rounded-b-md dark:text-textDark text-textLight flex justify-center`}>NFTs</div>
+        </div>
+      </Show>
+
+      <Show when={!props.loading().bookmarks} fallback={<Loader />}>
+        {props.marksView() === 'collections' ? <>
+          <div class="flex items-center">
+            {props.checkedBookmarks().length > 0 ? <div onClick={props.deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
+              <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
+            </div> : false}
+
+            <div class={`${props.checkedBookmarks().length > 0 && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
+              <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />
+            </div>
+            <Show when={settingsProps.blockchainEnabled()}>
+              <div title="Mint collection to NFT!" onClick={goToMintPage} class="w-2/12 flex items-center mt-1 justify-center cursor-pointer hover:animate-spin">
+                <BiSolidMagicWand size="30" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
+              </div>
+            </Show>
           </div>
-        </Show>
 
-        <Show when={!props.loading().bookmarks} fallback={<Loader />}>
-          {props.marksView() === 'collections' ? <>
-            <div class="flex items-center">
-              {props.checkedBookmarks().length > 0 ? <div onClick={props.deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
-                <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
-              </div> : false}
-
-              <div class={`${props.checkedBookmarks().length > 0 && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
-                <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />
-              </div>
-              <Show when={settingsProps.blockchainEnabled()}>
-                <div title="Mint collection to NFT!" onClick={goToMintPage} class="w-2/12 flex items-center mt-1 justify-center cursor-pointer hover:animate-spin">
-                  <BiSolidMagicWand size="30" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
-                </div>
-              </Show>
-            </div>
-
+          <div class="mt-2">
+            <RowList checkedBookmarks={props.checkedBookmarks} filterKey="collection" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks} search={props.search} />
+          </div>
+        </> :
+          <>
+            <Select value={props.nftmarkName()} setValue={props.setCollection} name="Collection" options={collections} />
             <div class="mt-2">
-              <RowList checkedBookmarks={props.checkedBookmarks} filterKey="collection" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks} search={props.search} />
+              {/* <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftmarks()} search={props.search()} /> */}
             </div>
-          </> :
-            <>
-              <Select value={props.nftmarkName()} setValue={props.setCollection} name="Collection" options={collections} />
-              <div class="mt-2">
-                {/* <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftmarks()} search={props.search()} /> */}
-              </div>
-            </>}
-        </Show>
-      </div>
-    </Show>
+          </>}
+      </Show>
+    </div>
 
 
   );

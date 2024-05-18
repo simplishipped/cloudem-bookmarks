@@ -20,7 +20,7 @@ let user: User = {
   blockchain_enabled: false,
   id: null
 }
-let landingView: boolean = true;
+let startView: boolean = true;
 let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
@@ -33,6 +33,7 @@ let blockchainEnabled: boolean = false;
 let authed: boolean = false;
 let search: string = '';
 let checkedBookmarks: number[] = [] // has ids of all bookmarks to delete
+let initRender: boolean = false;
 
 const [state, setState] = createStore({
   user,
@@ -43,7 +44,7 @@ const [state, setState] = createStore({
   nftCategory,
   collection,
   // blockchain,
-  landingView,
+  startView,
   failed: {
     nftmarks: null,
     bookmarks: null,
@@ -63,7 +64,8 @@ const [state, setState] = createStore({
   blockchainEnabled,
   authed,
   search,
-  checkedBookmarks
+  checkedBookmarks,
+  initRender
 });
 
 export const useAppState = () => {

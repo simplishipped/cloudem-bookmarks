@@ -2,6 +2,7 @@ import { useSelector } from "../../store";
 import supabase from "../../api/supabase";
 import { ethers } from 'ethers';
 import userApi from "../../api/user-api";
+import bookmarksApi from "../../api/bookmarks-api";
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
@@ -10,20 +11,20 @@ const useSettings = () => {
   const setState = app.setState;
   const blockchain = () => app.state.chainName;
   const connectedToBlockchain = () => app.state.connectedToBlockchain;
-  const landingView = () => app.state.landingView;
+  const startView = () => app.state.startView;
   const blockchainEnabled = () => app.state.blockchainEnabled;
 
   const enableBlockchain = async () => {
-    if(!blockchainEnabled()) {
+    if (!blockchainEnabled()) {
       setState(() => {
         return {
           ...app.state, globalLoader: true
         }
       })
-  
+
       const accounts = await provider.send("eth_requestAccounts", []);
       const network = await provider.getNetwork();
-  
+
       if (accounts.length > 0) {
         const { data } = await supabase.auth.getUser();
         const res = await supabase.from('users').update({ 'blockchain_enabled': true, walletaddr_arb: accounts[0] }).eq('email', data.user?.email).select();
@@ -32,18 +33,16 @@ const useSettings = () => {
           //@ts-ignore
           setState(() => {
             return {
-              ...app.state, connectedToBlockchain: true, blockchainEnabled: true,  chainName: network.name, globalLoader: false
+              ...app.state, connectedToBlockchain: true, blockchainEnabled: true, chainName: network.name, globalLoader: false
             }
           })
         } else {
-  
+
         }
-  
+
       } else {
       }
     } else {
-      console.log(app.state.user)
-
       //@ts-ignore
       disableBlockchain(app.state.user.id)
     }
@@ -51,16 +50,11 @@ const useSettings = () => {
   }
 
   const disableBlockchain = async (userId: number) => {
-    
-    console.log('huh', userId)
-        //@ts-ignore
 
+    //@ts-ignore
     const done = await userApi.disableBlockchain(userId);
-    console.log('haj', done)
     if (done) {
-      console.log('brier')
       setState(() => {
-        console.log('bruh')
         return {
           ...app.state, blockchainEnabled: false, connectedToBlockchain: false
         }
@@ -72,9 +66,6 @@ const useSettings = () => {
         }
       })
     }
-
-
-
   }
 
   const setConnected = (connected: boolean) => {
@@ -85,23 +76,51 @@ const useSettings = () => {
     })
   }
 
-  const setLandingView = (landingView: boolean) => {
-    setState(() => {
-      return {
-        ...app.state, landingView
-      }
-    })
+  const setStartView = async (startView: boolean) => {
+    //@ts-ignore
+    const data = await userApi.updateUser(app.state.user.id, { start_view: startView });
+    if(data) {
+      setState(() => {
+        return {
+          ...app.state, startView, 
+        }
+      })
+    }
+
   }
+
+
+  const exportBookmarks = async () => {
+    try {
+      //@ts-ignore
+      let bookmarks = await bookmarksApi.getBookmarksByUser(app.state.user.id);
+      var fileToSave = new Blob([JSON.stringify(bookmarks)], {
+        type: 'application/json'
+      });
+
+      const a = document.createElement('a');
+      const type = 'application/json'
+      a.href = URL.createObjectURL(fileToSave);
+      a.download = 'bookmarks.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
 
   return {
     setConnected,
     blockchain,
-    landingView,
-    setLandingView,
+    startView,
+    setStartView,
     enableBlockchain,
     connectedToBlockchain,
     blockchainEnabled,
-    disableBlockchain
+    disableBlockchain,
+    exportBookmarks
   };
 };
 
