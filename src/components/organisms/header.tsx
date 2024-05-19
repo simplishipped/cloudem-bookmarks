@@ -45,7 +45,7 @@ const Header = () => {
       <Show when={showSearch()}>
       <div class="flex justify-center absolute w-full mt-2 z-20">
         <div class={`transition-all duration-300 ease-in-out ${animation()? 'w-8/12 opacity-1' : 'w-0 opacity-0'}`}>
-          <Input type="text" placeholder="Search" value={contentProps.search} setValue={contentProps.setSearch} autofocus={true} />
+          <Input onBlur={() => setShowSearch(false)} type="text" placeholder="Search" value={contentProps.search} setValue={contentProps.setSearch} autofocus={true} />
         </div>
       </div>
       </Show>
