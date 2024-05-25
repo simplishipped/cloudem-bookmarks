@@ -5,9 +5,7 @@ import Input from '../atoms/input';
 import useContent from "../../state/actions/content-actions";
 
 const AddBookmark: Component<{}> = () => {
-  const categories = [{ label: 'Kinky', value: 'kinky' }, { label: 'Default', value: 'default' }];
-  const collections = [{ label: 'NFT Research 2023', value: 'NFT Research 2023' }, { label: 'Default', value: 'Default' }];
-
+  
   const navigate = useNavigate();
   const props = useContent();
   const [name, setName] = createSignal('');
@@ -16,16 +14,15 @@ const AddBookmark: Component<{}> = () => {
 
   const addBookmark = () => {
     //@ts-ignore
-    props.addBookmark({ name: name(), url: nftMark(), collection: props.collection() === 'Default' ? 'Default' : props.collection(), user_id: 1 });
+    props.addBookmark({ name: name(), url: nftMark(), collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), user_id: 1 });
     navigate('/')
   }
 
 
   return (
     <div class="px-6 text-textLight dark:text-textDark">
-      {props.marksView() === 'collections' ? <Select value={props.collection()} setValue={props.setCategory} name="Category" options={categories} />
-        : <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={collections} />
-      }
+      <Select value={props.newCollection} setValue={props.setNewCollection} name="Category" options={props.collections} />
+
       <div class="mt-4">
         <Input value={name} name="NFTmarkName" placeholder="Bookmark Name" setValue={setName} />
       </div>

@@ -25,7 +25,8 @@ let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
 let nftCategory: string = 'Default';
-let collection: string = 'Crypto';
+let collection: string = 'Default'
+let newCollection: string = 'Default'
 let globalLoader: boolean = false;
 let chainName: string = 'ethereum';
 let connectedToBlockchain: boolean = false;
@@ -34,6 +35,7 @@ let authed: boolean = false;
 let search: string = '';
 let checkedBookmarks: number[] = [] // has ids of all bookmarks to delete
 let initRender: boolean = false;
+let collections: string[] = [];
 
 const [state, setState] = createStore({
   user,
@@ -54,7 +56,8 @@ const [state, setState] = createStore({
   loading: {
     nftmarks: null,
     bookmarks: null,
-    mint: null
+    mint: null,
+    collections: null,
   },
   marksView: 'collections',
   markToMint: {},
@@ -65,7 +68,10 @@ const [state, setState] = createStore({
   authed,
   search,
   checkedBookmarks,
-  initRender
+  initRender,
+  collections,
+  newCollection
+
 });
 
 export const useAppState = () => {

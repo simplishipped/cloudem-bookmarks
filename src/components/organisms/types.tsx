@@ -5,3 +5,8 @@ export interface User {
   id: number | null,
   start_view?: boolean
 }
+
+export interface SelectChoice {
+  label: string
+  value: string
+}

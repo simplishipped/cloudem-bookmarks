@@ -35,7 +35,24 @@ const getBookmarksByUser = async (userId: number) => {
   } else {
     return false;
   }
+}
 
+const getCollectionsByUser = async (userId: number) => {
+  const { data, error }  = await supabase.from('collections').select('*').eq('user_id', userId);
+  if(data) {
+    return data;
+  } else {
+    return false;
+  }
+}
+
+const createCollection = async (name: string, userId: number) => { 
+  const { data, error }  = await supabase.from('collections').insert({ name, user_id: userId }).select('*');
+  if(data) {
+    return data[0]
+  } else {
+    return false;
+  }
 }
 
 
@@ -43,5 +60,7 @@ export default {
   addBookmark,
   getBookmarksByUser,
   getBookmarks,
-  deleteBookmarks
+  deleteBookmarks,
+  getCollectionsByUser,
+  createCollection
 }

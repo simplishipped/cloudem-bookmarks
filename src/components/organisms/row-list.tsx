@@ -13,12 +13,13 @@ export interface ListProps {
 };
 
 export const RowList: Component<ListProps> = (props) => {
+ 
 
-  const [rows, setRows]: [() => JSXElement[], (rows: Bookmark[]) => void] = createSignal([]);
+  const [rows, setRows]: [() => Bookmark[], (rows: Bookmark[]) => void] = createSignal([]);
   const contentProps = useContent()
 
-  function filterRows() {
-    const list = props.list().filter(
+  function filterRows(rows: Bookmark[]) {
+    const list = rows.filter(
       //@ts-ignore
       (row: Bookmark) => row[props.filterKey].toLowerCase() === props.filter()?.toLowerCase() && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
 
@@ -26,19 +27,19 @@ export const RowList: Component<ListProps> = (props) => {
   }
 
   createEffect(on([props.search, props.filter], (a, b) => {
-    const list = filterRows();
+    const list = filterRows(props.list());
     setRows(list)
   }, { defer: true }));
 
   onMount(() => {
-    const list = filterRows();
+    const list = filterRows(props.list());
     setRows(list)
   })
 
   createEffect(on(contentProps.checkedBookmarks, (bks) => {
     if (props.checkedBookmarks) {
-      const list = props.list().map((row) => {
-        row.checked = bks.includes(row.id)
+      const list = rows().map((row) => {
+        row.checked = bks.includes(row.id);
         return row
       })
       
@@ -48,6 +49,7 @@ export const RowList: Component<ListProps> = (props) => {
 
 
   createEffect(on(props.list, (list) => {
+    list = filterRows(list);
     setRows(list)
   }, { defer: true }));
 

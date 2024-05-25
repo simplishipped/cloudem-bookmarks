@@ -14,8 +14,6 @@ import useSettings from "../../state/actions/settings-actions";
 
 const Home: Component = () => {
 
-  const categories = [{ label: 'Crypto', value: 'Crypto' }, { label: 'Default', value: 'Default' }];
-  const collections = [{ label: 'NFT Research 2023', value: 'NFT Research 2023' }, { label: 'Inception', value: 'Inception' }];
   const navigate = useNavigate();
   const props = useContent();
   const userProps = useUser();
@@ -28,12 +26,12 @@ const Home: Component = () => {
   }
   onMount(() => {
     props.getUserBookmarks();
+    props.getUserCollections()
     if(userProps.user() && userProps.user().start_view && !userProps.initRender()) {
       navigate('/add-bookmark');
       userProps.setInitRender(true);
     }
   })
-
 
 
   return (
@@ -55,7 +53,7 @@ const Home: Component = () => {
             </div> : false}
 
             <div class={`${props.checkedBookmarks().length > 0 && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
-              <Select value={props.collection()} setValue={props.setCollection} name="Collection" options={categories} />
+              <Select value={props.collection} setValue={props.setCollection} name="Collection" options={props.collections} />
             </div>
             <Show when={settingsProps.blockchainEnabled()}>
               <div title="Mint collection to NFT!" onClick={goToMintPage} class="w-2/12 flex items-center mt-1 justify-center cursor-pointer hover:animate-spin">
@@ -69,7 +67,7 @@ const Home: Component = () => {
           </div>
         </> :
           <>
-            <Select value={props.nftmarkName()} setValue={props.setCollection} name="Collection" options={collections} />
+            <Select value={props.nftmarkName} setValue={props.setCollection} name="Collection" options={props.collections} />
             <div class="mt-2">
               {/* <RowList filterKey="collection" RowComponent={BookmarkRow} filter={props.nftmarkName()} list={props.nftmarks()} search={props.search()} /> */}
             </div>
