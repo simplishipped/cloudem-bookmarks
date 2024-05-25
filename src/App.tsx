@@ -15,6 +15,7 @@ import Loading from "./components/views/loading/loading";
 import useContent from "./state/actions/content-actions";
 import useUser from "./state/actions/user-actions";
 import Login from "./components/views/login";
+
 const App: Component = () => {
 
   const { globalLoader } = useContent();
@@ -25,6 +26,7 @@ const App: Component = () => {
   })
 
 
+  console.log(userProps.authed())
   return (
     <StoreProvider>
       <Router>
@@ -34,16 +36,18 @@ const App: Component = () => {
             style={{ width: "400px" }}
           >
             <Header />
-            <Routes>
-              <Show when={userProps.authed()} fallback={<Login />}>
+            <Show when={userProps.authed()} fallback={<Login />}>
+
+              <Routes>
                 <Route path="/" component={Home} />
                 <Route path="add-bookmark" component={AddBookmark} />
                 <Route path="/account" component={Settings} />
                 <Route path="/account/networks" component={Networks} />
                 <Route path="/market" component={Market} />
                 <Route path="/mint" component={Mint} />
-              </Show>
-            </Routes>
+              </Routes>
+            </Show>
+
             <div class="fixed bottom-0" style={{ width: "inherit" }}>
               <Footer />
             </div>

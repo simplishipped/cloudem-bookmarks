@@ -1,6 +1,6 @@
 import { useSelector } from "../../store";
 import { ethers } from "ethers";
-import userApi, { getUSerByWalletAddr } from "../../api/user-api";
+import userApi, { getUserByWalletAddr } from "../../api/user-api";
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
@@ -117,7 +117,7 @@ const useUser = () => {
     if ((window as any).ethereum) {
       try {
         const accounts = await provider.send("eth_requestAccounts", []);
-        const user = await getUSerByWalletAddr(accounts[0])
+        const user = await getUserByWalletAddr(accounts[0])
 
 
         if (user) {
@@ -146,6 +146,24 @@ const useUser = () => {
   }
 
 
+
+  // async function signUpNewUser(email: string, password: string, confirmPassword: string) {
+  //   if (email && password && confirmPassword) {
+  //     if (password === confirmPassword) {
+  //       const { data, error } = await supabase.auth.signUp({
+  //         email: email,
+  //         password: password,
+  //       })
+  //       if (data) {
+  //         const user = await userApi.createUser({email: email()});
+  //       } else {
+  //         setError('Failed to sign up with email');
+  //       }
+  //     } else {
+  //       setError('Passwords do not match');
+  //     }
+  //   }
+  // }
 
   return {
     user,

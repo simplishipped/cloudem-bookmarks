@@ -13,10 +13,17 @@ const getAuth = async () => {
 const createUser = async (user: any) => {
   const { data, error } = await supabase.from('users').insert(user).select('*');
   if (data) {
-    return data[0]
-  } else {
-    return false;
+    const response = await supabase.from('collections').insert({
+      name: 'default',
+      user_id: data[0].id,
+    }).select('*');
+    if (data && response) {
+      return data[0]
+    } else {
+      return false;
+    }
   }
+
 }
 export const getUser = async (email: string) => {
   const { data, error } = await supabase.from('users').select('*').eq('email', email);
@@ -27,7 +34,7 @@ export const getUser = async (email: string) => {
   }
 }
 
-export const getUSerByWalletAddr = async (walletaddr: string) => {
+export const getUserByWalletAddr = async (walletaddr: string) => {
   const { data, error } = await supabase.from('users').select('*').eq('walletaddr_arb', walletaddr);
   if (data) {
     return data[0]
@@ -61,6 +68,6 @@ export default {
   disableBlockchain,
   updateUser,
   getAuth,
-  getUSerByWalletAddr,
+  getUserByWalletAddr,
   createUser
 }

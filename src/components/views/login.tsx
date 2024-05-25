@@ -6,10 +6,12 @@ import useSettings from "../../state/actions/settings-actions";
 import useContent from "../../state/actions/content-actions";
 import Loading from "./loading/loading";
 import useUser from "../../state/actions/user-actions";
+import userApi from "../../api/user-api";
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
 const Login: Component<{}> = () => {
+  console.log('here')
   const [error, setError]: [() => null | string, Setter<null | string>] = createSignal(null);
   const [email, setEmail] = createSignal('');
   const [password, setPassword] = createSignal('');
@@ -28,8 +30,7 @@ const Login: Component<{}> = () => {
           password: password(),
         })
         if (data) {
-          setError('');
-          // await signInNewUser();
+          const user = await userApi.createUser({email: email()});
         } else {
           setError('Failed to sign up with email');
         }

@@ -78,16 +78,19 @@ const useContent = () => {
   const addBookmark = async (bookmark: Bookmark) => {
     try {
       const collections = await bookmarksApi.getCollectionsByUser(bookmark.user_id);
-      console.log(collections)
       //@ts-ignore
       const exists = collections.find(c => c.name.toLowerCase() === bookmark.collection.toLowerCase());
       if(!exists) {
-        const data = await bookmarksApi.createCollection(bookmark.name, bookmark.user_id);
+        const data = await bookmarksApi.createCollection(bookmark.collection, bookmark.user_id);
         if(data) {
           const bk = await bookmarksApi.addBookmark(bookmark);
           setState(() => {
-            return { ...app.state, bookmarks: [bk, ...app.state.bookmarks], collections: [data, ...app.state.collections] }
+            return { ...app.state, bookmarks: [bk, ...app.state.bookmarks], collections: [data.name, ...app.state.collections],
+              collection: bookmark.collection
+             }
           })
+        } else {
+          console.log('')
         }
 
       } else {

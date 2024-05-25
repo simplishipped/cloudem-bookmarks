@@ -20,6 +20,7 @@ let user: User = {
   blockchain_enabled: false,
   id: null
 }
+let errorRetries: number = 3;
 let startView: boolean = true;
 let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
@@ -70,8 +71,8 @@ const [state, setState] = createStore({
   checkedBookmarks,
   initRender,
   collections,
-  newCollection
-
+  newCollection,
+  errorRetries
 });
 
 export const useAppState = () => {
