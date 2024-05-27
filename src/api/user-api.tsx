@@ -2,87 +2,61 @@ import supabase from "./supabase";
 
 
 const getAuth = async () => {
-  const { data, error } = await supabase.auth.getUser();
-  if (data) {
-    return data
-  } else {
-    return false;
-  }
+  const response = await supabase.auth.getUser();
+  return response.data ? { data: response.data.user } : { error: response.error };
 }
 
 const signUpUser = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signUp({
+  const response = await supabase.auth.signUp({
     email: email,
     password,
   })
-  if (data) {
-    return data
-  } else {
-    return false;
-  }
+  return response.data ? { data: response.data.user } : { error: response.error };
 }
 
 const signInUser = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const response = await supabase.auth.signInWithPassword({
     email: email,
     password,
   })
-  if (data) {
-    return data
-  } else {
-    return false;
-  }
+  return response.data ? { data: response.data.user } : { error: response.error };
 }
 
 const createUser = async (user: any) => {
   const { data, error } = await supabase.from('users').insert(user).select('*');
+  let defaultCollection;
   if (data) {
-    const response = await supabase.from('collections').insert({
+    defaultCollection = await supabase.from('collections').insert({
       name: 'default',
       user_id: data[0].id,
     }).select('*');
-    if (data && response) {
-      return data[0]
-    } else {
-      return false;
-    }
   }
-
+  if(defaultCollection && defaultCollection.data) {
+    return data ? { data: data[0] } : { error };
+  } else {
+    return { error: new Error('Could not create default collection') };
+  }
 }
+
+
 export const getUser = async (email: string) => {
   const { data, error } = await supabase.from('users').select('*').eq('email', email);
-  if (data) {
-    return data[0]
-  } else {
-    return false;
-  }
+  return data ? { data: data[0] } : { error };
 }
 
 export const getUserByWalletAddr = async (walletaddr: string) => {
   const { data, error } = await supabase.from('users').select('*').eq('walletaddr_arb', walletaddr);
-  if (data) {
-    return data[0]
-  } else {
-    return false;
-  }
+  return data ? { data: data[0] } : { error };
 }
 
 const updateUser = async (id: number, user: any) => {
-  const { data, error } = await supabase.from('users').update(user).eq('id', id).select();
-  if (data) {
-    return data
-  } else {
-    return false;
-  }
+  const response = await supabase.from('users').update(user).eq('id', id).select();
+  return response;
 }
+
 const disableBlockchain = async (id: number) => {
-  const { data, error } = await supabase.from('users').update({ 'blockchain_enabled': false }).eq('id', id).select();
-  console.log(data)
-  if (data) {
-    return data
-  } else {
-    return false;
-  }
+  const response = await supabase.from('users').update({ 'blockchain_enabled': false }).eq('id', id).select();
+  return response;
 }
 
 

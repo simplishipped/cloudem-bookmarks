@@ -1,6 +1,8 @@
 import { useSelector } from "../../store";
 import { Bookmark, Nftmark } from "../../types/types";
 import bookmarksApi from "../../api/bookmarks-api";
+import log from "../../util/logger";
+import useCommon from "./common-actions";
 import capitalizeFirstLetter from "../../util/capitalize-word";
 
 const useContent = () => {
@@ -22,6 +24,8 @@ const useContent = () => {
   const startView = () => app.state.startView;
   const newCollection = () => app.state.newCollection;
   const user = () => app.state.user
+
+  const common = useCommon();
 
   const setSearch = (search: string) => {
     setState(() => {
@@ -79,32 +83,48 @@ const useContent = () => {
   const addBookmark = async (bookmark: Bookmark) => {
     try {
       const collections = await bookmarksApi.getCollectionsByUser(bookmark.user_id);
-      //@ts-ignore
-      const exists = collections.find(c => c.name.toLowerCase() === bookmark.collection.toLowerCase());
+      let exists = false;
+      if (collections.data) {
+        //@ts-ignore
+        exists = collections.data.find(c => c.name.toLowerCase() === bookmark.collection.toLowerCase());
+      }
       if (!exists) {
-        const data = await bookmarksApi.createCollection(bookmark.collection, bookmark.user_id);
-        if (data) {
+        const newCollection = await bookmarksApi.createCollection(bookmark.collection, bookmark.user_id);
+        if (newCollection.data) {
           const bk = await bookmarksApi.addBookmark(bookmark);
-          setState(() => {
-            return {
-              ...app.state, bookmarks: [bk, ...app.state.bookmarks], collections: [data, ...app.state.collections],
-              collection: bookmark.collection
-            }
-          })
+          if (bk.data) {
+            setState(() => {
+              return {
+                ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collections: [newCollection.data, ...app.state.collections],
+                collection: bookmark.collection
+              }
+            })
+          } else {
+            common.setError('Failed to add bookmark', 'addBookmarkError');
+            log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-1' });
+          }
+
         } else {
-          console.log('')
+          common.setError('Failed to add bookmark', 'addBookmarkError');
+          log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-2' });
         }
 
       } else {
         const bk = await bookmarksApi.addBookmark(bookmark);
-        setState(() => {
-          return { ...app.state, bookmarks: [bk, ...app.state.bookmarks] }
-        })
-
+        if (bk.data) {
+          setState(() => {
+            return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: bk.data.collection }
+          })
+        } else {
+          common.setError('Failed to add bookmark', 'addBookmarkError');
+          log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-3' });
+        }
       }
 
 
-    } catch (err) {
+    } catch (error) {
+      common.setError('Failed to add bookmark', 'addBookmarkError');
+      log.error({ function: 'addBookmark', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-4' });
 
     }
   }
@@ -113,13 +133,20 @@ const useContent = () => {
     try {
       if (app.state.checkedBookmarks.length > 0) {
         // @ts-ignore
-        await bookmarksApi.deleteBookmarks(app.state.checkedBookmarks);
+        const res = await bookmarksApi.deleteBookmarks(app.state.checkedBookmarks);
+        if (!res.error) {
+          setState(() => {
+            return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !app.state.checkedBookmarks.includes(b.id)), checkedBookmarks: [] }
+          })
+        } else {
+          common.setError('Failed to delete bookmark', 'deleteBookmarkError');
+          log.error({ function: 'deleteBookmarks', error: res.error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-5' });
+        }
       }
-      setState(() => {
-        return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !app.state.checkedBookmarks.includes(b.id)), checkedBookmarks: [] }
-      })
-    } catch (err) {
 
+    } catch (error) {
+      common.setError('Failed to delete bookmark', 'deleteBookmarkError');
+      log.error({ function: 'deleteBookmarks', error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-11' });
     }
   }
 
@@ -137,15 +164,23 @@ const useContent = () => {
   }
 
   const getUserBookmarks = async () => {
-    if (bookmarks().length === 0) {
-      setLoading('bookmarks', true);
-      const marks = await bookmarksApi.getBookmarksByUser(1);
-      setLoading('bookmarks', false);
-      if (marks) {
-        setState(() => {
-          return { ...app.state, bookmarks: marks }
-        })
+    try {
+      if (bookmarks().length === 0) {
+        setLoading('bookmarks', true);
+        const marks = await bookmarksApi.getBookmarksByUser(1);
+        setLoading('bookmarks', false);
+        if (marks.data) {
+          setState(() => {
+            return { ...app.state, bookmarks: marks.data }
+          })
+        } else {
+          common.setError('Failed to fetch user bookmarks', 'getUserBookmarksError');
+          log.error({ function: 'getUserBookmarks', error: 'Failed to fetch bookmarks', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-6' });
+        }
       }
+    } catch (error) {
+      common.setError('Failed to fetch user bookmarks', 'getUserBookmarksError');
+      log.error({ function: 'getUserBookmarks', error: 'Failed to fetch bookmarks', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-7' });
     }
   }
 
@@ -154,22 +189,31 @@ const useContent = () => {
       setLoading('collections', true);
       const collections = await bookmarksApi.getCollectionsByUser(user().id);
       setLoading('collections', false);
-      if (collections) {
+      if (collections.data) {
         setState(() => {
-          return { ...app.state, collections }
+          return { ...app.state, collections: collections.data }
         })
+      } else {
+        common.setError('Failed get user collections', 'getUserCollectionsError');
+        log.error({ function: 'getUserCollections', error: 'Failed to fetch collections', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-8' });
       }
     }
   }
 
   const deleteCollection = async (collection: any) => {
     try {
-      await bookmarksApi.deleteCollection(collection.id);
-      setState(() => {
-        return { ...app.state, collections: app.state.collections.filter(c => c.name !== collection.name) }
-      })
-    } catch (err) {
-
+      const res = await bookmarksApi.deleteCollection(collection.id);
+      if (res.data) {
+        setState(() => {
+          return { ...app.state, collections: app.state.collections.filter(c => c.name !== collection.name) }
+        })
+      } else {
+        common.setError('Failed to delete collection', 'deleteCollectionError');
+        log.error({ function: 'deleteCollection', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-9' });
+      }
+    } catch (error) {
+      common.setError('Failed to delete collection', 'deleteCollectionError');
+      log.error({ function: 'deleteCollection', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-10' });
     }
   }
 

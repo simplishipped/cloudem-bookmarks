@@ -37,3 +37,15 @@ export interface Collection {
   id: number
   user_id: number
 }
+
+export interface Log {
+  function: string
+  api?: string
+  error?: any
+  user_id?: string,
+  user_email?: string
+  timestamp?: Date
+  timer?: number,
+  log_id?: string,
+  walletaddr_arb?: string,
+}
