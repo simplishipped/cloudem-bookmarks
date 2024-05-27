@@ -8,7 +8,7 @@ module.exports = {
     extend: {
       colors: {
         primaryDark: 'rgb(30 27 75)',
-        secondaryDark: 'rgb(49 46 129)',
+        secondaryDark: 'rgb(24,21,64)',
         textDark: 'rgb(6 182 212)',
         // textDark: 'rgb(203 213 225)',
         primaryLight: '#FEF3C7',
@@ -26,3 +26,4 @@ module.exports = {
   },
   plugins: [],
 }
+//'rgb(49 46 129)'

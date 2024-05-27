@@ -1,5 +1,4 @@
-import { Bookmark } from "../components/molecules/types"
-import {Nftmark} from "../components/molecules/types";
+import { Bookmark, Nftmark } from "../types/types"
 import axios from 'axios';
 import supabase from "./supabase";
 // const url = 'http://localhost:9000/bookmark';
@@ -55,6 +54,14 @@ const createCollection = async (name: string, userId: number) => {
   }
 }
 
+const deleteCollection = async (id: number) => {
+  const { data, error }  = await supabase.from('collections').delete().eq('id', id);
+  if(data) {
+    return data;
+  } else {
+    return false;
+  }
+}
 
 export default {
   addBookmark,
@@ -62,5 +69,6 @@ export default {
   getBookmarks,
   deleteBookmarks,
   getCollectionsByUser,
-  createCollection
+  createCollection,
+  deleteCollection
 }

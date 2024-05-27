@@ -1,5 +1,5 @@
 import { useSelector } from "../../store";
-import { Bookmark, Nftmark } from "../../components/molecules/types";
+import { Bookmark, Nftmark } from "../../types/types";
 import bookmarksApi from "../../api/bookmarks-api";
 import capitalizeFirstLetter from "../../util/capitalize-word";
 
@@ -21,6 +21,7 @@ const useContent = () => {
   const checkedBookmarks = () => app.state.checkedBookmarks;
   const startView = () => app.state.startView;
   const newCollection = () => app.state.newCollection;
+  const user = () => app.state.user
 
   const setSearch = (search: string) => {
     setState(() => {
@@ -80,14 +81,15 @@ const useContent = () => {
       const collections = await bookmarksApi.getCollectionsByUser(bookmark.user_id);
       //@ts-ignore
       const exists = collections.find(c => c.name.toLowerCase() === bookmark.collection.toLowerCase());
-      if(!exists) {
+      if (!exists) {
         const data = await bookmarksApi.createCollection(bookmark.collection, bookmark.user_id);
-        if(data) {
+        if (data) {
           const bk = await bookmarksApi.addBookmark(bookmark);
           setState(() => {
-            return { ...app.state, bookmarks: [bk, ...app.state.bookmarks], collections: [data.name, ...app.state.collections],
+            return {
+              ...app.state, bookmarks: [bk, ...app.state.bookmarks], collections: [data, ...app.state.collections],
               collection: bookmark.collection
-             }
+            }
           })
         } else {
           console.log('')
@@ -100,7 +102,7 @@ const useContent = () => {
         })
 
       }
-  
+
 
     } catch (err) {
 
@@ -150,13 +152,24 @@ const useContent = () => {
   const getUserCollections = async () => {
     if (collections().length === 0) {
       setLoading('collections', true);
-      const collections = await bookmarksApi.getCollectionsByUser(1);
+      const collections = await bookmarksApi.getCollectionsByUser(user().id);
       setLoading('collections', false);
       if (collections) {
         setState(() => {
-          return { ...app.state, collections: collections.map(c => c.name) }
+          return { ...app.state, collections }
         })
       }
+    }
+  }
+
+  const deleteCollection = async (collection: any) => {
+    try {
+      await bookmarksApi.deleteCollection(collection.id);
+      setState(() => {
+        return { ...app.state, collections: app.state.collections.filter(c => c.name !== collection.name) }
+      })
+    } catch (err) {
+
     }
   }
 
@@ -180,13 +193,6 @@ const useContent = () => {
   const setBookmarks = (bookmarks: Bookmark[]) => {
     setState(() => {
       return { ...app.state, bookmarks }
-    })
-  }
-
-
-  const setCollections = (collections: string[]) => {
-    setState(() => {
-      return { ...app.state, collections }
     })
   }
 
@@ -224,7 +230,6 @@ const useContent = () => {
     marksView,
     collection,
     setCollection,
-    setCollections,
     setMarkToMint,
     nftmarkName,
     nftCategory,
@@ -245,7 +250,8 @@ const useContent = () => {
     collections,
     setNewCollection,
     newCollection,
-    getUserCollections
+    getUserCollections,
+    deleteCollection
 
   };
 };

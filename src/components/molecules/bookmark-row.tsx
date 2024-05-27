@@ -1,5 +1,4 @@
 import { Component, createSignal } from "solid-js";
-import { BsClipboard2CheckFill } from 'solid-icons/bs'
 import { FiLink2 } from 'solid-icons/fi'
 import { RiArrowsArrowDropDownFill } from 'solid-icons/ri'
 import { Bookmark } from "./types";

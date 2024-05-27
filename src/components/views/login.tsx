@@ -11,51 +11,57 @@ const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
 const Login: Component<{}> = () => {
-  console.log('here')
   const [error, setError]: [() => null | string, Setter<null | string>] = createSignal(null);
   const [email, setEmail] = createSignal('');
   const [password, setPassword] = createSignal('');
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [signUp, setSignUp] = createSignal(false);
   const { setConnected } = useSettings();
-  const { globalLoader, setGlobalLoader } = useContent();
-  const { connect, setAuthed, authed } = useUser();
+  const { globalLoader, setGlobalLoader, } = useContent();
+  const { connect, setAuthed, authed, signInWithEmail, signUpNewUser } = useUser();
 
 
-  async function signUpNewUser() {
-    if (email() && password() && confirmPassword()) {
-      if (password() === confirmPassword()) {
-        const { data, error } = await supabase.auth.signUp({
-          email: email(),
-          password: password(),
-        })
-        if (data) {
-          const user = await userApi.createUser({email: email()});
-        } else {
-          setError('Failed to sign up with email');
-        }
-      } else {
-        setError('Passwords do not match');
-      }
-    }
+  // async function signUpNewUser() {
+  //   if (email() && password() && confirmPassword()) {
+  //     if (password() === confirmPassword()) {
+  //       const { data, error } = await supabase.auth.signUp({
+  //         email: email(),
+  //         password: password(),
+  //       })
+  //       if (data) {
+  //         const user = await userApi.createUser({ email: email() });
+  //       } else {
+  //         setError('Failed to sign up with email');
+  //       }
+  //     } else {
+  //       setError('Passwords do not match');
+  //     }
+  //   }
+  // }
+
+
+  async function signUpUser() {
+    signUpNewUser(email(), password(), confirmPassword());
   }
 
-
-  async function signInWithEmail() {
-    if (email() && password()) {
-      setGlobalLoader(true);
-      const { error, data } = await supabase.auth.signInWithPassword({
-        email: email(),
-        password: password(),
-      })
-      if (error) {
-        setError('Credentials are incorrect');
-      } else {
-        setAuthed(true);
-      }
-      setGlobalLoader(false)
-    }
+  async function signIn() {
+    signInWithEmail(email(), password());
   }
+  // async function signInWithEmail() {
+  //   if (email() && password()) {
+  //     setGlobalLoader(true);
+  //     const { error, data } = await supabase.auth.signInWithPassword({
+  //       email: email(),
+  //       password: password(),
+  //     })
+  //     if (error) {
+  //       setError('Credentials are incorrect');
+  //     } else {
+  //       setAuthed(true);
+  //     }
+  //     setGlobalLoader(false)
+  //   }
+  // }
 
   return (
     <div class="px-6">
@@ -82,9 +88,9 @@ const Login: Component<{}> = () => {
       </Show>
 
       <Show when={signUp()} fallback={
-        <button onClick={signInWithEmail} class="px-4 py-2 mt-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 
+        <button onClick={signIn} class="px-4 py-2 mt-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 
               font-bold w-full items-center rounded-md text-center hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight">Sign In</button>}>
-        <button onClick={signUpNewUser} class="px-4 py-2 mt-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 
+        <button onClick={signUpUser} class="px-4 py-2 mt-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 
         font-bold w-full items-center rounded-md text-center hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight">Sign Up</button>
       </Show>
 

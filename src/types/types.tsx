@@ -1,4 +1,16 @@
 
+export interface User {
+  email: string
+  blockchain_enabled: boolean,
+  id: number,
+  start_view?: boolean
+}
+
+export interface SelectChoice {
+  label: string
+  value: string
+}
+
 export interface Bookmark {
   name: string
   url: string
@@ -18,4 +30,10 @@ export interface Nftmark {
   image?: any,
   price: number,
   checked?: boolean
+}
+
+export interface Collection {
+  name: string
+  id: number
+  user_id: number
 }

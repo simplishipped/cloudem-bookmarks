@@ -1,7 +1,6 @@
 import { createStore } from "solid-js/store";
-import { Bookmark, Nftmark } from '../components/molecules/types';
 import nftMarksApi from "../api/bookmarks-api";
-import { User } from "../components/organisms/types";
+import { User, Bookmark, Nftmark, Collection  } from "../types/types";
 let theme: boolean = true;
 
 if ("theme" in localStorage) {
@@ -15,11 +14,7 @@ if ("theme" in localStorage) {
 }
 
 
-let user: User = {
-  email:'',
-  blockchain_enabled: false,
-  id: null
-}
+let user: any = {}
 let errorRetries: number = 3;
 let startView: boolean = true;
 let nftmarkName: string = '';
@@ -36,7 +31,9 @@ let authed: boolean = false;
 let search: string = '';
 let checkedBookmarks: number[] = [] // has ids of all bookmarks to delete
 let initRender: boolean = false;
-let collections: string[] = [];
+let collections: Collection[] = [];
+let signUpError: string = '';
+
 
 const [state, setState] = createStore({
   user,
@@ -72,7 +69,9 @@ const [state, setState] = createStore({
   initRender,
   collections,
   newCollection,
-  errorRetries
+  errorRetries,
+
+  signUpError
 });
 
 export const useAppState = () => {

@@ -10,6 +10,30 @@ const getAuth = async () => {
   }
 }
 
+const signUpUser = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password,
+  })
+  if (data) {
+    return data
+  } else {
+    return false;
+  }
+}
+
+const signInUser = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password,
+  })
+  if (data) {
+    return data
+  } else {
+    return false;
+  }
+}
+
 const createUser = async (user: any) => {
   const { data, error } = await supabase.from('users').insert(user).select('*');
   if (data) {
@@ -69,5 +93,7 @@ export default {
   updateUser,
   getAuth,
   getUserByWalletAddr,
-  createUser
+  createUser,
+  signUpUser,
+  signInUser
 }

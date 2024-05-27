@@ -5,7 +5,7 @@ import Header from "./components/organisms/header";
 import Settings from "./components/views/settings/settings";
 import Home from "./components/views/home";
 import { Router, Route, Routes } from "@solidjs/router";
-import { Show, onMount } from "solid-js";
+import { Show, createEffect, onMount } from "solid-js";
 import { StoreProvider } from "./store";
 import Networks from "./components/views/settings/networks";
 import AddBookmark from "./components/views/add-bookmark";
@@ -21,12 +21,14 @@ const App: Component = () => {
   const { globalLoader } = useContent();
   const userProps = useUser();
   onMount(() => {
-    userProps.identifyUser();
+    userProps.identifyUser(null);
     userProps.initRender();
   })
 
 
-  console.log(userProps.authed())
+  // createEffect(() => {
+  //   console.log(userProps.authed())
+  // })
   return (
     <StoreProvider>
       <Router>

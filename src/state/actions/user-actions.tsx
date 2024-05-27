@@ -1,6 +1,9 @@
 import { useSelector } from "../../store";
 import { ethers } from "ethers";
 import userApi, { getUserByWalletAddr } from "../../api/user-api";
+import useCommon from "./common-actions";
+import { User } from "../..//types/types";
+
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
@@ -10,6 +13,7 @@ const useUser = () => {
   const setState = app.setState;
   const authed = () => app.state.authed;
   const initRender = () => app.state.initRender;
+  const common = useCommon();
 
 
   const setInitRender = (bool: boolean) => {
@@ -46,8 +50,13 @@ const useUser = () => {
     })
   }
 
-  const identifyUser = async () => {
-    const data = await userApi.getAuth()
+  const identifyUser = async (user: any) => {
+    let data: any
+    if(user) {
+      data = user;
+    } else {
+      data = await userApi.getAuth();
+    }
     if (data && data.user && data.user.email) {
 
       let user = await userApi.getUser(data.user.email)
@@ -147,23 +156,45 @@ const useUser = () => {
 
 
 
-  // async function signUpNewUser(email: string, password: string, confirmPassword: string) {
-  //   if (email && password && confirmPassword) {
-  //     if (password === confirmPassword) {
-  //       const { data, error } = await supabase.auth.signUp({
-  //         email: email,
-  //         password: password,
-  //       })
-  //       if (data) {
-  //         const user = await userApi.createUser({email: email()});
-  //       } else {
-  //         setError('Failed to sign up with email');
-  //       }
-  //     } else {
-  //       setError('Passwords do not match');
-  //     }
-  //   }
-  // }
+  async function signUpNewUser(email: string, password: string, confirmPassword: string) {
+    if (email && password && confirmPassword) {
+      if (password === confirmPassword) {
+        common.setGlobalLoader(true);
+
+        const signUpRes = await userApi.signUpUser(email, password);
+        if (signUpRes) {
+          const user = await userApi.createUser({ email });
+          if (user) {
+            setState(() => {
+              return { ...app.state, user, authed: true, blockchainEnabled: false, connectedToBlockchain: false }
+            })
+          } else {
+            common.setError('Failed to sign up with email', 'signUpError');
+          }
+        } else {
+          common.setError('Failed to sign up with email', 'signUpError');
+        }
+      } else {
+        common.setError('Passwords do not match', 'signUpError');
+      }
+      common.setGlobalLoader(false)
+
+    }
+  }
+
+
+  async function signInWithEmail(email: string, password: string) {
+    if (email && password) {
+      common.setGlobalLoader(true);
+      const user = await userApi.signInUser(email, password);
+      if (user) {
+        await identifyUser(user)
+      } else {
+        common.setError('Credentials are incorrect', 'signInError');
+      }
+      common.setGlobalLoader(false)
+    }
+  }
 
   return {
     user,
@@ -174,8 +205,9 @@ const useUser = () => {
     setAuthed,
     updateUser,
     initRender,
-    setInitRender
-    
+    setInitRender,
+    signUpNewUser,
+    signInWithEmail
   };
 };
 
