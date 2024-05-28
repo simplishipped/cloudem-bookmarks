@@ -139,13 +139,13 @@ const useContent = () => {
             return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !app.state.checkedBookmarks.includes(b.id)), checkedBookmarks: [] }
           })
         } else {
-          common.setError('Failed to delete bookmark', 'deleteBookmarkError');
+          common.setError('Failed to delete bookmark', 'homeError');
           log.error({ function: 'deleteBookmarks', error: res.error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-5' });
         }
       }
 
     } catch (error) {
-      common.setError('Failed to delete bookmark', 'deleteBookmarkError');
+      common.setError('Failed to delete bookmark', 'homeError');
       log.error({ function: 'deleteBookmarks', error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-11' });
     }
   }
@@ -174,12 +174,12 @@ const useContent = () => {
             return { ...app.state, bookmarks: marks.data }
           })
         } else {
-          common.setError('Failed to fetch user bookmarks', 'getUserBookmarksError');
+          common.setError('Failed to fetch user bookmarks', 'homeError');
           log.error({ function: 'getUserBookmarks', error: 'Failed to fetch bookmarks', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-6' });
         }
       }
     } catch (error) {
-      common.setError('Failed to fetch user bookmarks', 'getUserBookmarksError');
+      common.setError('Failed to fetch user bookmarks', 'homeError');
       log.error({ function: 'getUserBookmarks', error: 'Failed to fetch bookmarks', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-7' });
     }
   }
@@ -194,7 +194,7 @@ const useContent = () => {
           return { ...app.state, collections: collections.data }
         })
       } else {
-        common.setError('Failed get user collections', 'getUserCollectionsError');
+        common.setError('Failed get user collections', 'homeError');
         log.error({ function: 'getUserCollections', error: 'Failed to fetch collections', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-8' });
       }
     }
@@ -208,11 +208,11 @@ const useContent = () => {
           return { ...app.state, collections: app.state.collections.filter(c => c.name !== collection.name) }
         })
       } else {
-        common.setError('Failed to delete collection', 'deleteCollectionError');
+        common.setError('Failed to delete collection', 'HomeError');
         log.error({ function: 'deleteCollection', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-9' });
       }
     } catch (error) {
-      common.setError('Failed to delete collection', 'deleteCollectionError');
+      common.setError('Failed to delete collection', 'HomeError');
       log.error({ function: 'deleteCollection', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-10' });
     }
   }

@@ -32,7 +32,8 @@ const useUser = () => {
           return { ...app.state, user: data }
         })
       } else {
-        log.error({ function: 'updateUser', error: error.message, user_id: user.id, timestamp: new Date(), log_id: 'user-actions-1' })
+        log.error({ function: 'updateUser', error: error.message, user_id: user.id, timestamp: new Date(), log_id: 'user-actions-1' });
+        common.setError('Error updating user.', 'globalError');
       }
     } catch (error: any) {
       log.error({ function: 'updateUser', error: error.message, user_id: user.id, timestamp: new Date(), log_id: 'user-actions-2' })
@@ -94,7 +95,9 @@ const useUser = () => {
                   })
                 }
               } catch (error) {
-                log.error({ function: 'identifyUser', error, user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-3' })
+                log.error({ function: 'identifyUser', error, user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-3' });
+                common.setError('Error updating user.', 'globalError');
+
                 //@ts-ignore
                 setState(() => {
                   return { ...app.state, user, connectedToBlockchain: false, blockchainEnabled: true }
@@ -109,7 +112,9 @@ const useUser = () => {
           }
           setStartView(user.start_view);
         } else {
-          log.error({ function: 'identifyUser', error: 'No user data returend', user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-4' })
+          log.error({ function: 'identifyUser', error: 'No user data returend', user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-4' });
+          common.setError('Error updating user.', 'globalError');
+
           //@ts-ignore
           setState(() => {
             return { ...app.state, failed: { ...app.state.failed, login: 'Something went wrong.' }, connectedToBlockchain: false, authed: false, log_id: 'user-actions-5' }
@@ -128,7 +133,9 @@ const useUser = () => {
         }
       }
     } catch (error: any) {
-      log.error({ function: 'identifyUser', error: error.message, user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-6' })
+      log.error({ function: 'identifyUser', error: error.message, user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-6' });
+      common.setError('Error updating user.', 'globalError');
+
     }
   }
 
@@ -155,14 +162,16 @@ const useUser = () => {
             })
           } else {
             log.error({ function: 'connect', error: 'Failed to save walletaddr as user', walletaddr_arb: accounts[0], timestamp: new Date(), log_id: 'user-actions-7' })
-            common.setError('Failed to save user to database', 'connectError');
+            common.setError('Failed to save user to database', 'globalError');
           }
         }
 
 
       } catch (error) {
         // setError('Please install crypto wallet');
-        log.error({ function: 'connect', error: error, timestamp: new Date(), log_id: 'user-actions-7' })
+        log.error({ function: 'connect', error: error, timestamp: new Date(), log_id: 'user-actions-7' });
+        common.setError('Error updating user.', 'globalError');
+
 
       }
     }
@@ -185,20 +194,22 @@ const useUser = () => {
               })
             } else {
               log.error({ function: 'signUpNewUser', error: createUserRes.error, user_email: email, timestamp: new Date(), log_id: 'user-actions-8' })
-              common.setError('Failed to sign up with email', 'signUpError');
+              common.setError('Failed to sign up with email', 'globalError');
             }
           } else {
             log.error({ function: 'signUpNewUser', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-9' })
-            common.setError('Failed to sign up with email', 'signUpError');
+            common.setError('Failed to sign up with email', 'globalError');
           }
         } else {
-          common.setError('Passwords do not match', 'signUpError');
+          common.setError('Passwords do not match', 'globalError');
         }
         common.setGlobalLoader(false)
 
       }
     } catch (error: any) {
-      log.error({ function: 'signUpNewUser', error: error.message, user_email: email, timestamp: new Date(), log_id: 'user-actions-10' })
+      log.error({ function: 'signUpNewUser', error: error.message, user_email: email, timestamp: new Date(), log_id: 'user-actions-10' });
+      common.setError('Error updating user.', 'globalError');
+
     }
 
   }
@@ -212,12 +223,14 @@ const useUser = () => {
         if (user.data) {
           await identifyUser(user.data)
         } else {
-          common.setError('Credentials are incorrect', 'signInError');
+          common.setError('Credentials are incorrect', 'globalError');
         }
         common.setGlobalLoader(false)
       }
     } catch (error) {
-      log.error({ function: 'signInWithEmail', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-11' })
+      log.error({ function: 'signInWithEmail', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-11' });
+      common.setError('Error updating user.', 'globalError');
+
     }
   }
 
