@@ -28,6 +28,11 @@ const getCollectionsByUser = async (userId: number) => {
   return data ? { data: data } : { error };
 }
 
+const getCollectionsByUserWalletAddr = async (walletaddr: string) => {
+  const { data, error }  = await supabase.from('collections').select('*').eq('walletaddr_arb', walletaddr);
+  return data ? { data: data } : { error };
+}
+
 const createCollection = async (name: string, userId: number) => { 
   const { data, error }  = await supabase.from('collections').insert({ name, user_id: userId }).select('*');
   return data ? { data: data[0] } : { error };
@@ -45,5 +50,6 @@ export default {
   deleteBookmarks,
   getCollectionsByUser,
   createCollection,
-  deleteCollection
+  deleteCollection,
+  getCollectionsByUserWalletAddr
 }

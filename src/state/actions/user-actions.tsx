@@ -96,7 +96,7 @@ const useUser = () => {
                 }
               } catch (error) {
                 log.error({ function: 'identifyUser', error, user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-3' });
-                common.setError('Error updating user.', 'globalError');
+                common.setError('Error identifying user.', 'globalError');
 
                 //@ts-ignore
                 setState(() => {
@@ -112,29 +112,34 @@ const useUser = () => {
           }
           setStartView(user.start_view);
         } else {
-          log.error({ function: 'identifyUser', error: 'No user data returend', user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-4' });
-          common.setError('Error updating user.', 'globalError');
+          log.error({ function: 'identifyUser', error: 'No user data returned', user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-4' });
+          common.setError('Error identifying user.', 'globalError');
 
           //@ts-ignore
           setState(() => {
-            return { ...app.state, failed: { ...app.state.failed, login: 'Something went wrong.' }, connectedToBlockchain: false, authed: false, log_id: 'user-actions-5' }
+            return { ...app.state, connectedToBlockchain: false, authed: false }
           })
         }
       } else {
         const accounts = await provider.send('eth_accounts', []);
         if (accounts.length > 0) {
-          const user = await userApi.getUser(accounts[0])
-
-          if (user) {
+          const user = await userApi.getUserByWalletAddr(accounts[0])
+          if(user.data && user.data.blockchain_enabled) {
             setState(() => {
               return { ...app.state, user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
             })
-          }
+          } else {
+            if (user) {
+              setState(() => {
+                return { ...app.state, user, connectedToBlockchain: false, blockchainEnabled: false, authed: true }
+              })
+            }
+          }  
         }
       }
     } catch (error: any) {
       log.error({ function: 'identifyUser', error: error.message, user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-6' });
-      common.setError('Error updating user.', 'globalError');
+      common.setError('Error identifying user.', 'globalError');
 
     }
   }
@@ -171,8 +176,6 @@ const useUser = () => {
         // setError('Please install crypto wallet');
         log.error({ function: 'connect', error: error, timestamp: new Date(), log_id: 'user-actions-7' });
         common.setError('Error updating user.', 'globalError');
-
-
       }
     }
   }
@@ -190,7 +193,7 @@ const useUser = () => {
             const createUserRes = await userApi.createUser({ email });
             if (createUserRes.data) {
               setState(() => {
-                return { ...app.state, user, authed: true, blockchainEnabled: false, connectedToBlockchain: false }
+                return { ...app.state, user, authed: false, blockchainEnabled: false, connectedToBlockchain: false }
               })
             } else {
               log.error({ function: 'signUpNewUser', error: createUserRes.error, user_email: email, timestamp: new Date(), log_id: 'user-actions-8' })

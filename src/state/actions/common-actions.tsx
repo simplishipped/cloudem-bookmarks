@@ -23,11 +23,20 @@ const useCommon = () => {
       return { ...app.state, globalLoader: bool }
     })
   }
+
+  const setNotification = (notification: string, type: string) => {
+    setState(() => {
+      return { ...app.state, notifications: {
+        [type]: notification
+      } }
+    })
+  }
   return {
     signUpError,
     setError,
     setGlobalLoader,
-    globalLoader
+    globalLoader,
+    setNotification
   };
 };
 
