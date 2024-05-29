@@ -11,6 +11,8 @@ import { useNavigate } from "@solidjs/router";
 import { OcTrash2 } from 'solid-icons/oc'
 import useUser from "../../state/actions/user-actions";
 import useSettings from "../../state/actions/settings-actions";
+import useCommon from "../../state/actions/common-actions";
+import Error from "../atoms/error";
 
 const Home: Component = () => {
 
@@ -18,6 +20,7 @@ const Home: Component = () => {
   const props = useContent();
   const userProps = useUser();
   const settingsProps = useSettings();
+  const common = useCommon();
 
 
   function goToMintPage() {
@@ -28,7 +31,7 @@ const Home: Component = () => {
   onMount(() => {
     props.getUserBookmarks();
     props.getUserCollections()
-    if(userProps.user() && userProps.user().start_view && !userProps.initRender()) {
+    if (userProps.user() && userProps.user().start_view && !userProps.initRender()) {
       navigate('/add-bookmark');
       userProps.setInitRender(true);
     }
@@ -47,6 +50,11 @@ const Home: Component = () => {
       </Show>
 
       <Show when={!props.loading().bookmarks} fallback={<Loader />}>
+        <Show when={common.error().homeError}>
+          <div class=" w-full flex justify-center">
+            <Error close={() => common.setError(null, 'homeError')} error={common.error().homeError} />
+          </div>
+        </Show>
         {props.marksView() === 'collections' ? <>
           <div class="flex items-center">
             {props.checkedBookmarks().length > 0 ? <div onClick={props.deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">

@@ -1,3 +1,7 @@
+html {
+  height: 600px;
+  width: 400px;
+}
 .App {
   text-align: center;
   height: 600px;

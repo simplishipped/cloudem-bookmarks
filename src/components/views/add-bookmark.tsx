@@ -1,26 +1,36 @@
-import { Component, createEffect, createSignal } from "solid-js";
+import { Component, createEffect, createSignal, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import Select from "../atoms/select";
 import Input from '../atoms/input';
 import useContent from "../../state/actions/content-actions";
+import useCommon from "../../state/actions/common-actions";
+import Error from "../atoms/error";
+import useUser from "../../state/actions/user-actions";
 
 const AddBookmark: Component<{}> = () => {
-  
+
   const navigate = useNavigate();
   const props = useContent();
   const [name, setName] = createSignal('');
   const [nftMark, setNftMark] = createSignal(window.location.href);
+  const userProps = useUser();
+  const common = useCommon()
   // const [category, setCategory] = createSignal('Category');
 
   const addBookmark = () => {
     //@ts-ignore
-    props.addBookmark({ name: name(), url: nftMark(), collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), user_id: 1 });
+    props.addBookmark({ name: name(), url: nftMark(), collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), user_id: userProps.user().id });
     navigate('/')
   }
 
 
   return (
     <div class="px-6 text-textLight dark:text-textDark">
+      <Show when={common.error().addBookmarkError}>
+        <div class=" w-full flex justify-center">
+          <Error close={() => common.setError(null, 'addBookmarkError')} error={common.error().addBookmarkError} />
+        </div>
+      </Show>
       <Select value={props.newCollection} setValue={props.setNewCollection} name="Category" options={props.collections} />
 
       <div class="mt-4">

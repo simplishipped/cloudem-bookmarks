@@ -5,15 +5,19 @@ import bookmarksApi from "../../api/bookmarks-api";
 const useCommon = () => {
   const { app } = useSelector();
   const setState = app.setState;
-  const signUpError = () => app.state.signUpError;
   const globalLoader = () => app.state.globalLoader;
+  const error = () => app.state.error;
+  const loading = () => app.state.loading;
 
 
-  const setError = (error: string, type: string) => {
+  const setError = (error: string | null, type: string) => {
     setState(() => {
       return {
-       ...app.state,
-        [type]: error
+        ...app.state,
+        error: {
+          ...app.state.error,
+          [type]: error
+        }
       }
     })
   }
@@ -26,17 +30,31 @@ const useCommon = () => {
 
   const setNotification = (notification: string, type: string) => {
     setState(() => {
-      return { ...app.state, notifications: {
-        [type]: notification
-      } }
+      return {
+        ...app.state, 
+        notifications: {
+          [type]: notification
+        }
+      }
     })
   }
+
+  const setLoading = (bool: Boolean, type: string) => {
+    console.log(bool)
+    setState(() => {
+      return { ...app.state, loading: { ...app.state.loading, [type]: bool } }
+    })
+  }
+
+
   return {
-    signUpError,
     setError,
     setGlobalLoader,
     globalLoader,
-    setNotification
+    setNotification,
+    error,
+    loading,
+    setLoading
   };
 };
 

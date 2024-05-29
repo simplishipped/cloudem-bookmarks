@@ -1,13 +1,9 @@
-import { Accessor, Component, Setter, createEffect, createSignal, onMount, Show } from "solid-js";
-import { ethers } from 'ethers';
+import { Component, Setter, createSignal, Show } from "solid-js";
 import Input from "../atoms/input";
-import supabase from "../../api/supabase";
 import useSettings from "../../state/actions/settings-actions";
-import useContent from "../../state/actions/content-actions";
 import Loading from "./loading/loading";
 import useUser from "../../state/actions/user-actions";
-import userApi from "../../api/user-api";
-const provider = new ethers.BrowserProvider((window as any).ethereum);
+import useCommon from "../../state/actions/common-actions";
 
 
 const Login: Component<{}> = () => {
@@ -16,28 +12,8 @@ const Login: Component<{}> = () => {
   const [password, setPassword] = createSignal('');
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [signUp, setSignUp] = createSignal(false);
-  const { setConnected } = useSettings();
-  const { globalLoader, setGlobalLoader, } = useContent();
-  const { connect, setAuthed, authed, signInWithEmail, signUpNewUser } = useUser();
-
-
-  // async function signUpNewUser() {
-  //   if (email() && password() && confirmPassword()) {
-  //     if (password() === confirmPassword()) {
-  //       const { data, error } = await supabase.auth.signUp({
-  //         email: email(),
-  //         password: password(),
-  //       })
-  //       if (data) {
-  //         const user = await userApi.createUser({ email: email() });
-  //       } else {
-  //         setError('Failed to sign up with email');
-  //       }
-  //     } else {
-  //       setError('Passwords do not match');
-  //     }
-  //   }
-  // }
+  const { globalLoader } = useCommon();
+  const { connect, signInWithEmail, signUpNewUser } = useUser();
 
 
   async function signUpUser() {
@@ -47,21 +23,7 @@ const Login: Component<{}> = () => {
   async function signIn() {
     signInWithEmail(email(), password());
   }
-  // async function signInWithEmail() {
-  //   if (email() && password()) {
-  //     setGlobalLoader(true);
-  //     const { error, data } = await supabase.auth.signInWithPassword({
-  //       email: email(),
-  //       password: password(),
-  //     })
-  //     if (error) {
-  //       setError('Credentials are incorrect');
-  //     } else {
-  //       setAuthed(true);
-  //     }
-  //     setGlobalLoader(false)
-  //   }
-  // }
+
 
   return (
     <div class="px-6">

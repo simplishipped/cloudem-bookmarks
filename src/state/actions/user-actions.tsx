@@ -65,6 +65,7 @@ const useUser = () => {
         user = auth.data;
       }
       if (user && user.email) {
+
         let userRes = await userApi.getUser(user.email);
 
         if (userRes && userRes.data) {
@@ -113,7 +114,7 @@ const useUser = () => {
           setStartView(user.start_view);
         } else {
           log.error({ function: 'identifyUser', error: 'No user data returned', user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-4' });
-          common.setError('Error identifying user.', 'globalError');
+          // common.setError('No user found.', 'globalError');
 
           //@ts-ignore
           setState(() => {
@@ -123,15 +124,15 @@ const useUser = () => {
       } else {
         const accounts = await provider.send('eth_accounts', []);
         if (accounts.length > 0) {
-          const user = await userApi.getUserByWalletAddr(accounts[0])
+          const user = await userApi.getUserByWalletAddr(accounts[0]);
           if(user.data && user.data.blockchain_enabled) {
             setState(() => {
-              return { ...app.state, user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
+              return { ...app.state, user: user.data, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
             })
           } else {
             if (user) {
               setState(() => {
-                return { ...app.state, user, connectedToBlockchain: false, blockchainEnabled: false, authed: true }
+                return { ...app.state, user: user.data, connectedToBlockchain: false, blockchainEnabled: false, authed: true }
               })
             }
           }  
@@ -142,6 +143,7 @@ const useUser = () => {
       common.setError('Error identifying user.', 'globalError');
 
     }
+    common.setLoading(false, 'user');
   }
 
 
@@ -154,12 +156,10 @@ const useUser = () => {
 
         if (user.data) {
           setState(() => {
-            return { ...app.state, user: user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
+            return { ...app.state, user: user.data, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
           })
-          setUser(user);
         } else if (accounts[0]) {
           const user = await userApi.createUser(accounts[0]);
-
           if (user) {
             setState(() => {
               //@ts-ignore

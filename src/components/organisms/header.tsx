@@ -30,7 +30,7 @@ const Header = () => {
   ));
 
   createEffect(() => {
-    if(showSearch()) {
+    if (showSearch()) {
       setTimeout(() => {
         startAnimation(true);
       }, 10);
@@ -43,13 +43,13 @@ const Header = () => {
   return (
     <Show when={userProps.authed()}>
       <Show when={showSearch()}>
-      <div class="flex justify-center absolute w-full mt-2 z-20">
-        <div class={`transition-all duration-300 ease-in-out ${animation()? 'w-8/12 opacity-1' : 'w-0 opacity-0'}`}>
-          <Input onBlur={() => setShowSearch(false)} type="text" placeholder="Search" value={contentProps.search} setValue={contentProps.setSearch} autofocus={true} />
+        <div class="flex justify-center absolute w-full mt-2 z-20">
+          <div class={`transition-all duration-300 ease-in-out pt-1 ${animation() ? 'w-8/12 opacity-1' : 'w-0 opacity-0'}`}>
+            <Input onBlur={() => setShowSearch(false)} type="text" placeholder="Search" value={contentProps.search} setValue={contentProps.setSearch} autofocus={true} />
+          </div>
         </div>
-      </div>
       </Show>
-   
+
       <div class="flex justify-between p-4 items-center text-textLight dark:text-textDark">
         {/* <Show when={settingsProps.blockchainEnabled() && settingsProps.connectedToBlockchain()}>
           <div class="cursor-pointer">
@@ -60,13 +60,13 @@ const Header = () => {
           <FiSearch size="26" />
         </div>
         <div class="cursor-pointer">
-          {location.pathname.includes('/market') ?
+          {location.pathname.includes('/index.html/market') ?
             <A href="/" title="My Bookmarks">
               <RiMapSpaceShipLine size="32" class="text-primaryButtonLight dark:text-primaryButtonDark " />
             </A>
             :
             <Show when={settingsProps.blockchainEnabled() && settingsProps.connectedToBlockchain()}>
-              <A href="/market" title="NFTmarks Marketplace">
+              <A href="/index.html/market" title="NFTmarks Marketplace">
                 <BiRegularStoreAlt size="32" class="fill-primaryButtonLight dark:fill-primaryButtonDark text-primaryButtonLight dark:text-primaryButtonDark" />
               </A>
             </Show>
@@ -79,7 +79,7 @@ const Header = () => {
               <IoChevronBack size="23" />
             </A>
             : (
-              <A href="/account" title="Settings" >
+              <A href="/index.html/account" title="Settings" >
                 <FaSolidUserAstronaut size="23" class="fill-textLight dark:fill-textDark " />
               </A>
             )}

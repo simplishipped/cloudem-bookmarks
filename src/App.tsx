@@ -1,5 +1,5 @@
 import type { Component } from "solid-js";
-// import styles from "./App.module.css";
+import "./App.module.css";
 import Footer from "./components/organisms/footer";
 import Header from "./components/organisms/header";
 import Settings from "./components/views/settings/settings";
@@ -12,23 +12,19 @@ import AddBookmark from "./components/views/add-bookmark";
 import Market from "./components/views/market";
 import Mint from "./components/views/mint";
 import Loading from "./components/views/loading/loading";
-import useContent from "./state/actions/content-actions";
 import useUser from "./state/actions/user-actions";
 import Login from "./components/views/login";
+import useCommon from "./state/actions/common-actions";
+import Error from "./components/atoms/error";
 
 const App: Component = () => {
-
-  const { globalLoader } = useContent();
+  const common = useCommon();
   const userProps = useUser();
   onMount(() => {
     userProps.identifyUser(null);
     userProps.initRender();
   })
 
-
-  // createEffect(() => {
-  //   console.log(userProps.authed())
-  // })
   return (
     <StoreProvider>
       <Router>
@@ -37,23 +33,29 @@ const App: Component = () => {
             class="bg-primaryLight dark:bg-primaryDark transition-colors h-screen relative"
             style={{ width: "400px" }}
           >
+            <Show when={common.error().globalError}>
+              <div class=" w-full flex justify-center px-6 pt-4">
+                <Error close={() => common.setError(null, 'globalError')} error={common.error().globalError} />
+              </div>
+            </Show>
             <Header />
-            <Show when={userProps.authed()} fallback={<Login />}>
-
-              <Routes>
-                <Route path="/" component={Home} />
-                <Route path="add-bookmark" component={AddBookmark} />
-                <Route path="/account" component={Settings} />
-                <Route path="/account/networks" component={Networks} />
-                <Route path="/market" component={Market} />
-                <Route path="/mint" component={Mint} />
-              </Routes>
+            <Show when={!common.loading().user} fallback={<Loading />}>
+              <Show when={userProps.authed()} fallback={<Login />}>
+                <Routes>
+                  <Route path="/index.html" component={Home} />
+                  <Route path="/index.html/add-bookmark" component={AddBookmark} />
+                  <Route path="/index.html/account" component={Settings} />
+                  <Route path="/index.html/account/networks" component={Networks} />
+                  <Route path="/index.html/market" component={Market} />
+                  <Route path="/index.html/mint" component={Mint} />
+                </Routes>
+              </Show>
             </Show>
 
             <div class="fixed bottom-0" style={{ width: "inherit" }}>
               <Footer />
             </div>
-            {globalLoader() ? <Loading /> : false}
+            {common.globalLoader() ? <Loading /> : false}
           </div>
         </div>
       </Router>

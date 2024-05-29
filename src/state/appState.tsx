@@ -14,6 +14,8 @@ if ("theme" in localStorage) {
 }
 
 
+
+
 let user: any = {}
 let errorRetries: number = 3;
 let startView: boolean = true;
@@ -32,7 +34,6 @@ let search: string = '';
 let checkedBookmarks: number[] = [] // has ids of all bookmarks to delete
 let initRender: boolean = false;
 let collections: Collection[] = [];
-let signUpError: string = '';
 
 
 const [state, setState] = createStore({
@@ -45,17 +46,12 @@ const [state, setState] = createStore({
   collection,
   // blockchain,
   startView,
-  failed: {
-    nftmarks: null,
-    bookmarks: null,
-    mint: null,
-    login: null
-  },
   loading: {
     nftmarks: null,
     bookmarks: null,
     mint: null,
     collections: null,
+    user: true,
   },
   marksView: 'collections',
   markToMint: {},
@@ -70,8 +66,20 @@ const [state, setState] = createStore({
   collections,
   newCollection,
   errorRetries,
+  error: {
+    settingsError: null,
+    globalError: null,
+    addBookmarkError: null,
+    homeError: null
+  },
+  notification: {
+    settingsNotification: null,
+    globalNotification: null,
+    addBookmarkNotification: null,
+    homeNotification: null
+  }
 
-  signUpError
+  
 });
 
 export const useAppState = () => {

@@ -5,5 +5,11 @@
     "action": {
         "default_popup": "index.html",
         "default_title": "Blockmarks"
-    }
+    },
+    "chrome_url_overrides": {
+        "newtab": "index.html"
+    },
+    "permissions": [
+        "activeTab"
+    ]
 }

@@ -17,8 +17,6 @@ const useContent = () => {
   const markToMint = () => app.state.markToMint;
   const nftmarkName = () => app.state.nftmarkName;
   const nftCategory = () => app.state.nftCategory;
-  const failed = () => app.state.failed;
-  const globalLoader = () => app.state.globalLoader;
   const search = () => app.state.search;
   const checkedBookmarks = () => app.state.checkedBookmarks;
   const startView = () => app.state.startView;
@@ -33,11 +31,6 @@ const useContent = () => {
     })
   }
 
-  const setGlobalLoader = (bool: boolean) => {
-    setState(() => {
-      return { ...app.state, globalLoader: bool }
-    })
-  }
 
   const setBookmarkChecked = (id: number, bool: boolean, row: any) => {
     let clone = app.state.checkedBookmarks.slice();
@@ -74,11 +67,6 @@ const useContent = () => {
     })
   }
 
-  const setLoadFailed = (type: string, bool: Boolean) => {
-    setState(() => {
-      return { ...app.state, failed: { ...app.state.failed, [type]: bool } }
-    })
-  }
 
   const addBookmark = async (bookmark: Bookmark) => {
     try {
@@ -187,7 +175,13 @@ const useContent = () => {
   const getUserCollections = async () => {
     if (collections().length === 0) {
       setLoading('collections', true);
-      const collections = await bookmarksApi.getCollectionsByUser(user().id);
+      let collections: any = [];
+      console.log(user())
+      if(user().email) {
+        collections = await bookmarksApi.getCollectionsByUser(user().id);
+      } else {
+        collections = await bookmarksApi.getCollectionsByUserWalletAddr(user().walletaddr_arb);
+      }
       setLoading('collections', false);
       if (collections.data) {
         setState(() => {
@@ -278,13 +272,9 @@ const useContent = () => {
     nftmarkName,
     nftCategory,
     markToMint,
-    setLoadFailed,
-    failed,
     setBookmarkChecked,
     setAllBookmarksChecked,
     deleteBookmarks,
-    globalLoader,
-    setGlobalLoader,
     setMarkToMintAndNavToMintPage,
     getUserBookmarks,
     search,
