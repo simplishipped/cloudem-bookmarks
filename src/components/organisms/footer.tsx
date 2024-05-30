@@ -12,9 +12,7 @@ const Footer = () => {
 
   createEffect(on(
     () => location.pathname,
-    () => {
-      console.log(location.pathname)
-    }
+    () => {}
   ));
 
   return (

@@ -138,7 +138,11 @@ const useUser = () => {
           }  
         }
       }
+      common.setLoading(false, 'user');
+
     } catch (error: any) {
+      common.setLoading(false, 'user');
+
       log.error({ function: 'identifyUser', error: error.message, user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-6' });
       common.setError('Error identifying user.', 'globalError');
 

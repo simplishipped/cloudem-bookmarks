@@ -9,6 +9,10 @@ import useUser from "../../state/actions/user-actions";
 
 const AddBookmark: Component<{}> = () => {
 
+//   chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
+//     let url = tabs[0].url;
+//     // use `url` here inside the callback because it's asynchronous!
+// });
   const navigate = useNavigate();
   const props = useContent();
   const [name, setName] = createSignal('');
@@ -18,9 +22,10 @@ const AddBookmark: Component<{}> = () => {
   // const [category, setCategory] = createSignal('Category');
 
   const addBookmark = () => {
+    
     //@ts-ignore
     props.addBookmark({ name: name(), url: nftMark(), collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), user_id: userProps.user().id });
-    navigate('/')
+    navigate('/index.html');
   }
 
 

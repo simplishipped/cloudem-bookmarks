@@ -1,7 +1,7 @@
 import { Component, For, Index, JSXElement, Show, ValidComponent, createEffect, createSignal, on, onMount } from "solid-js";
 import { Dynamic } from "solid-js/web"
 import { FaRegularFaceSadTear } from 'solid-icons/fa'
-import { Bookmark } from "../molecules/types";
+import { Bookmark } from "../../types/types"
 import useContent from "../../state/actions/content-actions";
 export interface ListProps {
   list: () => Bookmark[]
@@ -56,7 +56,7 @@ export const RowList: Component<ListProps> = (props) => {
 
 
   return (
-    <div class={`${props.list.length > 6 ? 'overflow-y-scroll' : ''} scroller-height pb-20`}>
+    <div class={`${props.list().length > 6 ? 'overflow-y-scroll' : ''} scroller-height pb-20`}>
       <Show when={rows().length > 0} fallback={
         <div class="flex flex-col items-center justify-center h-full">
           <FaRegularFaceSadTear class="w-16 h-16 text-primaryButtonLight dark:text-primaryButtonDark dark:fill-textDark fill-textLight" />

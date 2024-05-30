@@ -1,5 +1,4 @@
 import type { Component } from "solid-js";
-import "./App.module.css";
 import Footer from "./components/organisms/footer";
 import Header from "./components/organisms/header";
 import Settings from "./components/views/settings/settings";
@@ -39,7 +38,7 @@ const App: Component = () => {
               </div>
             </Show>
             <Header />
-            <Show when={!common.loading().user} fallback={<Loading />}>
+            <Show when={!common.loading().user}>
               <Show when={userProps.authed()} fallback={<Login />}>
                 <Routes>
                   <Route path="/index.html" component={Home} />
@@ -55,7 +54,8 @@ const App: Component = () => {
             <div class="fixed bottom-0" style={{ width: "inherit" }}>
               <Footer />
             </div>
-            {common.globalLoader() ? <Loading /> : false}
+            {common.globalLoader() || common.loading().user ? <Loading /> : false}
+
           </div>
         </div>
       </Router>

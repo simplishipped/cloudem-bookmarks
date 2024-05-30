@@ -1,9 +1,8 @@
 import { Component, For, Show } from "solid-js";
-import { ListProps } from "./types";
+// import { ListProps } from "../../types/types"
 
 
-export const BoxList: Component<ListProps> = (props) => {
-  console.log('WTF', props.list)
+export const BoxList: Component<any> = (props) => {
   return (
     <div class={`${props.list.length > 6 ? 'overflow-y-scroll' : ''} scroller-height pb-20 flex flex-wrap w-full content-start gap-1`}>
       <For each={props.list}>

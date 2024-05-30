@@ -62,8 +62,6 @@ const Login: Component<{}> = () => {
       }>
         <h1 onClick={() => setSignUp(false)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-white text-textLight text-md">Sign In</h1>
       </Show>
-      {globalLoader() ? <Loading /> : false}
-
     </div>
   );
 };
