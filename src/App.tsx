@@ -15,6 +15,7 @@ import useUser from "./state/actions/user-actions";
 import Login from "./components/views/login";
 import useCommon from "./state/actions/common-actions";
 import Error from "./components/atoms/error";
+import AreYouSure from "./components/views/arey-you-sure.tsx/are-you-sure";
 
 const App: Component = () => {
   const common = useCommon();
@@ -55,6 +56,7 @@ const App: Component = () => {
               <Footer />
             </div>
             {common.globalLoader() || common.loading().user ? <Loading /> : false}
+            {/* <AreYouSure onYes={() =>{}} onNo={() => {}} /> */}
 
           </div>
         </div>

@@ -1,0 +1,4 @@
+1.finish are you sure modal
+2.finish expport/import data
+3.finish theme colors
+4.try to get favicons

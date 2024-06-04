@@ -40,7 +40,7 @@ const createCollection = async (name: string, userId: number) => {
 
 const deleteCollection = async (id: number) => {
   const { data, error }  = await supabase.from('collections').delete().eq('id', id);
-  return data ? { data: data } : { error };
+  return !error ? { data: data } : { error };
 }
 
 export default {

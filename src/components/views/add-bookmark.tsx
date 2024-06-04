@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, Show } from "solid-js";
+import { Component, createEffect, createSignal, onMount, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import Select from "../atoms/select";
 import Input from '../atoms/input';
@@ -9,10 +9,7 @@ import useUser from "../../state/actions/user-actions";
 
 const AddBookmark: Component<{}> = () => {
 
-//   chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
-//     let url = tabs[0].url;
-//     // use `url` here inside the callback because it's asynchronous!
-// });
+
   const navigate = useNavigate();
   const props = useContent();
   const [name, setName] = createSignal('');
@@ -21,6 +18,14 @@ const AddBookmark: Component<{}> = () => {
   const common = useCommon()
   // const [category, setCategory] = createSignal('Category');
 
+  // onMount(() => {
+  //   if(chrome) {
+  //     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
+  //       let url = tabs[0].url;
+  //       // use `url` here inside the callback because it's asynchronous!
+  //   });
+  //   }
+  // })
   const addBookmark = () => {
     
     //@ts-ignore

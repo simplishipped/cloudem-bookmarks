@@ -1,7 +1,7 @@
 import { Component, createSignal } from "solid-js";
 import { FiLink2 } from 'solid-icons/fi'
 import { RiArrowsArrowDropDownFill } from 'solid-icons/ri'
-import { Bookmark } from "./types";
+import { Bookmark } from "../../types/types"
 import Checkbox from "../atoms/checkbox/checkbox";
 import useContent from "../../state/actions/content-actions";
 

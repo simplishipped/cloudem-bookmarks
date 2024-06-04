@@ -1,4 +1,4 @@
-import { Nftmark } from "../components/molecules/types"
+import { Nftmark } from "../types/types"
 import supabase from "./supabase";
 import axios from 'axios';
 

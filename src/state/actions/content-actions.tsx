@@ -197,7 +197,7 @@ const useContent = () => {
   const deleteCollection = async (collection: any) => {
     try {
       const res = await bookmarksApi.deleteCollection(collection.id);
-      if (res.data) {
+      if (!res.error) {
         setState(() => {
           return { ...app.state, collections: app.state.collections.filter(c => c.name !== collection.name) }
         })

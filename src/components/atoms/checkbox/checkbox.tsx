@@ -1,6 +1,6 @@
 import { Component, createEffect, on } from "solid-js";
 import './checkbox.css';
-import { Bookmark } from "../../molecules/types";
+import { Bookmark } from "../../../types/types"
 
 
 interface CheckboxProps {
