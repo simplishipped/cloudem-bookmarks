@@ -16,6 +16,7 @@ import Login from "./components/views/login";
 import useCommon from "./state/actions/common-actions";
 import Error from "./components/atoms/error";
 import AreYouSure from "./components/views/arey-you-sure.tsx/are-you-sure";
+import ExportImport from "./components/views/settings/export-import";
 
 const App: Component = () => {
   const common = useCommon();
@@ -48,6 +49,8 @@ const App: Component = () => {
                   <Route path="/index.html/account/networks" component={Networks} />
                   <Route path="/index.html/market" component={Market} />
                   <Route path="/index.html/mint" component={Mint} />
+                  <Route path="/index.html/account/export-import" component={ExportImport} />
+
                 </Routes>
               </Show>
             </Show>

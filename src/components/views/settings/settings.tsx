@@ -37,11 +37,9 @@ const Settings: Component<{}> = () => {
       <Show when={settingsProps.blockchainEnabled()}>
         <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       </Show>
-      <SettingsNavRow navTo={'url'} title="Export/Import" Icon={ImCloudDownload} />
+      <SettingsNavRow navTo={'/index.html/account/export-import'} title="Export/Import" Icon={ImCloudDownload} />
       <SettingsNavRow navTo={'url'} title="Help" Icon={FaRegularCircleQuestion} />
 
-      <button onClick={settingsProps.exportBookmarks} class="px-4 py-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-6
-        font-bold w-full items-center rounded-md text-center hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight">Export Bookmarks</button>
     </div>
   );
 };

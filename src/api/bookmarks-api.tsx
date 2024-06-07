@@ -8,6 +8,11 @@ const addBookmark = async (bookmark: Bookmark) => {
   return data ? { data: data[0] } : { error };
 }
 
+const addBookmarks = async (bookmarks: Bookmark[]) => {
+  const { data, error }  = await supabase.from('bookmarks').insert(bookmarks).select('*');
+  return data ? { data } : { error };
+}
+
 const deleteBookmarks = async (ids: number[]) => {
   const { data, error }  = await supabase.from('bookmarks').delete().in('id', ids);
   return data ? { data } : { error };
@@ -38,6 +43,13 @@ const createCollection = async (name: string, userId: number) => {
   return data ? { data: data[0] } : { error };
 }
 
+
+const createCollections = async (collections: any) => { 
+  const { data, error }  = await supabase.from('collections').insert(collections).select('*');
+  return data ? { data: data } : { error };
+}
+
+
 const deleteCollection = async (id: number) => {
   const { data, error }  = await supabase.from('collections').delete().eq('id', id);
   return !error ? { data: data } : { error };
@@ -51,5 +63,7 @@ export default {
   getCollectionsByUser,
   createCollection,
   deleteCollection,
-  getCollectionsByUserWalletAddr
+  getCollectionsByUserWalletAddr,
+  addBookmarks,
+  createCollections
 }

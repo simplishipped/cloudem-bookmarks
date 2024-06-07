@@ -111,20 +111,55 @@ const useSettings = () => {
   const exportBookmarks = async () => {
     try {
       //@ts-ignore
-      let bookmarks = await bookmarksApi.getBookmarksByUser(app.state.user.id);
-      var fileToSave = new Blob([JSON.stringify(bookmarks)], {
+      let bookmarks = app.state.bookmarks;
+      let exportFile = {
+        bookmarks: bookmarks,
+        collections: app.state.collections,
+      }
+      var fileToSave = new Blob([JSON.stringify(exportFile)], {
         type: 'application/json'
       });
 
       const a = document.createElement('a');
-      const type = 'application/json'
       a.href = URL.createObjectURL(fileToSave);
       a.download = 'bookmarks.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      log.error({ function: 'exportBookmarks', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-6' });
+      common.setError('Error exporting bookmarks.', 'settingsError');
+    }
+  }
+
+  const importBookmarks = async (e: any) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (event: any) => {
+        try {
+        const fileContent = event.target.result;
+        const bookmarksFile = JSON.parse(fileContent);
+        const bookmarks = bookmarksFile.bookmarks;
+        const collections = bookmarksFile.collections;
+        const inserted = await bookmarksApi.addBookmarks(bookmarks);
+        const insertedCollections = await bookmarksApi.createCollections(collections);
+        if(inserted && insertedCollections) {
+          setState(() => {
+            return {
+              ...app.state, bookmarks, collections
+            }
+          })
+        } else {
+          log.error({ function: 'importBookmarks', error: 'Failed to import bookmarks', timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-8' });
+          common.setError('Error importing bookmarks.', 'settingsError');
+        } 
+        } catch (error) {
+          log.error({ function: 'importBookmarks', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-7' });
+          common.setError('Error importing bookmarks.', 'settingsError');
+        }
+      }
+      reader.readAsText(file);
     }
   }
 
@@ -138,8 +173,9 @@ const useSettings = () => {
     connectedToBlockchain,
     blockchainEnabled,
     disableBlockchain,
-    exportBookmarks
+    exportBookmarks,
+    importBookmarks
   };
 };
 
-export default useSettings;
+export default useSettings
