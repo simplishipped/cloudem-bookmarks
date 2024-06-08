@@ -4,6 +4,7 @@ import userApi from "../../api/user-api";
 import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
+import { Bookmark, Collection } from "../../types/types";
 
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
@@ -133,6 +134,22 @@ const useSettings = () => {
   }
 
   const importBookmarks = async (e: any) => {
+    function filterForExistingBookmarks(existingBookmarks: Bookmark[],bookmarks: Bookmark[]) {
+      const filtered = bookmarks.filter(bk => {
+        let exists = existingBookmarks.find(ebk => ebk.name === bk.name);
+        return !exists;
+      })
+      return filtered
+    }
+
+    function filterForExistingCollections(existingCollections: Collection[], collections: Collection[]) {
+      const filtered = collections.filter(c => {
+        let exists = existingCollections.find(ec => ec.name === c.name);
+        return !exists;
+      })
+      return filtered
+    }
+
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -140,14 +157,17 @@ const useSettings = () => {
         try {
         const fileContent = event.target.result;
         const bookmarksFile = JSON.parse(fileContent);
-        const bookmarks = bookmarksFile.bookmarks;
-        const collections = bookmarksFile.collections;
+        let bookmarks = bookmarksFile.bookmarks;
+        let collections = bookmarksFile.collections;
+        bookmarks = filterForExistingBookmarks(app.state.bookmarks, bookmarks);
+        collections = filterForExistingCollections(app.state.collections, collections);
         const inserted = await bookmarksApi.addBookmarks(bookmarks);
         const insertedCollections = await bookmarksApi.createCollections(collections);
+
         if(inserted && insertedCollections) {
           setState(() => {
             return {
-              ...app.state, bookmarks, collections
+              ...app.state, bookmarks: [...app.state.bookmarks, ...bookmarks], collections: [...app.state.collections, ...collections]
             }
           })
         } else {
