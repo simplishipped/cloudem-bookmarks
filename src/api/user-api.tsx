@@ -31,7 +31,7 @@ const createUser = async (user: any) => {
       user_id: data[0].id,
     }).select('*');
   }
-  if(defaultCollection && defaultCollection.data) {
+  if (defaultCollection && defaultCollection.data) {
     return data ? { data: data[0] } : { error };
   } else {
     return { error: new Error('Could not create default collection') };
@@ -54,6 +54,11 @@ const updateUser = async (id: number, user: any) => {
   return response;
 }
 
+const updateAuth = async (id: number, user: any) => {
+  const { data, error } = await supabase.auth.updateUser(user)
+  return data ? { data: data } : { error };
+}
+
 const disableBlockchain = async (id: number) => {
   const response = await supabase.from('users').update({ 'blockchain_enabled': false }).eq('id', id).select();
   return response;
@@ -69,5 +74,6 @@ export default {
   getUserByWalletAddr,
   createUser,
   signUpUser,
-  signInUser
+  signInUser,
+  updateAuth
 }

@@ -26,6 +26,12 @@ const useUser = () => {
 
   const updateUser = async (user: any) => {
     try {
+      if(user.password || user.password) {
+        const change: any = {};
+        if(user.email) change.email = user.email;
+        if(user.password) change.password = user.password;
+        await userApi.updateAuth(user.id, change);
+      }
       const { data, error } = await userApi.updateUser(user.id, user);
       if (data) {
         setState(() => {
@@ -39,6 +45,8 @@ const useUser = () => {
       log.error({ function: 'updateUser', error: error.message, user_id: user.id, timestamp: new Date(), log_id: 'user-actions-2' })
     }
   }
+
+
 
   const setUser = (user: any) => {
     setState(() => {

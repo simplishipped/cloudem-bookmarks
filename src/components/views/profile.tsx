@@ -15,11 +15,16 @@ const Profile: Component<Props> = (props) => {
   const [username, setUsername] = createSignal(userProps.user().username);
   const [editMode, setEditMode] = createSignal(false);
   const [newPassword, setNewPassword] = createSignal('');
-
   const [confirmPassword, setConfirmPassword] = createSignal('');
-
   const [currentPassword, setCurrentPassword] = createSignal('');
 
+  const save = async () => {
+    let user = {
+      email,
+      username,
+      
+    }
+  }
 
 
   return (
