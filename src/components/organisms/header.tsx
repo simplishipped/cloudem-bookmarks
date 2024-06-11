@@ -11,6 +11,7 @@ import { FiSearch } from 'solid-icons/fi'
 import { Show } from "solid-js";
 import Input from '../atoms/input'
 import useContent from "../../state/actions/content-actions";
+import Error from "../atoms/error";
 
 const Header = () => {
   const location = useLocation();
@@ -85,6 +86,9 @@ const Header = () => {
             )}
         </div>
       </div>
+      {/* <div class="px-6">
+        <Error error="Error" />
+      </div> */}
     </Show>
 
   );

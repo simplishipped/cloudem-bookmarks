@@ -4,7 +4,8 @@ import {
   FaRegularMoon,
   FaSolidSun,
   FaRegularCircleQuestion,
-  FaSolidListUl
+  FaSolidListUl,
+  FaSolidUserAstronaut
 } from "solid-icons/fa";
 import { } from "solid-icons/fa";
 import useTheme from "../../../state/actions/theme-actions";
@@ -31,6 +32,7 @@ const Settings: Component<{}> = () => {
           <Error close={() => common.setError(null, 'settingsError')} error={common.error().settingsError} />
         </div>
       </Show>
+      <SettingsNavRow navTo={'/index.html/account/profile'} title="Profile" Icon={FaSolidUserAstronaut} />
       <SettingsBoolRow IconTrue={FaRegularMoon} IconFalse={FaSolidSun} titles={["Dark Theme", "Light Theme"]} setter={setTheme} value={theme} />
       <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Start App Into Adding', 'Start App Into List']} setter={settingsProps.setStartView} value={settingsProps.startView} />
       <SettingsBoolRow IconTrue={ImBlocked} IconFalse={AiOutlineBlock} titles={['Enable Blockchain', 'Disable Blockchain']} setter={settingsProps.enableBlockchain} value={settingsProps.blockchainEnabled} />
@@ -38,7 +40,6 @@ const Settings: Component<{}> = () => {
         <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       </Show>
       <SettingsNavRow navTo={'/index.html/account/export-import'} title="Export/Import" Icon={ImCloudDownload} />
-      <SettingsNavRow navTo={'url'} title="Help" Icon={FaRegularCircleQuestion} />
 
     </div>
   );
