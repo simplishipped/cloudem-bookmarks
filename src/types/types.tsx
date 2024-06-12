@@ -17,7 +17,8 @@ export interface Bookmark {
   id: number
   collection: string
   user_id: number
-  checked?: boolean
+  checked?: boolean,
+  favicon?: string
 }
 
 export interface Nftmark {

@@ -8,12 +8,11 @@ import Error from "../atoms/error";
 import useUser from "../../state/actions/user-actions";
 
 const AddBookmark: Component<{}> = () => {
-
-
   const navigate = useNavigate();
   const props = useContent();
   const [name, setName] = createSignal('');
   const [bookmark, setBookmark] = createSignal(window.location.href);
+  const [favicon, setFavicon] = createSignal('');
   const userProps = useUser();
   const common = useCommon()
   // const [category, setCategory] = createSignal('Category');
@@ -33,6 +32,8 @@ const AddBookmark: Component<{}> = () => {
       //@ts-ignore
       const tabs = await chrome.tabs.query({ active: true });
       const url = tabs[0].url;
+      const favicon = tabs[0].favIconUrl;
+      setFavicon(favicon);
       setBookmark(url)
     }
   }
@@ -43,7 +44,13 @@ const AddBookmark: Component<{}> = () => {
 
   const addBookmark = async () => {  
     //@ts-ignore
-    props.addBookmark({ name: name(), url: bookmark(), collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), user_id: userProps.user().id });
+    props.addBookmark({ 
+      name: name(), 
+      url: bookmark(), 
+      collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), 
+      user_id: userProps.user().id,
+      favicon: favicon() 
+    });
     navigate('/index.html');
   }
 
