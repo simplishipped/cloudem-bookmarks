@@ -3,6 +3,8 @@ import EditableInfoRow from "../molecules/editable-info-row";
 import Button from "../atoms/button";
 import useUser from "../../state/actions/user-actions";
 import Input from "../atoms/input";
+import useCommon from "../../state/actions/common-actions";
+import useSettings from "../../state/actions/settings-actions";
 
 interface Props {
 
@@ -11,6 +13,7 @@ interface Props {
 const Profile: Component<Props> = (props) => {
 
   const userProps = useUser();
+  const settingsProps = useSettings();
   const [email, setEmail] = createSignal(userProps.user().email);
   const [username, setUsername] = createSignal(userProps.user().username);
   const [editMode, setEditMode] = createSignal(false);
@@ -19,11 +22,23 @@ const Profile: Component<Props> = (props) => {
   const [currentPassword, setCurrentPassword] = createSignal('');
 
   const save = async () => {
-    let user = {
-      email,
-      username,
+    await settingsProps.saveUserUpdate(email(), username(), newPassword());
+    setEditMode(false);
+
+    // try {
+
+    // } catch (err) {
       
-    }
+    // }
+    // let user = {
+    //   email: email(),
+    //   username: username(),
+    //   password: newPassword()
+    // }
+    // common.setGlobalLoader(true);
+    // await userProps.updateUser(user);
+    // common.setGlobalLoader(false);
+    // setEditMode(false);
   }
 
 
@@ -47,7 +62,7 @@ const Profile: Component<Props> = (props) => {
         <div class="mt-2">
           <Input placeholder="Current Password" value={currentPassword} setValue={setCurrentPassword} />
         </div>
-        <Button title="Save" func={() => { }} />
+        <Button title="Save" func={save} />
         <Button title="Cancel" func={() => setEditMode(false)} />
       </Show>
 

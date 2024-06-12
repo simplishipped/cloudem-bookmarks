@@ -13,7 +13,7 @@ const AddBookmark: Component<{}> = () => {
   const navigate = useNavigate();
   const props = useContent();
   const [name, setName] = createSignal('');
-  const [nftMark, setNftMark] = createSignal(window.location.href);
+  const [bookmark, setBookmark] = createSignal(window.location.href);
   const userProps = useUser();
   const common = useCommon()
   // const [category, setCategory] = createSignal('Category');
@@ -26,10 +26,24 @@ const AddBookmark: Component<{}> = () => {
   //   });
   //   }
   // })
-  const addBookmark = () => {
-    
+  //@ts-ignore
+  async function getUrl () {
     //@ts-ignore
-    props.addBookmark({ name: name(), url: nftMark(), collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), user_id: userProps.user().id });
+    if (window.chrome) {
+      //@ts-ignore
+      const tabs = await chrome.tabs.query({ active: true });
+      const url = tabs[0].url;
+      setBookmark(url)
+    }
+  }
+
+  onMount(() => {
+    getUrl()
+  });
+
+  const addBookmark = async () => {  
+    //@ts-ignore
+    props.addBookmark({ name: name(), url: bookmark(), collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), user_id: userProps.user().id });
     navigate('/index.html');
   }
 
@@ -47,7 +61,7 @@ const AddBookmark: Component<{}> = () => {
         <Input value={name} name="NFTmarkName" placeholder="Bookmark Name" setValue={setName} />
       </div>
       <div class="mt-4">
-        <Input value={nftMark} name="NFTmarkName" placeholder="Bookmark" setValue={setNftMark} />
+        <Input value={bookmark} name="NFTmarkName" placeholder="Bookmark" setValue={setBookmark} />
       </div>
       <div class="mt-4">
         <button id="nft-mark" class={`dark:border-textDark 

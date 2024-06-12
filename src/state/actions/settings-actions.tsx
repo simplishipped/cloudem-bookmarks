@@ -5,6 +5,7 @@ import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
 import { Bookmark, Collection } from "../../types/types";
+import useUser from "./user-actions";
 
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
@@ -18,6 +19,7 @@ const useSettings = () => {
   const blockchainEnabled = () => app.state.blockchainEnabled;
   const user = () => app.state.user;
   const common = useCommon();
+  const userProps = useUser();
 
   const enableBlockchain = async () => {
     try {
@@ -134,7 +136,7 @@ const useSettings = () => {
   }
 
   const importBookmarks = async (e: any) => {
-    function filterForExistingBookmarks(existingBookmarks: Bookmark[],bookmarks: Bookmark[]) {
+    function filterForExistingBookmarks(existingBookmarks: Bookmark[], bookmarks: Bookmark[]) {
       const filtered = bookmarks.filter(bk => {
         let exists = existingBookmarks.find(ebk => ebk.name === bk.name);
         return !exists;
@@ -155,25 +157,25 @@ const useSettings = () => {
       const reader = new FileReader();
       reader.onload = async (event: any) => {
         try {
-        const fileContent = event.target.result;
-        const bookmarksFile = JSON.parse(fileContent);
-        let bookmarks = bookmarksFile.bookmarks;
-        let collections = bookmarksFile.collections;
-        bookmarks = filterForExistingBookmarks(app.state.bookmarks, bookmarks);
-        collections = filterForExistingCollections(app.state.collections, collections);
-        const inserted = await bookmarksApi.addBookmarks(bookmarks);
-        const insertedCollections = await bookmarksApi.createCollections(collections);
+          const fileContent = event.target.result;
+          const bookmarksFile = JSON.parse(fileContent);
+          let bookmarks = bookmarksFile.bookmarks;
+          let collections = bookmarksFile.collections;
+          bookmarks = filterForExistingBookmarks(app.state.bookmarks, bookmarks);
+          collections = filterForExistingCollections(app.state.collections, collections);
+          const inserted = await bookmarksApi.addBookmarks(bookmarks);
+          const insertedCollections = await bookmarksApi.createCollections(collections);
 
-        if(inserted && insertedCollections) {
-          setState(() => {
-            return {
-              ...app.state, bookmarks: [...app.state.bookmarks, ...bookmarks], collections: [...app.state.collections, ...collections]
-            }
-          })
-        } else {
-          log.error({ function: 'importBookmarks', error: 'Failed to import bookmarks', timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-8' });
-          common.setError('Error importing bookmarks.', 'settingsError');
-        } 
+          if (inserted && insertedCollections) {
+            setState(() => {
+              return {
+                ...app.state, bookmarks: [...app.state.bookmarks, ...bookmarks], collections: [...app.state.collections, ...collections]
+              }
+            })
+          } else {
+            log.error({ function: 'importBookmarks', error: 'Failed to import bookmarks', timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-8' });
+            common.setError('Error importing bookmarks.', 'settingsError');
+          }
         } catch (error) {
           log.error({ function: 'importBookmarks', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-7' });
           common.setError('Error importing bookmarks.', 'settingsError');
@@ -181,6 +183,23 @@ const useSettings = () => {
       }
       reader.readAsText(file);
     }
+  }
+
+  const saveUserUpdate = async (email: string | undefined, username: string | undefined, password: string | undefined) => {
+    try {
+      let user = {
+        email,
+        username,
+        password
+      }
+      common.setGlobalLoader(true);
+      await userProps.updateUser(user);
+      common.setGlobalLoader(false);
+    } catch (error) {
+      log.error({ function: 'saveUserUpdate', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-9' });
+      common.setError('Error saving user update.', 'settingsError');
+    }
+
   }
 
 
@@ -194,7 +213,8 @@ const useSettings = () => {
     blockchainEnabled,
     disableBlockchain,
     exportBookmarks,
-    importBookmarks
+    importBookmarks,
+    saveUserUpdate
   };
 };
 

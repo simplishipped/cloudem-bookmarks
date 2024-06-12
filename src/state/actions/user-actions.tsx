@@ -26,18 +26,21 @@ const useUser = () => {
 
   const updateUser = async (user: any) => {
     try {
-      if(user.password || user.password) {
+      if(user.password || user.email) {
         const change: any = {};
         if(user.email) change.email = user.email;
         if(user.password) change.password = user.password;
-        await userApi.updateAuth(user.id, change);
+        await userApi.updateAuth(app.state.user.id, change);
       }
-      const { data, error } = await userApi.updateUser(user.id, user);
+      delete user.password;
+      const { data, error } = await userApi.updateUser(app.state.user.id, user);
+      console.log(data)
       if (data) {
         setState(() => {
           return { ...app.state, user: data }
         })
       } else {
+        //@ts-ignore
         log.error({ function: 'updateUser', error: error.message, user_id: user.id, timestamp: new Date(), log_id: 'user-actions-1' });
         common.setError('Error updating user.', 'globalError');
       }

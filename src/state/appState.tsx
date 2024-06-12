@@ -15,7 +15,7 @@ if ("theme" in localStorage) {
 
 
 
-
+let userUpdate: any = {}
 let user: any = {}
 let errorRetries: number = 3;
 let startView: boolean = true;
@@ -77,8 +77,7 @@ const [state, setState] = createStore({
     globalNotification: null,
     addBookmarkNotification: null,
     homeNotification: null
-  }
-
+  },
   
 });
 

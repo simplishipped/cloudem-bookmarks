@@ -50,8 +50,8 @@ export const getUserByWalletAddr = async (walletaddr: string) => {
 }
 
 const updateUser = async (id: number, user: any) => {
-  const response = await supabase.from('users').update(user).eq('id', id).select();
-  return response;
+  const { data, error } = await supabase.from('users').update(user).eq('id', id).select();
+  return data ? { data: data[0] } : { error };
 }
 
 const updateAuth = async (id: number, user: any) => {
