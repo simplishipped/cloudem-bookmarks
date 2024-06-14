@@ -9,7 +9,7 @@
     "serve": "vite preview",
     "format": "",
     "build-extension": "vite build && npm run copy-assets",
-    "copy-assets": "cp manifest.json dist/ && cp -R icons dist/ && cp background.js dist/"
+    "copy-assets": "cp manifest.json dist/ && cp -R icons dist/ && cp background.js dist/ && cp content.js dist/"
   },
   "license": "MIT",
   "devDependencies": {

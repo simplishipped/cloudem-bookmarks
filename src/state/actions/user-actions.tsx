@@ -26,10 +26,10 @@ const useUser = () => {
 
   const updateUser = async (user: any) => {
     try {
-      if(user.password || user.email) {
+      if (user.password || user.email) {
         const change: any = {};
-        if(user.email) change.email = user.email;
-        if(user.password) change.password = user.password;
+        if (user.email) change.email = user.email;
+        if (user.password) change.password = user.password;
         await userApi.updateAuth(app.state.user.id, change);
       }
       delete user.password;
@@ -69,6 +69,25 @@ const useUser = () => {
     })
   }
 
+
+  const requestBlockchain = () => {
+
+    // Send message to background script to request accounts
+    //@ts-ignore
+    if (window.chrome) {
+      //@ts-ignore
+      window.chrome.runtime.sendMessage({ type: 'REQUEST_ACCOUNTS' }, response => {
+        if (response.success) {
+          console.log('Connected to MetaMask:', response.accounts[0]);
+          // Handle successful connection
+        } else {
+          console.error('Error connecting to MetaMask:', response.error);
+          // Handle error
+        }
+
+      });
+    }
+  }
   const identifyUser = async (user: any) => {
     try {
       if (!user) {
@@ -133,10 +152,11 @@ const useUser = () => {
           })
         }
       } else {
+        console.log(window)
         const accounts = await provider.send('eth_accounts', []);
         if (accounts.length > 0) {
           const user = await userApi.getUserByWalletAddr(accounts[0]);
-          if(user.data && user.data.blockchain_enabled) {
+          if (user.data && user.data.blockchain_enabled) {
             setState(() => {
               return { ...app.state, user: user.data, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
             })
@@ -146,7 +166,7 @@ const useUser = () => {
                 return { ...app.state, user: user.data, connectedToBlockchain: false, blockchainEnabled: false, authed: true }
               })
             }
-          }  
+          }
         }
       }
       common.setLoading(false, 'user');
