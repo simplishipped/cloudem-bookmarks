@@ -72,13 +72,12 @@ const useUser = () => {
 
   const requestBlockchain = () => {
 
-    // Send message to background script to request accounts
     //@ts-ignore
     if (window.chrome) {
       //@ts-ignore
-      window.chrome.runtime.sendMessage({ type: 'REQUEST_ACCOUNTS' }, response => {
+      window.chrome.runtime.sendMessage({ type: 'REQUEST_CRYPTO_ACCOUNT' }, response => {
         if (response.success) {
-          console.log('Connected to MetaMask:', response.accounts[0]);
+          console.log('Connected to MetaMask:', response.account);
           // Handle successful connection
         } else {
           console.error('Error connecting to MetaMask:', response.error);
@@ -152,7 +151,6 @@ const useUser = () => {
           })
         }
       } else {
-        console.log(window)
         const accounts = await provider.send('eth_accounts', []);
         if (accounts.length > 0) {
           const user = await userApi.getUserByWalletAddr(accounts[0]);
@@ -183,36 +181,38 @@ const useUser = () => {
 
 
   const connect = async () => {
-    if ((window as any).ethereum) {
-      try {
-        const accounts = await provider.send("eth_requestAccounts", []);
-        const user = await getUserByWalletAddr(accounts[0])
+    requestBlockchain()
+
+    // if ((window as any).ethereum) {
+    //   try {
+    //     const accounts = await provider.send("eth_requestAccounts", []);
+    //     const user = await getUserByWalletAddr(accounts[0])
 
 
-        if (user.data) {
-          setState(() => {
-            return { ...app.state, user: user.data, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
-          })
-        } else if (accounts[0]) {
-          const user = await userApi.createUser(accounts[0]);
-          if (user) {
-            setState(() => {
-              //@ts-ignore
-              return { ...app.state, user: data.user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
-            })
-          } else {
-            log.error({ function: 'connect', error: 'Failed to save walletaddr as user', walletaddr_arb: accounts[0], timestamp: new Date(), log_id: 'user-actions-7' })
-            common.setError('Failed to save user to database', 'globalError');
-          }
-        }
+    //     if (user.data) {
+    //       setState(() => {
+    //         return { ...app.state, user: user.data, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
+    //       })
+    //     } else if (accounts[0]) {
+    //       const user = await userApi.createUser(accounts[0]);
+    //       if (user) {
+    //         setState(() => {
+    //           //@ts-ignore
+    //           return { ...app.state, user: data.user, connectedToBlockchain: true, blockchainEnabled: true, authed: true }
+    //         })
+    //       } else {
+    //         log.error({ function: 'connect', error: 'Failed to save walletaddr as user', walletaddr_arb: accounts[0], timestamp: new Date(), log_id: 'user-actions-7' })
+    //         common.setError('Failed to save user to database', 'globalError');
+    //       }
+    //     }
 
 
-      } catch (error) {
-        // setError('Please install crypto wallet');
-        log.error({ function: 'connect', error: error, timestamp: new Date(), log_id: 'user-actions-7' });
-        common.setError('Error updating user.', 'globalError');
-      }
-    }
+    //   } catch (error) {
+    //     // setError('Please install crypto wallet');
+    //     log.error({ function: 'connect', error: error, timestamp: new Date(), log_id: 'user-actions-7' });
+    //     common.setError('Error updating user.', 'globalError');
+    //   }
+    // }
   }
 
 
