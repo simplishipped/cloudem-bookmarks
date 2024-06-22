@@ -155,7 +155,7 @@ const useContent = () => {
     try {
       if (bookmarks().length === 0) {
         setLoading('bookmarks', true);
-        const marks = await bookmarksApi.getBookmarksByUser(1);
+        const marks = await bookmarksApi.getBookmarksByUser(user().id);
         setLoading('bookmarks', false);
         if (marks.data) {
           setState(() => {

@@ -28,7 +28,7 @@ const AddBookmark: Component<{}> = () => {
   //@ts-ignore
   async function getUrl () {
     //@ts-ignore
-    if (window.chrome) {
+    if (window && window.chrome) {
       //@ts-ignore
       const tabs = await chrome.tabs.query({ active: true });
       const url = tabs[0].url;
