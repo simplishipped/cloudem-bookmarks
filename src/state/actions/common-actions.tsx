@@ -40,7 +40,6 @@ const useCommon = () => {
   }
 
   const setLoading = (bool: Boolean, type: string) => {
-    console.log(bool)
     setState(() => {
       return { ...app.state, loading: { ...app.state.loading, [type]: bool } }
     })

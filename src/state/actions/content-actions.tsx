@@ -176,7 +176,6 @@ const useContent = () => {
     if (collections().length === 0) {
       setLoading('collections', true);
       let collections: any = [];
-      console.log(user())
       if(user().email) {
         collections = await bookmarksApi.getCollectionsByUser(user().id);
       } else {

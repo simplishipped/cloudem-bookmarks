@@ -28,7 +28,7 @@ const getBookmarksByUser = async (userId: number) => {
   return data ? { data: data } : { error };
 }
 
-const getCollectionsByUser = async (userId: number) => {
+const getCollectionsByUser = async (userId: string) => {
   const { data, error }  = await supabase.from('collections').select('*').eq('user_id', userId);
   return data ? { data: data } : { error };
 }

@@ -1,4 +1,4 @@
-import { Component, Setter, createSignal, Show } from "solid-js";
+import { Component, Setter, createSignal, Show, onMount } from "solid-js";
 import Input from "../atoms/input";
 import useSettings from "../../state/actions/settings-actions";
 import Loading from "./loading/loading";
@@ -14,15 +14,38 @@ const Login: Component<{}> = () => {
   const [signUp, setSignUp] = createSignal(false);
   const { globalLoader } = useCommon();
   const { connect, signInWithEmail, signUpNewUser } = useUser();
+  const [listenerForMetaMask, setListenerForMetaMask] = createSignal(false);
+
 
 
   async function signUpUser() {
-    signUpNewUser(email(), password(), confirmPassword());
+    // signUpNewUser(email(), password(), confirmPassword());
   }
 
   async function signIn() {
     signInWithEmail(email(), password());
   }
+
+  onMount(() => {
+    //@ts-ignore
+    if (window.chrome && window.chrome.runtime && !listenerForMetaMask()) {
+      console.log('adding listener')
+      setListenerForMetaMask(true);
+      //@ts-ignore
+      window.chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: any) => {
+        if (message.type === 'METAMASK_RESULT') {
+          if (message.success) {
+            console.log('WE GOT IT', message);
+            return true;
+          } else {
+            console.log('WE DONT GOT SHIT')
+            return true;
+          }
+        }
+      });
+    }
+
+  })
 
 
   return (

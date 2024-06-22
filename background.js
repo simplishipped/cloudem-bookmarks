@@ -1,18 +1,12 @@
-
-import { ethers } from "./ethers.min.js";
-const provider = new ethers.BrowserProvider(window.ethereum);
-
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-	if (message.type === 'REQUEST_CRYPTO_ACCOUNT') {
-
-		try {
-			const accounts = await provider.send("eth_requestAccounts", []);
-			sendResponse({ success: true, account: accounts[0] });
-		} catch (error) {
-			console.log(error)
-			sendResponse({ success: false, error })
-		}
-		// Return true to indicate asynchronous response
-		return true;
-	}
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'CRYPTO_ACCOUNT') {
+    // Forward the message to the content script
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, message);
+    });
+  } else if (message.type === 'METAMASK_RESULT') {
+    console.log('HEYOOO')
+    // Forward the result to the popup script
+    chrome.runtime.sendMessage(message);
+  }
 });

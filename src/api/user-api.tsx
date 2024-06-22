@@ -23,34 +23,35 @@ const signInUser = async (email: string, password: string) => {
 }
 
 const createUser = async (user: any) => {
-  const { data, error } = await supabase.from('users').insert(user).select('*');
+  const { data, error } = await supabase.from('profiles').insert(user).select('*').single();
   let defaultCollection;
   if (data) {
     defaultCollection = await supabase.from('collections').insert({
       name: 'default',
-      user_id: data[0].id,
+      user_id: data.id,
     }).select('*');
   }
   if (defaultCollection && defaultCollection.data) {
-    return data ? { data: data[0] } : { error };
+    return data ? { data: data } : { error };
   } else {
     return { error: new Error('Could not create default collection') };
+    //@jaja delete user
   }
 }
 
 
 export const getUser = async (email: string) => {
-  const { data, error } = await supabase.from('users').select('*').eq('email', email);
+  const { data, error } = await supabase.from('profiles').select('*').eq('email', email);
   return data ? { data: data[0] } : { error };
 }
 
 export const getUserByWalletAddr = async (walletaddr: string) => {
-  const { data, error } = await supabase.from('users').select('*').eq('walletaddr_arb', walletaddr);
+  const { data, error } = await supabase.from('profiles').select('*').eq('walletaddr_arb', walletaddr);
   return data ? { data: data[0] } : { error };
 }
 
 const updateUser = async (id: number, user: any) => {
-  const { data, error } = await supabase.from('users').update(user).eq('id', id).select();
+  const { data, error } = await supabase.from('profiles').update(user).eq('id', id).select();
   return data ? { data: data[0] } : { error };
 }
 
@@ -60,7 +61,7 @@ const updateAuth = async (id: number, user: any) => {
 }
 
 const disableBlockchain = async (id: number) => {
-  const response = await supabase.from('users').update({ 'blockchain_enabled': false }).eq('id', id).select();
+  const response = await supabase.from('profiles').update({ 'blockchain_enabled': false }).eq('id', id).select();
   return response;
 }
 

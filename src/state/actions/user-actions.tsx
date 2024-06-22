@@ -4,6 +4,7 @@ import userApi, { getUserByWalletAddr } from "../../api/user-api";
 import useCommon from "./common-actions";
 import { User } from "../../types/types";
 import log from "../../util/logger";
+import { onMount, createSignal } from "solid-js";
 
 const provider = new ethers.BrowserProvider((window as any).ethereum);
 
@@ -34,7 +35,6 @@ const useUser = () => {
       }
       delete user.password;
       const { data, error } = await userApi.updateUser(app.state.user.id, user);
-      console.log(data)
       if (data) {
         setState(() => {
           return { ...app.state, user: data }
@@ -70,21 +70,29 @@ const useUser = () => {
   }
 
 
+
+
   const requestBlockchain = () => {
 
     //@ts-ignore
     if (window.chrome) {
       //@ts-ignore
-      window.chrome.runtime.sendMessage({ type: 'REQUEST_CRYPTO_ACCOUNT' }, response => {
-        if (response.success) {
-          console.log('Connected to MetaMask:', response.account);
-          // Handle successful connection
-        } else {
-          console.error('Error connecting to MetaMask:', response.error);
-          // Handle error
-        }
+      // window.chrome.runtime.sendMessage({ type: 'REQUEST_CRYPTO_ACCOUNT' }, response => {
 
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        let activeTab = tabs[0];
+        //@ts-ignore
+        window.chrome.tabs.sendMessage(activeTab.id, { type: 'CRYPTO_ACCOUNT' }, (response: any) => { });
       });
+      // if (response.success) {
+      //   console.log('Connected to MetaMask:', response.account);
+      //   // Handle successful connection
+      // } else {
+      //   console.error('Error connecting to MetaMask:', response.error);
+      //   // Handle error
+      // }
+
+      // });
     }
   }
   const identifyUser = async (user: any) => {
@@ -96,9 +104,14 @@ const useUser = () => {
       if (user && user.email) {
 
         let userRes = await userApi.getUser(user.email);
+        let newProfile = null;
+        if (!userRes.data) {
+          newProfile = await createProfile(user.id, user.email)
+        }
 
-        if (userRes && userRes.data) {
-          user = userRes.data;
+        console.log('wtf', newProfile)
+        if ((userRes && userRes.data) || newProfile) {
+          user = userRes.data || newProfile;
           if (user.blockchain_enabled) {
             const accounts = await provider.send('eth_accounts', []);
             setState(() => {
@@ -216,34 +229,46 @@ const useUser = () => {
   }
 
 
+  async function createProfile(id: string, email: string) {
+    // common.setGlobalLoader(true);
+    const { data, error } = await userApi.createUser({ email, id });
+    if (data) {
+      console.log('bruh', data)
+      return data
+    } else {
+      return false
+      //log stuff
+    }
+  }
 
-  async function signUpNewUser(email: string, password: string, confirmPassword: string) {
+  async function signUpNewUser(id: string, email: string, password: string | null, confirmPassword: string | null) {
     try {
-      if (email && password && confirmPassword) {
-        if (password === confirmPassword) {
-          common.setGlobalLoader(true);
+      //if (email && password && confirmPassword) {
+      // if (password === confirmPassword) {
+      common.setGlobalLoader(true);
 
-          const { data, error } = await userApi.signUpUser(email, password);
-          if (data) {
-            const createUserRes = await userApi.createUser({ email });
-            if (createUserRes.data) {
-              setState(() => {
-                return { ...app.state, user, authed: false, blockchainEnabled: false, connectedToBlockchain: false }
-              })
-            } else {
-              log.error({ function: 'signUpNewUser', error: createUserRes.error, user_email: email, timestamp: new Date(), log_id: 'user-actions-8' })
-              common.setError('Failed to sign up with email', 'globalError');
-            }
-          } else {
-            log.error({ function: 'signUpNewUser', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-9' })
-            common.setError('Failed to sign up with email', 'globalError');
-          }
+      // const { data, error } = await userApi.signUpUser(email, password);
+
+      if (id && email) {
+        const createUserRes = await userApi.createUser({ email, id });
+        if (createUserRes.data) {
+          setState(() => {
+            return { ...app.state, user, authed: false, blockchainEnabled: false, connectedToBlockchain: false }
+          })
         } else {
-          common.setError('Passwords do not match', 'globalError');
+          log.error({ function: 'signUpNewUser', error: createUserRes.error, user_email: email, timestamp: new Date(), log_id: 'user-actions-8' })
+          common.setError('Failed to sign up with email', 'globalError');
         }
-        common.setGlobalLoader(false)
-
+      } else {
+        log.error({ function: 'signUpNewUser', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-9' })
+        common.setError('Failed to sign up with email', 'globalError');
       }
+      // } else {
+      //   common.setError('Passwords do not match', 'globalError');
+      // }
+      common.setGlobalLoader(false)
+
+      //}
     } catch (error: any) {
       log.error({ function: 'signUpNewUser', error: error.message, user_email: email, timestamp: new Date(), log_id: 'user-actions-10' });
       common.setError('Error updating user.', 'globalError');

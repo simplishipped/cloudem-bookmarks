@@ -1,22 +1,21 @@
-// content.js
-// import { ethers } from "ethers";
-// const provider = new ethers.BrowserProvider(window.ethereum);
+// Inject the injected.js script into the web page
+const script = document.createElement('script');
+script.src = chrome.runtime.getURL('injected.js');
+document.documentElement.appendChild(script);
 
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.type === 'REQUEST_CRYPTO_ACCOUNTS') {
-//       if (typeof window.ethereum !== 'undefined') {
-//           window.ethereum
-//               .request({ method: 'eth_requestAccounts' })
-//               .then(accounts => {
-//                   sendResponse({ success: true, accounts });
-//               })
-//               .catch(error => {
-//                   sendResponse({ success: false, error: error.message });
-//               });
-//       } else {
-//           sendResponse({ success: false, error: 'MetaMask not installed' });
-//       }
-//       // Return true to indicate asynchronous response
-//       return true;
-//   }
-// });   
+// Listen for messages from the injected script
+window.addEventListener('message', function(event) {
+  if (event.source !== window) return;
+
+  if (event.data.type === 'METAMASK_RESULT') {
+    chrome.runtime.sendMessage(event.data);
+  }
+});
+
+// Listen for messages from the background script or popup
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "CRYPTO_ACCOUNT") {
+    // Forward the message to the injected script
+    window.postMessage({ type: 'METAMASK_CONNECT' }, '*');
+  }
+});
