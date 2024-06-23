@@ -4,6 +4,7 @@ import { RiArrowsArrowDropDownFill } from 'solid-icons/ri'
 import { Bookmark } from "../../types/types"
 import Checkbox from "../atoms/checkbox/checkbox";
 import useContent from "../../state/actions/content-actions";
+import { FiBookmark } from 'solid-icons/fi'
 
 interface BookmarkProps {
   row: () => Bookmark
@@ -16,11 +17,13 @@ export const BookmarkRow: Component<BookmarkProps> = (props) => {
 
 
   return (
-    <div class=" py-2 mt-2 px-2 font-bold border-solid border-2 fill-textLight dark:fill-textDark border-textLight dark:border-textDark text-textLight dark:text-textDark rounded-md">
+    <div class=" py-2 mt-2 px-2 font-bold  bookmark-hover cursor-default fill-textLight dark:fill-textDark border-textLight dark:border-textDark text-textLight dark:text-textDark rounded-md">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
+          {props.row().favicon ? <img class=" rounded-full w-4 h-4 mr-2" src={props.row().favicon}/> : 
+            <FiBookmark size={20} class="dark:text-textDark text-textLight mr-2" />}
           <Checkbox check={contentProps.setBookmarkChecked} row={props.row} />
-          <div class="text-primaryButtonLight dark:text-primaryButtonDark ml-2">{props.row().name}</div>
+          <div class="text-primaryButtonLight dark:text-primaryButtonDark ml-2">{props.row().name.slice(0, 23)+'...'}</div>
 
         </div>
         <div class="flex items-center">

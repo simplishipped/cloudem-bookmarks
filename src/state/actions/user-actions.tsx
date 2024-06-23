@@ -260,6 +260,7 @@ const useUser = () => {
           common.setError('Failed to sign up with email', 'globalError');
         }
       } else {
+        //@ts-ignore
         log.error({ function: 'signUpNewUser', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-9' })
         common.setError('Failed to sign up with email', 'globalError');
       }

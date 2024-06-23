@@ -29,10 +29,15 @@ const Home: Component = () => {
   }
 
   onMount(() => {
+    if(window.chrome && window.chrome.bookmarks) {
+      window.chrome.bookmarks.getTree((tree) => {
+        console.log(tree)
+      })
+    }
     props.getUserBookmarks();
     props.getUserCollections()
     if (userProps.user() && userProps.user().start_view && !userProps.initRender()) {
-      navigate('/add-bookmark');
+      navigate('/index.html/add-bookmark');
       userProps.setInitRender(true);
     }
   })

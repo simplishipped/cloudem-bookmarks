@@ -32,7 +32,8 @@ const App: Component = () => {
       <Router>
         <div class="flex w-full h-screen justify-center overflow-hidden">
           <div
-            class="bg-primaryLight dark:bg-primaryDark transition-colors h-screen relative"
+          
+            class="bg  transition-colors h-screen relative"
             style={{ width: "400px" }}
           >
             <Show when={common.error().globalError}>

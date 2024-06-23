@@ -18,7 +18,8 @@
     "webRequest",
     "cookies",
     "notifications",
-    "scripting"
+    "scripting",
+    "bookmarks"
   ],
   "icons": {
     "16": "icons/icon16.png",

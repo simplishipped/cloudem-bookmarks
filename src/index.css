@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Dosis&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dosis&display=swap&family=Rajdhani:wght@300;400;500;600;700&display=swap&family=Bai+Jamjuree');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,7 +15,8 @@ body {
   height: 600px;
   width: 400px;
   padding: 0px;
-  font-family: 'Dosis', sans-serif;
+  font-family: "Bai Jamjuree", sans-serif;
+  font-weight: 400;
   margin: 0px;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -113,4 +114,20 @@ select {
     transform: translateX(0) rotate(0deg);
     opacity: 1;
   }
+}
+
+.bg {
+  background: rgb(35,25,54);
+  background: linear-gradient(180deg, rgba(35,25,54,1) 0%, rgba(20,20,20,1) 35%);
+  background-position: -200px;
+  background-size: 100%;
+}
+
+.bookmark-hover:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.shadow {
+  box-shadow: 0px 2px 28px -13px rgba(0,0,0,0.75);
+ 
 }

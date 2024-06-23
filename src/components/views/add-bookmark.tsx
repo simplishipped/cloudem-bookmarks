@@ -33,6 +33,8 @@ const AddBookmark: Component<{}> = () => {
       const tabs = await chrome.tabs.query({ active: true });
       const url = tabs[0].url;
       const favicon = tabs[0].favIconUrl;
+      const title = tabs[0].title;
+      setName(title)
       setFavicon(favicon);
       setBookmark(url)
     }
