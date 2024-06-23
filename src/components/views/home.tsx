@@ -44,7 +44,7 @@ const Home: Component = () => {
 
 
   return (
-    <div class="px-6 relative">
+    <div class="px-4 relative">
       <Show when={settingsProps.blockchainEnabled() && settingsProps.connectedToBlockchain()}>
         <div class="w-full p-1 flex">
           <div onClick={() => props.setMarksView('collections')}

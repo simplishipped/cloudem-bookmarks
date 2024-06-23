@@ -141,3 +141,8 @@ select {
   transform: translateX(10px);
   transition: all ease-in-out .2s;
 }
+
+.dark .deep-hover-transition-three:hover > div > div:nth-child(2) {
+  transform: translateX(10px);
+  transition: all ease-in-out .2s;
+}

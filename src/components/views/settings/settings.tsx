@@ -26,7 +26,7 @@ const Settings: Component<{}> = () => {
 
 
   return (
-    <div class={`text-textLight dark:text-textDark px-6 pt-2 transition-colors`}>
+    <div class={`text-textLight dark:text-textDark px-4 pt-2 transition-colors`}>
       <Show when={common.error().settingsError}>
         <div class=" w-full flex justify-center">
           <Error close={() => common.setError(null, 'settingsError')} error={common.error().settingsError} />

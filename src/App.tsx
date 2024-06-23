@@ -37,7 +37,7 @@ const App: Component = () => {
             style={{ width: "400px" }}
           >
             <Show when={common.error().globalError}>
-              <div class=" w-full flex justify-center px-6 pt-4">
+              <div class=" w-full flex justify-center px-4 pt-4">
                 <Error close={() => common.setError(null, 'globalError')} error={common.error().globalError} />
               </div>
             </Show>

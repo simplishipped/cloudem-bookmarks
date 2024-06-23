@@ -43,7 +43,7 @@ const Profile: Component<Props> = (props) => {
 
 
   return (
-    <div class="px-6 mt-2">
+    <div class="px-4 mt-2">
       <div class="mt-2">
         <EditableInfoRow title="Username" value={username} setValue={setUsername} editMode={editMode()} />
       </div>

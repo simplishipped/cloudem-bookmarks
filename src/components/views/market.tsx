@@ -37,7 +37,7 @@ const Market: Component = () => {
 
   return (
 
-    <div class="px-6 relative">
+    <div class="px-4 relative">
       <Show when={!props.loading().nftmarks} fallback={<Loader />}>
         <Select value={props.category} setValue={props.setCategory} name="Category" options={categories} />
         <div class="mt-2">

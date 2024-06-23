@@ -58,7 +58,7 @@ const AddBookmark: Component<{}> = () => {
 
 
   return (
-    <div class="px-6 text-textLight dark:text-textDark">
+    <div class="px-4 text-textLight dark:text-textDark">
       <Show when={common.error().addBookmarkError}>
         <div class=" w-full flex justify-center">
           <Error close={() => common.setError(null, 'addBookmarkError')} error={common.error().addBookmarkError} />

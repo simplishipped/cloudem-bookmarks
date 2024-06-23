@@ -11,7 +11,7 @@ const Networks: Component<NetworksProps> = ({ }) => {
     return <SettingsRow name={network} />
   })
   return (
-    <div class={`text-textLight dark:text-textDark px-6 pt-2 transition-colors`}>
+    <div class={`text-textLight dark:text-textDark px-4 pt-2 transition-colors`}>
       {networksMap}
     </div>
   )
