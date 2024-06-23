@@ -33,7 +33,7 @@ const App: Component = () => {
         <div class="flex w-full h-screen justify-center overflow-hidden">
           <div
           
-            class="bg  transition-colors h-screen relative"
+            class="bg-gradient-to-b from-lightCompliment to-primaryLight  dark:bg-gradient-to-b dark:from-darkCompliment dark:to-primaryDark to-20% transition-colors h-screen relative"
             style={{ width: "400px" }}
           >
             <Show when={common.error().globalError}>

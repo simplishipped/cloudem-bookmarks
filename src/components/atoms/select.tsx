@@ -53,7 +53,7 @@ const Select: Component<SelectProps> = (props) => {
   let ChoiceElement = (choice: any) => {
     return (
       <div
-        class="hover:bg-primaryLight select-none dark:hover:bg-primaryDark cursor-pointer rounded-md text-textLight dark:text-textDark  mt-2 w-full flex items-center justify-between" style={{ padding: '8px 8px 10px 8px' }}>
+        class="dark:hover:text-secondaryButtonDark btn-hover-one deep-hover-transition-two  select-none  cursor-pointer rounded-lg text-textLight dark:text-textDark  mt-2 w-full flex items-center justify-between" style={{ padding: '8px 8px 10px 8px' }}>
         <div onClick={() => makeChoice(choice)} class="w-5/6">{capitalizeFirstLetter(choice.name)}</div>
         <Show when={props.deleteOp}>
           <OcTrash2 onClick={() => props.deleteOp && props.deleteOp(choice)} size="18" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
@@ -63,7 +63,8 @@ const Select: Component<SelectProps> = (props) => {
   }
 
   let choicesMap =
-    <div style={{ height: 'calc(100vh - 230px)', 'z-index': 50, transform: 'translateX(-50%)' }} class="left-1/2 absolute dark:bg-secondaryDark flex-col overflow-auto w-10/12 px-3 pb-3 mt-2 rounded-md shadow-xl dark:border-textDark text-textLight dark:text-textDark">
+    <div style={{ height: 'calc(100vh - 230px)', 'z-index': 50, transform: 'translateX(-50%)' }} 
+    class="left-1/2 absolute bg-primaryLight dark:bg-secondaryDark flex-col overflow-auto w-10/12 px-3 pb-3 mt-2 rounded-md shadow-lg dark:border-textDark text-textLight dark:text-textDark">
       {choices().map((choice: any) => {
         return ChoiceElement(choice)
       })}
@@ -77,7 +78,7 @@ const Select: Component<SelectProps> = (props) => {
 
   return (
     <>
-      <div onClick={showOptions} class="inner-shadow select-none relative mt-2 shadow text-textLight dark:text-textDark p-2 flex justify-center rounded-md cursor-pointer ">
+      <div onClick={showOptions} class="select-none relative mt-2 shadow  text-textLight dark:text-textDark p-2 flex justify-center rounded-md cursor-pointer ">
         <input ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} border-0 bg-transparent w-full active:border-0 focus:border-0 pl-2 text-center outline-none`} value={search()} type="text" />
         <Show when={!showChoices()}>
           <div style={{ 'margin-left': '6.5px' }} class="absolute">{capitalizeFirstLetter(props.value())}</div>

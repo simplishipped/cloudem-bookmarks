@@ -21,10 +21,10 @@ const Footer = () => {
         <div class="cursor-pointer text-textLight dark:text-textDark">
           {location.pathname !== '/index.html' ?
             <A href="/index.html" title="Back to Home" >
-              <IoChevronUp size="28" class="text-primaryButtonLight dark:text-primaryButtonDark" />
+              <IoChevronUp size="28" class="text-textLight dark:text-textDark" />
             </A> :
             <A href="/index.html/add-bookmark" title="Add Bookmark" >
-              <AiOutlinePlusCircle size="28" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
+              <AiOutlinePlusCircle size="28" class="fill-textLight dark:fill-textDark" />
             </A>}
         </div>
       </div>

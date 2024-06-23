@@ -23,9 +23,9 @@ const Input: Component<InputProps> = ({ name, value, setValue, placeholder, type
   })
   return (
     //@ts-ignore
-    <input ref={input} onBlur={onBlur} autofocus={autofocus} type={type} placeholder={placeholder} class={`${absolute ? 'absolute' : ''} dark:border-textDark border-textLight border-2 border-solid
-    dark:bg-primaryDark bg-primaryLight focus:bg-secondaryLight dark:focus:bg-secondaryDark p-2 flex font-bold w-full rounded-md 
-    hover:dark:bg-secondaryDark hover:bg-secondaryLight dark:text-textDark text-textLight dark:autofill:bg-primaryDark autofill:bg-primaryLight`} name={name} value={value()} onInput={(e) => setValue((e.target as HTMLInputElement).value)} />
+    <input ref={input} onBlur={onBlur} autofocus={autofocus} type={type} placeholder={placeholder} class={`${absolute ? 'absolute' : ''} 
+     p-2 pl-4 flex font-bold w-full rounded-3xl bg-transparent focus:border-none active:border-none
+     dark:text-textDark text-textLight dark:autofill:bg-primaryDark autofill:bg-primaryLight`} name={name} value={value()} onInput={(e) => setValue((e.target as HTMLInputElement).value)} />
   )
 };
 

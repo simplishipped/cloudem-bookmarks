@@ -21,7 +21,7 @@ const Checkbox: Component<CheckboxProps> = (props) => {
   return (
     <div class="checkbox-wrapper" style={{'margin-top': '-6px'}}>
       <input onChange={handleCheck} checked={props.row().checked} id={'cbx'+props.row().id} type="checkbox" />
-      <label class="cbx border-2 dark:border-textDark" for={'cbx'+props.row().id}></label>
+      <label class="cbx border-2 dark:border-textDark border-textLight" for={'cbx'+props.row().id}></label>
     </div>
   );
 };
