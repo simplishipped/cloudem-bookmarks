@@ -24,6 +24,7 @@ let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
 let nftCategory: string = 'Default';
 let collection: string = 'Default'
+let newCollectionParentId: number | undefined;
 let newCollection: string = 'Default'
 let globalLoader: boolean = false;
 let chainName: string = 'ethereum';
@@ -78,6 +79,7 @@ const [state, setState] = createStore({
     addBookmarkNotification: null,
     homeNotification: null
   },
+  newCollectionParentId
   
 });
 

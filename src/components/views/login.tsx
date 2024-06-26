@@ -80,10 +80,12 @@ const Login: Component<{}> = () => {
       </Show>
 
       <Show when={signUp()} fallback={
-        <h1 onClick={() => setSignUp(true)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-textDark text-textLight text-md">Are you new?
+        <h1 onClick={() => setSignUp(true)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-primaryButtonDark text-primaryButtonLight text-md">Are you new?
           <span class="text-white">&nbsp;Sign Up!</span></h1>
       }>
-        <h1 onClick={() => setSignUp(false)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-white text-textLight text-md">Sign In</h1>
+        <h1 onClick={() => setSignUp(false)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-primaryButtonDark text-primaryButtonLight text-md">Already a member?
+          <span class="text-white">&nbsp;Sign In!</span>
+        </h1>
       </Show>
     </div>
   );

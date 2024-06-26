@@ -26,7 +26,7 @@ const AddBookmark: Component<{}> = () => {
   //   }
   // })
   //@ts-ignore
-  async function getUrl () {
+  async function getUrl() {
     //@ts-ignore
     if (window && window.chrome) {
       //@ts-ignore
@@ -44,14 +44,14 @@ const AddBookmark: Component<{}> = () => {
     getUrl()
   });
 
-  const addBookmark = async () => {  
+  const addBookmark = async () => {
     //@ts-ignore
-    props.addBookmark({ 
-      name: name(), 
-      url: bookmark(), 
-      collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(), 
+    props.addBookmark({
+      name: name(),
+      url: bookmark(),
+      collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(),
       user_id: userProps.user().id,
-      favicon: favicon() 
+      favicon: favicon()
     });
     navigate('/index.html');
   }
@@ -64,7 +64,8 @@ const AddBookmark: Component<{}> = () => {
           <Error close={() => common.setError(null, 'addBookmarkError')} error={common.error().addBookmarkError} />
         </div>
       </Show>
-      <Select value={props.newCollection} setValue={props.setNewCollection} name="Category" options={props.collections} />
+      <Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection} 
+      name="Category" options={props.collections} />
 
       <div class="mt-4">
         <Input value={name} name="NFTmarkName" placeholder="Bookmark Name" setValue={setName} />
@@ -73,9 +74,11 @@ const AddBookmark: Component<{}> = () => {
         <Input value={bookmark} name="NFTmarkName" placeholder="Bookmark" setValue={setBookmark} />
       </div>
       <div class="mt-4">
-        <button id="nft-mark" class={`dark:border-textDark 
+        <div class="px-1">
+          <button id="nft-mark" class={`dark:border-textDark 
     dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-2 font-bold w-full items-center rounded-md text-center 
     hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight`} name="NFTmarkName" onClick={addBookmark}>Save</button>
+        </div>
       </div>
     </div>);
 };

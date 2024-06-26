@@ -1,5 +1,5 @@
 import { useSelector } from "../../store";
-import { Bookmark, Nftmark } from "../../types/types";
+import { Bookmark, Nftmark, SelectChoice } from "../../types/types";
 import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
@@ -22,6 +22,7 @@ const useContent = () => {
   const startView = () => app.state.startView;
   const newCollection = () => app.state.newCollection;
   const user = () => app.state.user
+  const newCollectionParentId = () => app.state.newCollectionParentId
 
   const common = useCommon();
 
@@ -176,7 +177,7 @@ const useContent = () => {
     if (collections().length === 0) {
       setLoading('collections', true);
       let collections: any = [];
-      if(user().email) {
+      if (user().email) {
         collections = await bookmarksApi.getCollectionsByUser(user().id);
       } else {
         collections = await bookmarksApi.getCollectionsByUserWalletAddr(user().walletaddr_arb);
@@ -252,6 +253,14 @@ const useContent = () => {
     })
   }
 
+  const setNewCollectionParentId = (id: number) => {
+    setState(() => {
+      return {
+        ...app.state, newCollectionParentId
+          : id
+      }
+    })
+  }
   // const setLoading = app.setLoading;
 
   return {
@@ -284,8 +293,9 @@ const useContent = () => {
     setNewCollection,
     newCollection,
     getUserCollections,
-    deleteCollection
-
+    deleteCollection,
+    setNewCollectionParentId,
+    newCollectionParentId
   };
 };
 
