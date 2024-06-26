@@ -4,7 +4,8 @@ import capitalizeFirstLetter from "../../util/capitalize-word";
 import { OcTrash2 } from 'solid-icons/oc';
 import { FaSolidPlus } from 'solid-icons/fa';
 import { IoCloseOutline } from 'solid-icons/io';
-import { IoChevronBack } from 'solid-icons/io'
+import { IoChevronBack } from 'solid-icons/io';
+import { TbSubtask } from 'solid-icons/tb'
 
 interface SelectProps {
   options: () => any[],
@@ -13,7 +14,7 @@ interface SelectProps {
   setValue: (value: string) => void
   color?: string,
   loading?: boolean,
-  deleteOp?: (collection: any) => Promise<void>
+  deleteOp?: (collection: any) => Promise<boolean>
   enablePlus?: boolean,
   setParentValueId?: (id: number | undefined) => void
   collectionParentId?: number | undefined
@@ -24,19 +25,27 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   const [search, setSearch] = createSignal("");
   const [choices, setChoices] = createSignal(props.options());
   const [selectedPath, setSelectedPath] = createSignal<string[]>([]);
+  const [focusedChoice, setFocusedChoice] = createSignal<number>();
+
   let input: any;
 
   const makeChoice = (value: any) => {
-    if(value.children && value.children.length > 0) {
-      setSelectedPath([...selectedPath(), value.name]);
-      filterChoices();
-    } else {
-      props.setValue(value.name);
-      setShowChoices(false);
-      // setSelectedPath([]);
-    }
-    }
- 
+    props.setValue(value.name);
+    setShowChoices(false);
+    // if (value.children && value.children.length > 0) {
+    //   setSelectedPath([...selectedPath(), value.name]);
+    //   filterChoices();
+    // } else {
+    //   props.setValue(value.name);
+    //   setShowChoices(false);
+    //   // setSelectedPath([]);
+    // }
+  }
+
+  const lookIntoSubCollection = (value: any) => {
+    setSelectedPath([...selectedPath(), value.name]);
+    filterChoices();
+  }
 
   const showOptions = () => {
     setShowChoices(!showChoices());
@@ -58,10 +67,10 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
       }
     });
 
-    const filteredChoices = currentChoices.filter((choice: any) => 
+    const filteredChoices = currentChoices.filter((choice: any) =>
       choice.name.toLowerCase().includes(search().toLowerCase())
     );
-    
+
     setChoices(filteredChoices);
   }
 
@@ -103,49 +112,28 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
     filterChoices();
   }
 
-  const deleteCollections = (choice:any) => {
-    props.deleteOp && props.deleteOp(choice);
-
+  const deleteCollection = async (choice: any) => {
+    if (props.deleteOp) {
+      let done = await props.deleteOp(choice);
+      if (done && props.value() === choice.name) {
+        props.setValue(selectedPath()[0]);
+      }
+    }
   }
-
-  const ChoiceElement = (choice: any, index: number) => {
-    return (
-      <div
-        class="dark:hover:text-secondaryButtonDark btn-hover-one deep-hover-transition-two select-none cursor-pointer rounded-lg text-textLight dark:text-textDark mt-2 w-full flex items-center justify-between"
-        style={{ padding: '8px 8px 10px 8px' }}>
-        <div onClick={() => makeChoice(choice)} class="w-5/6">
-          {capitalizeFirstLetter(choice.name)} {choice.children.length > 0 ? `(${choice.children.length})` : ""}
-        </div>
-        <Show when={props.deleteOp}>
-          <OcTrash2 onClick={() => props.deleteOp && props.deleteOp(choice)} size="18" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
-        </Show>
-        <Show when={!props.deleteOp && choice.children}>
-          <button onClick={() => createSubCollection(choice)} title="New Sub Collection" >
-            <FaSolidPlus size="18" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
-          </button>
-        </Show>
-      </div>
-    )
-  }
-
-  const choicesMap = (
-    <div style={{ height: 'calc(100vh - 230px)', 'z-index': 50, transform: 'translateX(-50%)' }}
-      class="left-1/2 absolute bg-primaryLight dark:bg-secondaryDark flex-col overflow-auto w-11/12 px-3 pb-3 mt-2 rounded-md shadow-lg dark:border-textDark text-textLight dark:text-textDark">
-   
-      {choices().map((choice: any, ind: number) => {
-        return ChoiceElement(choice, ind)
-      })}
-    </div>
-  );
 
   const onEnter = (e: any) => {
-    console.log('wtf', search())
+    const options = props.options();
+    const focusedChoiceIndex = options.findIndex(option => option.id === focusedChoice);
     if (e.key === 'Enter' || e.key === 'Tab') {
       makeChoice({ name: search() });
     } else if (e.key === 'ArrowDown') {
-
+      let nextIndex = (focusedChoiceIndex + 1) % options.length;
+      let nextId = options[nextIndex].id;
+      setFocusedChoice(nextId);
     } else if (e.key === 'ArrowUp') {
-
+      let prevIndex = (focusedChoiceIndex - 1 + options.length) % options.length;
+      let prevId = options[prevIndex].id;
+      setFocusedChoice(prevId);
     } else {
       if (e.key === 'Backspace' && search().includes('>')) {
         let lastCharacterIsArrow = search().slice(search().length - 3, search().length - 1) === ' >';
@@ -156,16 +144,56 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
     }
   }
 
-  console.log
+
+  const ChoiceElement = (choice: any, index: number) => {
+    return (
+      <button
+        tabIndex={2}
+        class={`${choice.id === focusedChoice() ? 'active-btn' : ''} dark:hover:text-secondaryButtonDark btn-hover-one deep-hover-transition-two 
+    select-none cursor-pointer rounded-lg text-textLight dark:text-textDark mt-2 w-full flex items-center justify-between text-left`}
+        style={{ padding: '8px 8px 10px 8px' }}>
+        <div onClick={() => makeChoice(choice)} class={`w-5/6 ${choice.id === focusedChoice() ? 'translate-x-3 transition-transform' : ''}`}>
+          {capitalizeFirstLetter(choice.name)} {choice.children && choice.children.length > 0 ? `(${choice.children.length})` : ""}
+        </div>
+        <Show when={choice.children && choice.children.length > 0}>
+          <button class="mr-2" onClick={() => lookIntoSubCollection(choice)} title="Sub Collections" >
+            <TbSubtask size="20" class="text-primaryButtonLight dark:text-primaryButtonDark dark:hover:text-textDark hover:text-textLight" />
+          </button>
+        </Show>
+        <Show when={props.deleteOp}>
+          <OcTrash2 onClick={() => deleteCollection(choice)} size="18" class="dark:hover:fill-textDark hover:fill-textLight fill-primaryButtonLight dark:fill-primaryButtonDark" />
+        </Show>
+
+        <Show when={!props.deleteOp && choice.children}>
+          <button onClick={() => createSubCollection(choice)} title="New Sub Collection" >
+            <FaSolidPlus size="18" class="fill-primaryButtonLight dark:fill-primaryButtonDark dark:hover:fill-textDark hover:fill-textLight" />
+          </button>
+        </Show>
+
+      </button>
+
+    )
+  }
+
+  const choicesMap = (
+    <div style={{ height: 'calc(100vh - 230px)', 'z-index': 50, transform: 'translateX(-50%)' }}
+      class="left-1/2 absolute bg-primaryLight dark:bg-secondaryDark flex-col overflow-auto w-11/12 px-3 pb-3 mt-2 rounded-md shadow-lg dark:border-textDark text-textLight dark:text-textDark">
+
+      {choices().map((choice: any, ind: number) => {
+        return ChoiceElement(choice, ind)
+      })}
+    </div>
+  );
+
 
   return (
     <>
       <div onClick={showOptions} class="select-none relative mt-2 shadow text-textLight dark:text-textDark p-2 flex justify-center rounded-md cursor-pointer ">
-      <Show when={selectedPath().length > 0 && showChoices()}>
-        <IoChevronBack onClick={goBack} size="20" class="absolute left-8 transform -translate-x-full top-1/2 -translate-y-1/2 fill-primaryButtonLight dark:fill-primaryButtonDark" />
-      
-      </Show>
-        <input ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} border-0 bg-transparent w-full active:border-0 focus:border-0 pl-2 text-center outline-none`} value={search()} type="text" />
+        <Show when={selectedPath().length > 0 && showChoices()}>
+          <IoChevronBack onClick={goBack} size="20" class="absolute left-8 transform -translate-x-full top-1/2 -translate-y-1/2 fill-primaryButtonLight dark:fill-primaryButtonDark" />
+
+        </Show>
+        <input onFocus={() => setShowChoices(true)} ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} border-0 bg-transparent w-full active:border-0 focus:border-0 pl-2 text-center outline-none`} value={search()} type="text" />
         <Show when={!showChoices()}>
           <div style={{ 'margin-left': '6.5px' }} class="absolute">{capitalizeFirstLetter(props.value())}</div>
         </Show>

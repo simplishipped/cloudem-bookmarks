@@ -14,6 +14,7 @@ const useContent = () => {
   const loading = () => app.state.loading;
   const marksView = () => app.state.marksView;
   const collection = () => app.state.collection;
+  const initCollections = () => app.state.initCollections;
   const collections = () => app.state.collections;
   const markToMint = () => app.state.markToMint;
   const nftmarkName = () => app.state.nftmarkName;
@@ -107,8 +108,8 @@ const useContent = () => {
           if (bk.data) {
             setState(() => {
               return {
-                ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collections: [newCollection.data, ...app.state.collections],
-                collection: bookmark.collection
+                ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collections: organizeCollectionsWithSubs([newCollection.data, ...initCollections()]),
+                collection: bookmark.collection, initCollections: [newCollection.data, ...initCollections()]
               }
             })
             return true;
@@ -241,10 +242,10 @@ const useContent = () => {
       if (collections.data) {
         const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
         setState(() => {
-          return { ...app.state, collections: collectionsOrganized }
+          return { ...app.state, collections: collectionsOrganized, initCollections: collections.data }
         })
       } else {
-        common.setError('Failed get user collections', 'homeError');
+        common.setError('Failed get user collections', 'globalError');
         log.error({ function: 'getUserCollections', error: 'Failed to fetch collections', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-8' });
       }
     }
@@ -254,16 +255,21 @@ const useContent = () => {
     try {
       const res = await bookmarksApi.deleteCollection(collection.id);
       if (!res.error) {
+        let removedFromCollections = initCollections().filter(c => c.id !== collection.id);
+        let reorganized = organizeCollectionsWithSubs(removedFromCollections);
         setState(() => {
-          return { ...app.state, collections: app.state.collections.filter(c => c.name !== collection.name) }
+          return { ...app.state, collections: reorganized}
         })
+        return true;
       } else {
-        common.setError('Failed to delete collection', 'HomeError');
+        common.setError('Failed to delete collection', 'globalError');
         log.error({ function: 'deleteCollection', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-9' });
+        return false;
       }
     } catch (error) {
-      common.setError('Failed to delete collection', 'HomeError');
+      common.setError('Failed to delete collection', 'globalError');
       log.error({ function: 'deleteCollection', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-10' });
+      return false;
     }
   }
 

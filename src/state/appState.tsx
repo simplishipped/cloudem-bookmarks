@@ -35,6 +35,8 @@ let search: string = '';
 let checkedBookmarks: number[] = [] // has ids of all bookmarks to delete
 let initRender: boolean = false;
 let collections: Collection[] = [];
+let initCollections: Collection[] = [];
+
 
 
 const [state, setState] = createStore({
@@ -65,6 +67,7 @@ const [state, setState] = createStore({
   checkedBookmarks,
   initRender,
   collections,
+  initCollections,
   newCollection,
   errorRetries,
   error: {
