@@ -20,6 +20,18 @@ const useCommon = () => {
         }
       }
     })
+
+    setTimeout(() => {
+      setState(() => {
+        return {
+          ...app.state,
+          error: {
+            ...app.state.error,
+            [type]: ''
+          }
+        }
+      })
+    }, 2000)
   }
 
   const setGlobalLoader = (bool: boolean) => {

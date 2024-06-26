@@ -1,4 +1,4 @@
-import { Bookmark, Nftmark } from "../types/types"
+import { Bookmark, Collection, Nftmark } from "../types/types"
 import supabase from "./supabase";
 // const url = 'http://localhost:9000/bookmark';
 
@@ -38,8 +38,8 @@ const getCollectionsByUserWalletAddr = async (walletaddr: string) => {
   return data ? { data: data } : { error };
 }
 
-const createCollection = async (name: string, userId: string) => { 
-  const { data, error }  = await supabase.from('collections').insert({ name, user_id: userId }).select('*');
+const createCollection = async (collection: Collection) => { 
+  const { data, error }  = await supabase.from('collections').insert(collection).select('*');
   return data ? { data: data[0] } : { error };
 }
 

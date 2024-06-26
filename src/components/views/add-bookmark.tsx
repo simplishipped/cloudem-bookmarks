@@ -46,14 +46,18 @@ const AddBookmark: Component<{}> = () => {
 
   const addBookmark = async () => {
     //@ts-ignore
-    props.addBookmark({
+    const done = await props.addBookmark({
       name: name(),
       url: bookmark(),
       collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(),
       user_id: userProps.user().id,
       favicon: favicon()
     });
-    navigate('/index.html');
+    console.log(done)
+    if (done) {
+      navigate('/index.html');
+
+    }
   }
 
 
@@ -64,8 +68,8 @@ const AddBookmark: Component<{}> = () => {
           <Error close={() => common.setError(null, 'addBookmarkError')} error={common.error().addBookmarkError} />
         </div>
       </Show>
-      <Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection} 
-      name="Category" options={props.collections} />
+      <Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection}
+        name="Category" options={props.collections} />
 
       <div class="mt-4">
         <Input value={name} name="NFTmarkName" placeholder="Bookmark Name" setValue={setName} />

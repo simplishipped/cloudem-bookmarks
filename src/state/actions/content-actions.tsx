@@ -1,5 +1,5 @@
 import { useSelector } from "../../store";
-import { Bookmark, Nftmark, SelectChoice } from "../../types/types";
+import { Bookmark, Collection, Nftmark, SelectChoice } from "../../types/types";
 import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
@@ -73,12 +73,34 @@ const useContent = () => {
     try {
       const collections = await bookmarksApi.getCollectionsByUser(bookmark.user_id);
       let exists = false;
+      let collectionName: string;
+      if (newCollectionParentId()) {
+        collectionName = bookmark.collection.split('>')[1].trim()
+        bookmark.collection = collectionName
+      }
       if (collections.data) {
         //@ts-ignore
         exists = collections.data.find(c => c.name.toLowerCase() === bookmark.collection.toLowerCase());
       }
       if (!exists) {
-        const newCollection = await bookmarksApi.createCollection(bookmark.collection, bookmark.user_id);
+        let newCollection: any;
+        if (!newCollectionParentId()) {
+          let collection = {
+            name: bookmark.collection,
+            user_id: bookmark.user_id,
+            is_root: true
+          }
+          collectionName = bookmark.collection;
+          newCollection = await bookmarksApi.createCollection(collection);
+        } else {
+          let collection = {
+            name: bookmark.collection,
+            user_id: bookmark.user_id,
+            is_root: false,
+            parent_id: newCollectionParentId()
+          }
+          newCollection = await bookmarksApi.createCollection(collection);
+        }
         if (newCollection.data) {
           const bk = await bookmarksApi.addBookmark(bookmark);
           if (bk.data) {
@@ -88,32 +110,64 @@ const useContent = () => {
                 collection: bookmark.collection
               }
             })
+            return true;
+
           } else {
             common.setError('Failed to add bookmark', 'addBookmarkError');
             log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-1' });
+            return false;
           }
 
         } else {
           common.setError('Failed to add bookmark', 'addBookmarkError');
           log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-2' });
+          return false;
         }
 
       } else {
-        const bk = await bookmarksApi.addBookmark(bookmark);
-        if (bk.data) {
-          setState(() => {
-            return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: bk.data.collection }
-          })
+
+        //@ts-ignore
+        if (exists && !newCollectionParentId) {
+          common.setError('Collection already exists.', 'addBookmarkError');
+          //@ts-ignore
+        } else if (exists && newCollectionParentId()) {
+          //@ts-ignore
+          if (exists.parent_id === newCollectionParentId() && collectionName === exists.name) {
+            common.setError('Collection already exists.', 'globalError')
+          } else {
+            const bk = await bookmarksApi.addBookmark(bookmark);
+            if (bk.data) {
+              setState(() => {
+                return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: bk.data.collection }
+              })
+              return true;
+            } else {
+              common.setError('Failed to add bookmark', 'addBookmarkError');
+              log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-3' });
+              return false;
+            }
+          }
         } else {
-          common.setError('Failed to add bookmark', 'addBookmarkError');
-          log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-3' });
+          const bk = await bookmarksApi.addBookmark(bookmark);
+          if (bk.data) {
+            setState(() => {
+              return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: bk.data.collection }
+            })
+            return true;
+          } else {
+            common.setError('Failed to add bookmark', 'addBookmarkError');
+            log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-3' });
+            return false;
+          }
         }
+
       }
 
 
     } catch (error) {
       common.setError('Failed to add bookmark', 'addBookmarkError');
       log.error({ function: 'addBookmark', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-4' });
+      return false; 
 
     }
   }

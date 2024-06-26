@@ -16,7 +16,7 @@ interface SelectProps {
   loading?: boolean,
   deleteOp?: (collection: any) => Promise<void>
   enablePlus?: boolean,
-  setParentValueId?: (id: number) => void
+  setParentValueId?: (id: number | undefined) => void
   collectionParentId?: number | undefined
 }
 
@@ -60,6 +60,14 @@ const Select: Component<SelectProps> = (props) => {
       props.setValue(value.name);
       setSearch(capitalizeFirstLetter(value.name) + ' > ');
       props.setParentValueId(value.id)
+      input.focus();
+    }
+  }
+  const cancelSubCollection = (value: any) => {
+    if(props.setParentValueId) {
+      props.setParentValueId(undefined);
+      props.setValue('');
+      setSearch('');
       input.focus();
     }
   }
@@ -113,8 +121,9 @@ const Select: Component<SelectProps> = (props) => {
         <Show when={!showChoices()}>
           <div style={{ 'margin-left': '6.5px' }} class="absolute">{capitalizeFirstLetter(props.value())}</div>
         </Show>
+        
         <Show when={props.collectionParentId !== undefined}>
-          {props.collectionParentId() ? <IoCloseOutline size={20} class="absolute right-10 top-1/2 -translate-y-1/2 z-0 cursor-pointer" /> : false}
+          {props.collectionParentId() ? <IoCloseOutline onClick={cancelSubCollection} size={20} class="absolute right-10 top-1/2 -translate-y-1/2 z-0 cursor-pointer" /> : false}
 
         </Show>
         <RiArrowsArrowDropDownFill size={30} class="absolute right-2 top-1/2 -translate-y-1/2 z-0" />
