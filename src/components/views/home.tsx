@@ -1,6 +1,6 @@
 import { Component, Show, createEffect, onMount, on } from "solid-js";
 import { RowList } from "../organisms/row-list";
-import Select from "../atoms/select";
+import Select from "../molecules/sub-choices-select";
 import useContent from "../../state/actions/content-actions";
 import Login from "./login";
 import Loader from "../atoms/loader/loader";

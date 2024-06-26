@@ -4,6 +4,7 @@ import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
 import capitalizeFirstLetter from "../../util/capitalize-word";
+import organizeCollectionsWithSubs from "../../util/organizeCollections";
 
 const useContent = () => {
   const { app } = useSelector();
@@ -238,8 +239,9 @@ const useContent = () => {
       }
       setLoading('collections', false);
       if (collections.data) {
+        const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
         setState(() => {
-          return { ...app.state, collections: collections.data }
+          return { ...app.state, collections: collectionsOrganized }
         })
       } else {
         common.setError('Failed get user collections', 'homeError');

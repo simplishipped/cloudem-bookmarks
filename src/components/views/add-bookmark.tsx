@@ -1,6 +1,6 @@
 import { Component, createEffect, createSignal, onMount, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import Select from "../atoms/select";
+import Select from "../molecules/sub-choices-select";
 import Input from '../atoms/input';
 import useContent from "../../state/actions/content-actions";
 import useCommon from "../../state/actions/common-actions";
@@ -68,6 +68,7 @@ const AddBookmark: Component<{}> = () => {
           <Error close={() => common.setError(null, 'addBookmarkError')} error={common.error().addBookmarkError} />
         </div>
       </Show>
+      {/*@ts-ignore*/}
       <Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection}
         name="Category" options={props.collections} />
 

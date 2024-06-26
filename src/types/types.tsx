@@ -36,9 +36,10 @@ export interface Nftmark {
 export interface Collection {
   name: string
   id?: number
-  user_id: string,
+  user_id: string
   parent_id?: number
   is_root?: boolean
+  has_children?: boolean
 }
 
 export interface Log {
