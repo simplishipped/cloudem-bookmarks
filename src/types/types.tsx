@@ -14,11 +14,12 @@ export interface SelectChoice {
 export interface Bookmark {
   name: string
   url: string
-  id: number
+  id?: number
   collection: string
   user_id: string
   checked?: boolean,
   favicon?: string
+  collection_id?: number,
 }
 
 export interface Nftmark {

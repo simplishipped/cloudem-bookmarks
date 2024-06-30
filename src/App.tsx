@@ -18,6 +18,7 @@ import Error from "./components/atoms/error";
 import AreYouSure from "./components/views/arey-you-sure.tsx/are-you-sure";
 import ExportImport from "./components/views/settings/export-import";
 import Profile from "./components/views/profile";
+import Sync from "./components/views/settings/sync";
 
 const App: Component = () => {
   const common = useCommon();
@@ -53,6 +54,8 @@ const App: Component = () => {
                   <Route path="/index.html/mint" component={Mint} />
                   <Route path="/index.html/account/export-import" component={ExportImport} />
                   <Route path="/index.html/account/profile" component={Profile} />
+                  <Route path="/index.html/account/sync" component={Sync} />
+
                 </Routes>
               </Show>
             </Show>

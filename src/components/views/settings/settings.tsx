@@ -18,6 +18,7 @@ import { RiMediaPlayListAddFill } from 'solid-icons/ri'
 import useSettings from "../../../state/actions/settings-actions";
 import useCommon from "../../../state/actions/common-actions";
 import Error from "../../atoms/error";
+import { IoSyncCircleOutline } from 'solid-icons/io'
 
 const Settings: Component<{}> = () => {
   const { theme, setTheme } = useTheme();
@@ -40,6 +41,8 @@ const Settings: Component<{}> = () => {
         <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       </Show>
       <SettingsNavRow navTo={'/index.html/account/export-import'} title="Export/Import" Icon={ImCloudDownload} />
+      <SettingsNavRow navTo={'/index.html/account/sync'} title="Sync Bookmarks" Icon={IoSyncCircleOutline} />
+
 
     </div>
   );

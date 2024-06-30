@@ -169,7 +169,7 @@ const useContent = () => {
     } catch (error) {
       common.setError('Failed to add bookmark', 'addBookmarkError');
       log.error({ function: 'addBookmark', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-4' });
-      return false; 
+      return false;
 
     }
   }
@@ -258,7 +258,7 @@ const useContent = () => {
         let removedFromCollections = initCollections().filter(c => c.id !== collection.id);
         let reorganized = organizeCollectionsWithSubs(removedFromCollections);
         setState(() => {
-          return { ...app.state, collections: reorganized}
+          return { ...app.state, collections: reorganized }
         })
         return true;
       } else {
@@ -272,6 +272,64 @@ const useContent = () => {
       return false;
     }
   }
+
+  async function syncBookmarksToDatabase() {
+    let bookmarkTreeNodes: any;;
+    if(window.chrome){
+      bookmarkTreeNodes = await window.chrome.bookmarks.getTree();
+    } else {
+    }
+    async function processNode(node:any, parentCollectionId?:number, collectionName?: string) {
+      if (node.children) {
+        // It's a folder, create a collection
+        let collectionName = node.title.toLowerCase();
+  
+        // Check if collection already exists (case-insensitive)
+        const existingCollections = await bookmarksApi.getCollectionsByUser(user().id);
+        let collectionId = null;
+        let existingCollection
+        if(existingCollections.data) { 
+          existingCollection = existingCollections.data.find(
+            (c) => c.name.toLowerCase() === collectionName && c.parent_id === parentCollectionId
+          );
+        }
+        if (!existingCollection) {
+          const collection = {
+            name: node.title,
+            parent_id: parentCollectionId,
+            user_id: user().id,
+          };
+          const createdCollection = await bookmarksApi.createCollection(collection);
+          collectionId = createdCollection.data.id;
+        } else {
+          collectionId = existingCollection.id;
+          collectionName = existingCollection.data.name;
+        }
+  
+        // Process children
+        for (const childNode of node.children) {
+          await processNode(childNode, collectionId, collectionName);
+        }
+      } else {
+        // It's a bookmark item, add it to the collection
+        const bookmark = {
+          name: node.title,
+          url: node.url,
+          collection_id: parentCollectionId,
+          collection: collectionName,
+          user_id: user().id,
+        };
+        //@ts-ignore
+        await bookmarksApi.addBookmark(bookmark);
+      }
+    }
+  
+    // Process the top-level nodes
+    for (const node of bookmarkTreeNodes) {
+      await processNode(node);
+    }
+  }
+  
 
   const setCategory = (category: string) => {
     setState(() => {
@@ -357,7 +415,8 @@ const useContent = () => {
     getUserCollections,
     deleteCollection,
     setNewCollectionParentId,
-    newCollectionParentId
+    newCollectionParentId,
+    syncBookmarksToDatabase,
   };
 };
 

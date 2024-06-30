@@ -65,6 +65,10 @@ const disableBlockchain = async (id: number) => {
   return response;
 }
 
+const getUserByEmail = async (email: string) => {
+  const { data, error } = await supabase.from('profiles').select('*').eq('email', email).single();
+  return data ? { data: data } : { error };
+}
 
 
 export default {
@@ -76,5 +80,6 @@ export default {
   createUser,
   signUpUser,
   signInUser,
-  updateAuth
+  updateAuth,
+  getUserByEmail
 }

@@ -1,5 +1,5 @@
 import { useSelector } from "../../store";
-import { ethers } from "ethers";
+import { ethers, id } from "ethers";
 import userApi, { getUserByWalletAddr } from "../../api/user-api";
 import useCommon from "./common-actions";
 import { User } from "../../types/types";
@@ -233,7 +233,6 @@ const useUser = () => {
     // common.setGlobalLoader(true);
     const { data, error } = await userApi.createUser({ email, id });
     if (data) {
-      console.log('bruh', data)
       return data
     } else {
       return false
@@ -241,41 +240,39 @@ const useUser = () => {
     }
   }
 
-  async function signUpNewUser(id: string, email: string, password: string | null, confirmPassword: string | null) {
+  async function signUpNewUser(email: string, password: string | null, confirmPassword: string | null) {
     try {
-      //if (email && password && confirmPassword) {
-      // if (password === confirmPassword) {
-      common.setGlobalLoader(true);
+      if (email && password && confirmPassword) {
+        if (password === confirmPassword) {
+          common.setGlobalLoader(true);
+          const userExists = await userApi.getUserByEmail(email);
+          if (userExists.data) {
+            common.setGlobalLoader(false);
+            common.setError('User already exists', 'globalError');
+            return false;
+          }
+          const { data, error } = await userApi.signUpUser(email, password);
+          common.setGlobalLoader(false)
 
-      // const { data, error } = await userApi.signUpUser(email, password);
-
-      if (id && email) {
-        const createUserRes = await userApi.createUser({ email, id });
-        if (createUserRes.data) {
-          setState(() => {
-            return { ...app.state, user, authed: false, blockchainEnabled: false, connectedToBlockchain: false }
-          })
+          if (data) {
+            return true;
+          } else {
+            //@ts-ignore
+            log.error({ function: 'signUpNewUser', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-9' })
+            common.setError('Failed to sign up with email', 'globalError');
+            return false
+          }
         } else {
-          log.error({ function: 'signUpNewUser', error: createUserRes.error, user_email: email, timestamp: new Date(), log_id: 'user-actions-8' })
-          common.setError('Failed to sign up with email', 'globalError');
+          common.setError('Passwords do not match', 'globalError');
+          return false;
         }
-      } else {
-        //@ts-ignore
-        log.error({ function: 'signUpNewUser', error: error, user_email: email, timestamp: new Date(), log_id: 'user-actions-9' })
-        common.setError('Failed to sign up with email', 'globalError');
-      }
-      // } else {
-      //   common.setError('Passwords do not match', 'globalError');
-      // }
-      common.setGlobalLoader(false)
 
-      //}
+      }
     } catch (error: any) {
       log.error({ function: 'signUpNewUser', error: error.message, user_email: email, timestamp: new Date(), log_id: 'user-actions-10' });
       common.setError('Error updating user.', 'globalError');
-
+      return false
     }
-
   }
 
 
