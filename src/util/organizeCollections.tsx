@@ -1,6 +1,6 @@
 import { Collection } from "../types/types";
 
-function organizeCollectionsWithSubs(folders: Collection[]) {
+export function organizeCollectionsWithSubs(folders: Collection[]) {
   // Create a map to store folders by their ids
   const folderMap = new Map();
   
@@ -31,4 +31,28 @@ function organizeCollectionsWithSubs(folders: Collection[]) {
   return hierarchy;
 }
 
-export default organizeCollectionsWithSubs
+export function flattenBookmarks(chromeBookmarks, parentId = null) {
+    let bookmarks = [];
+    chromeBookmarks.forEach(node => {
+      if (node.children) {
+        // It's a folder
+        bookmarks.push({
+          id: node.id,
+          title: node.title,
+          parentId: parentId,
+          children: []  // Initialize with empty children, will be populated later
+        });
+        // Recursively process children
+        bookmarks = bookmarks.concat(flattenBookmarks(node.children, node.id));
+      } else {
+        // It's a bookmark item
+        bookmarks.push({
+          id: node.id,
+          title: node.title,
+          parentId: parentId,
+          url: node.url
+        });
+      }
+    });
+    return bookmarks;
+  }

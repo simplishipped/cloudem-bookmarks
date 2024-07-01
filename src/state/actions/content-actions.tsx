@@ -4,7 +4,7 @@ import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
 import capitalizeFirstLetter from "../../util/capitalize-word";
-import organizeCollectionsWithSubs from "../../util/organizeCollections";
+import { flattenBookmarks, syncBookmarksToState, organizeCollectionsWithSubs } from "../../util/syncFromBrowserToState";
 
 const useContent = () => {
   const { app } = useSelector();
@@ -35,7 +35,7 @@ const useContent = () => {
   }
 
 
-  const setBookmarkChecked = (id: number, bool: boolean, row: any) => {
+  const setBookmarkChecked = (id: number) => {
     let clone = app.state.checkedBookmarks.slice();
 
     if (clone.includes(id)) {
@@ -181,6 +181,7 @@ const useContent = () => {
         const res = await bookmarksApi.deleteBookmarks(app.state.checkedBookmarks);
         if (!res.error) {
           setState(() => {
+            //@ts-ignore
             return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !app.state.checkedBookmarks.includes(b.id)), checkedBookmarks: [] }
           })
         } else {
@@ -273,26 +274,43 @@ const useContent = () => {
     }
   }
 
-  async function syncBookmarksToDatabase() {
-    let bookmarkTreeNodes: any;;
-    if(window.chrome){
-      bookmarkTreeNodes = await window.chrome.bookmarks.getTree();
+
+  async function syncBookmarksToDatabase(params: any) {
+    let bookmarkTreeNodes: any;
+    //@ts-ignore
+    if (window.chrome) {
+      //@ts-ignore
+      bookmarkTreeNodes = await new Promise((resolve) => {
+        window.chrome.bookmarks.getTree(resolve);
+      });
+      
+      if (params.removeOtherBookmarks) {
+        let children = bookmarkTreeNodes[0].children;
+        children[1].title = 'default';
+        bookmarkTreeNodes = [...children[0].children, children[1]];
+      } else {
+        bookmarkTreeNodes = bookmarkTreeNodes[0].children; // Use only the top-level folders
+      }
     } else {
+      return; // Exit if not in a Chrome environment
     }
-    async function processNode(node:any, parentCollectionId?:number, collectionName?: string) {
+  
+    async function processNode(node: any, parentCollectionId?: number, collectionName?: string) {
       if (node.children) {
-        // It's a folder, create a collection
-        let collectionName = node.title.toLowerCase();
+        // It's a folder, create or find a collection
+        const folderName = node.title.toLowerCase();
   
         // Check if collection already exists (case-insensitive)
         const existingCollections = await bookmarksApi.getCollectionsByUser(user().id);
         let collectionId = null;
-        let existingCollection
-        if(existingCollections.data) { 
+        let existingCollection = null;
+  
+        if (existingCollections.data) {
           existingCollection = existingCollections.data.find(
-            (c) => c.name.toLowerCase() === collectionName && c.parent_id === parentCollectionId
+            (c) => c.name.toLowerCase() === folderName
           );
         }
+  
         if (!existingCollection) {
           const collection = {
             name: node.title,
@@ -303,12 +321,11 @@ const useContent = () => {
           collectionId = createdCollection.data.id;
         } else {
           collectionId = existingCollection.id;
-          collectionName = existingCollection.data.name;
         }
   
         // Process children
         for (const childNode of node.children) {
-          await processNode(childNode, collectionId, collectionName);
+          await processNode(childNode, collectionId, folderName);
         }
       } else {
         // It's a bookmark item, add it to the collection
@@ -319,7 +336,6 @@ const useContent = () => {
           collection: collectionName,
           user_id: user().id,
         };
-        //@ts-ignore
         await bookmarksApi.addBookmark(bookmark);
       }
     }
@@ -328,8 +344,18 @@ const useContent = () => {
     for (const node of bookmarkTreeNodes) {
       await processNode(node);
     }
+    let combined = await syncBookmarksToState(bookmarkTreeNodes, initCollections());
+    let flattenedChromeBookmarks = flattenBookmarks(bookmarkTreeNodes);
+    console.log(1, combined)
+    console.log(2, flattenedChromeBookmarks)
+    console.log(3, initCollections())
+    //@ts-ignore
+    setState(() => {
+      return { ...app.state, collections: combined, initCollections: [...initCollections(), ...flattenedChromeBookmarks] }
+    })
   }
   
+
 
   const setCategory = (category: string) => {
     setState(() => {

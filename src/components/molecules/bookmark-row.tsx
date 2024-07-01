@@ -32,8 +32,8 @@ export const BookmarkRow: Component<BookmarkProps> = (props) => {
       <div class="flex justify-between items-center">
         <div class="flex items-center">
           {props.row().favicon ? <img class="rounded-full w-4 h-4 mr-2" src={props.row().favicon} /> :
-            <FiBookmark size={20} class="dark:!text-textDark text-textLight mr-2" />}
-          <Checkbox check={contentProps.setBookmarkChecked} row={props.row} />
+            <FiBookmark size={16} class="dark:!text-textDark text-textLight mr-2" />}
+          <Checkbox id={props.row().id} checked={props.row().checked} check={contentProps.setBookmarkChecked} row={props.row} />
           <div class="ml-2 transition-all">{props.row().name.slice(0, 23) + '...'}</div>
 
         </div>
