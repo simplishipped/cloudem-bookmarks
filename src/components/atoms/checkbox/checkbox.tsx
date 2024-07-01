@@ -22,10 +22,7 @@ const Checkbox: Component<CheckboxProps> = (props) => {
   createEffect(on(props.row ? props.row : props.checked, () => {
   }, { defer: true }))
 
-  // createEffect(on(props.row, () => {
-  // }, { defer: true }))
-
-
+ 
   return (
     <div class="checkbox-wrapper" style={{ 'margin-top': '-6px' }}>
       { /*@ts-ignore*/}

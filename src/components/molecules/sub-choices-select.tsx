@@ -151,8 +151,8 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
         tabIndex={2}
         class={`${choice.id === focusedChoice() ? 'active-btn' : ''} dark:hover:text-secondaryButtonDark btn-hover-one deep-hover-transition-two 
     select-none cursor-pointer rounded-lg text-textLight dark:text-textDark mt-2 w-full flex items-center justify-between text-left`}
-        style={{ padding: '8px 8px 10px 8px' }}>
-        <div onClick={() => makeChoice(choice)} class={`w-5/6 ${choice.id === focusedChoice() ? 'translate-x-3 transition-transform' : ''}`}>
+        style={{ padding: '0px 8px 0px 8px' }}>
+        <div style={{ padding: '8px 0px 10px 0px' }} onClick={() => makeChoice(choice)} class={`w-5/6 ${choice.id === focusedChoice() ? 'translate-x-3 transition-transform' : ''}`}>
           {capitalizeFirstLetter(choice.name)} {choice.children && choice.children.length > 0 ? `(${choice.children.length})` : ""}
         </div>
         <Show when={choice.children && choice.children.length > 0}>
@@ -193,7 +193,8 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
           <IoChevronBack onClick={goBack} size="20" class="absolute left-8 transform -translate-x-full top-1/2 -translate-y-1/2 fill-primaryButtonLight dark:fill-primaryButtonDark" />
 
         </Show>
-        <input onFocus={() => setShowChoices(true)} ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} border-0 bg-transparent w-full active:border-0 focus:border-0 pl-2 text-center outline-none`} value={search()} type="text" />
+        <input ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} 
+        border-0 bg-transparent w-full active:border-0 focus:border-0 pl-2 text-center outline-none`} value={search()} type="text" />
         <Show when={!showChoices()}>
           <div style={{ 'margin-left': '6.5px' }} class="absolute">{capitalizeFirstLetter(props.value())}</div>
         </Show>

@@ -4,7 +4,7 @@ import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
 import capitalizeFirstLetter from "../../util/capitalize-word";
-import { flattenBookmarks, syncBookmarksToState, organizeCollectionsWithSubs } from "../../util/syncFromBrowserToState";
+import { organizeCollectionsWithSubs } from "../../util/organizeCollections";
 
 const useContent = () => {
   const { app } = useSelector();
@@ -274,87 +274,129 @@ const useContent = () => {
     }
   }
 
-
   async function syncBookmarksToDatabase(params: any) {
-    let bookmarkTreeNodes: any;
-    //@ts-ignore
-    if (window.chrome) {
+    try {
+      let bookmarkTreeNodes: any;
       //@ts-ignore
-      bookmarkTreeNodes = await new Promise((resolve) => {
-        window.chrome.bookmarks.getTree(resolve);
-      });
-      
-      if (params.removeOtherBookmarks) {
-        let children = bookmarkTreeNodes[0].children;
-        children[1].title = 'default';
-        bookmarkTreeNodes = [...children[0].children, children[1]];
-      } else {
-        bookmarkTreeNodes = bookmarkTreeNodes[0].children; // Use only the top-level folders
-      }
-    } else {
-      return; // Exit if not in a Chrome environment
-    }
+      if (window.chrome) {
+        //@ts-ignore
+        bookmarkTreeNodes = await new Promise((resolve) => {
+          ///@ts-ignore
+          window.chrome.bookmarks.getTree(resolve);
+        });
   
-    async function processNode(node: any, parentCollectionId?: number, collectionName?: string) {
-      if (node.children) {
-        // It's a folder, create or find a collection
-        const folderName = node.title.toLowerCase();
-  
-        // Check if collection already exists (case-insensitive)
-        const existingCollections = await bookmarksApi.getCollectionsByUser(user().id);
-        let collectionId = null;
-        let existingCollection = null;
-  
-        if (existingCollections.data) {
-          existingCollection = existingCollections.data.find(
-            (c) => c.name.toLowerCase() === folderName
-          );
-        }
-  
-        if (!existingCollection) {
-          const collection = {
-            name: node.title,
-            parent_id: parentCollectionId,
-            user_id: user().id,
-          };
-          const createdCollection = await bookmarksApi.createCollection(collection);
-          collectionId = createdCollection.data.id;
+        if (params.removeOtherBookmarks) {
+          let children = bookmarkTreeNodes[0].children;
+          children[1].title = 'default';
+          bookmarkTreeNodes = [...children[0].children, children[1]];
         } else {
-          collectionId = existingCollection.id;
-        }
-  
-        // Process children
-        for (const childNode of node.children) {
-          await processNode(childNode, collectionId, folderName);
+          bookmarkTreeNodes = bookmarkTreeNodes[0].children; // Use only the top-level folders
         }
       } else {
-        // It's a bookmark item, add it to the collection
-        const bookmark = {
-          name: node.title,
-          url: node.url,
-          collection_id: parentCollectionId,
-          collection: collectionName,
-          user_id: user().id,
-        };
-        await bookmarksApi.addBookmark(bookmark);
+        return; // Exit if not in a Chrome environment
       }
-    }
   
-    // Process the top-level nodes
-    for (const node of bookmarkTreeNodes) {
-      await processNode(node);
+      // Mapping from original IDs to new IDs from the database
+      const collectionsIdMap = new Map();
+  
+      async function processNode(node: any, parentCollectionId?: number, collectionName?: string) {
+        const existingBookmarks = await bookmarksApi.getBookmarksByUser(user().id);
+        const existingCollections = await bookmarksApi.getCollectionsByUser(user().id);
+  
+  
+        if (node.children) {
+          // It's a folder, create or find a collection
+          const folderName = node.title.toLowerCase();
+  
+          // Check if collection already exists (case-insensitive)
+  
+          let collectionId = null;
+          let existingCollection = null;
+  
+          if (existingCollections.data) {
+            existingCollection = existingCollections.data.find(
+              (c) => c.name.toLowerCase() === folderName
+            );
+          }
+  
+          if (!existingCollection) {
+            const collection = {
+              name: node.title,
+              parent_id: parentCollectionId,
+              user_id: user().id,
+            };
+            const createdCollection = await bookmarksApi.createCollection(collection);
+            collectionId = createdCollection.data.id;
+            collectionsIdMap.set(node.id, collectionId); // Map original ID to new database ID
+          } else {
+            collectionId = existingCollection.id;
+            collectionsIdMap.set(node.id, collectionId); // Map original ID to existing collection ID
+          }
+  
+          // Process children
+          for (const childNode of node.children) {
+            await processNode(childNode, collectionId, folderName);
+          }
+        } else {
+          //@ts-ignore
+          let exists = existingBookmarks.data.find(eb => eb.url === node.url);
+          if (!exists) {
+            const bookmark = {
+              name: node.title,
+              url: node.url,
+              collection_id: parentCollectionId,
+              collection: collectionName,
+              user_id: user().id,
+            };
+            //@ts-ignore
+            const createdBookmark = await bookmarksApi.addBookmark(bookmark);
+            collectionsIdMap.set(node.id, createdBookmark.data.id);
+          }
+        }
+      }
+  
+      // Process the top-level nodes
+      for (const node of bookmarkTreeNodes) {
+        await processNode(node);
+      }
+  
+      return true;
+      // Retrieve combined bookmarks with new IDs
+  
+    } catch (error) {
+      common.setError('Failed to fetch updated bookmarks', 'globalError');
+      log.error({ function: 'syncBookmarsFromBrowser', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-13' });
+      return false;
+    } 
+
+  }
+
+  const syncBookmarksFromBrowser = async (params: any) => {
+    let done =  await syncBookmarksToDatabase(params);
+    const collections = await bookmarksApi.getCollectionsByUser(user().id);
+    const bookmarks = await bookmarksApi.getBookmarksByUser(user().id);
+    
+    if(!done) {
+      return false;
     }
-    let combined = await syncBookmarksToState(bookmarkTreeNodes, initCollections());
-    let flattenedChromeBookmarks = flattenBookmarks(bookmarkTreeNodes);
-    console.log(1, combined)
-    console.log(2, flattenedChromeBookmarks)
-    console.log(3, initCollections())
+    
+    if(collections.data && bookmarks.data) {
     //@ts-ignore
     setState(() => {
-      return { ...app.state, collections: combined, initCollections: [...initCollections(), ...flattenedChromeBookmarks] }
-    })
+      return {
+        ...app.state,
+        collections: organizeCollectionsWithSubs(collections.data),
+        initCollections: collections.data,
+        bookmarks: bookmarks.data
+      };
+    });
+    } else {
+      common.setError('Failed to fetch updated bookmarks', 'globalError');
+      log.error({ function: 'syncBookmarsFromBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-13' });
+      return false;
+    }
+
   }
-  
 
 
   const setCategory = (category: string) => {
@@ -442,7 +484,7 @@ const useContent = () => {
     deleteCollection,
     setNewCollectionParentId,
     newCollectionParentId,
-    syncBookmarksToDatabase,
+    syncBookmarksFromBrowser,
   };
 };
 

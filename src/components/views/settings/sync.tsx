@@ -14,7 +14,7 @@ const Sync: Component<Props> = ({ }) => {
 
 
   const syncFromBrowser = () => {
-    content.syncBookmarksToDatabase({removeOtherBookmarks: removeOtherBookmarks()})
+    content.syncBookmarksFromBrowser({removeOtherBookmarks: removeOtherBookmarks()})
   }
 
   return (
