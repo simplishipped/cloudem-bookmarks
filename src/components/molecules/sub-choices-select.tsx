@@ -6,6 +6,7 @@ import { FaSolidPlus } from 'solid-icons/fa';
 import { IoCloseOutline } from 'solid-icons/io';
 import { IoChevronBack } from 'solid-icons/io';
 import { TbSubtask } from 'solid-icons/tb'
+import useContent from "../../state/actions/content-actions";
 
 interface SelectProps {
   options: () => any[],
@@ -26,7 +27,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   const [choices, setChoices] = createSignal(props.options());
   const [selectedPath, setSelectedPath] = createSignal<string[]>([]);
   const [focusedChoice, setFocusedChoice] = createSignal<number>();
-
+  const contentProps = useContent();
   let input: any;
 
   const makeChoice = (value: any) => {
@@ -115,12 +116,17 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
 
   const deleteCollection = async (choice: any) => {
     if (props.deleteOp) {
+      setShowChoices(false);
       let done = await props.deleteOp(choice);
-      if (done && props.value() === choice.name) {
-        props.setValue(selectedPath()[0]);
+      console.log(props.value(), choice.name, selectedPath());
+      if (done && props.value() === choice.name && selectedPath().length > 1) {
+        props.setValue(selectedPath()[selectedPath().length - 2]);
+      } else {
+        props.setValue('default');
       }
     }
   }
+
 
   const onEnter = (e: any) => {
     const options = props.options();
@@ -162,7 +168,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
           </button>
         </Show>
         <Show when={props.deleteOp}>
-          <button class=" p-2" onClick={() => deleteCollection(choice)} title="Delete Collection" >
+          <button class=" p-2" onClick={() => contentProps.setConfirmedAction(() => deleteCollection(choice))} title="Delete Collection" >
             <OcTrash2 size="18" class="dark:hover:fill-textDark hover:fill-textLight fill-primaryButtonLight dark:fill-primaryButtonDark" />
           </button>
 

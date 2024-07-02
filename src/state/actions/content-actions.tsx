@@ -24,7 +24,8 @@ const useContent = () => {
   const startView = () => app.state.startView;
   const newCollection = () => app.state.newCollection;
   const user = () => app.state.user
-  const newCollectionParentId = () => app.state.newCollectionParentId
+  const newCollectionParentId = () => app.state.newCollectionParentId;
+  const confirmedAction = () => app.state.confirmedAction;
 
   const common = useCommon();
 
@@ -579,6 +580,15 @@ const useContent = () => {
       }
     })
   }
+
+  const setConfirmedAction = (confirmation: any) => {
+    setState(() => {
+      return {
+        ...app.state, 
+        confirmedAction: confirmation
+      }
+    })
+  }
   // const setLoading = app.setLoading;
 
   return {
@@ -615,7 +625,9 @@ const useContent = () => {
     setNewCollectionParentId,
     newCollectionParentId,
     syncBookmarksFromBrowser,
-    syncDatabaseToBrowser
+    syncDatabaseToBrowser,
+    confirmedAction,
+    setConfirmedAction
   };
 };
 

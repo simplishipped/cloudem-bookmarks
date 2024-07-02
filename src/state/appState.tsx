@@ -36,7 +36,8 @@ let checkedBookmarks: number[] = [] // has ids of all bookmarks to delete
 let initRender: boolean = false;
 let collections: Collection[] = [];
 let initCollections: Collection[] = [];
-
+let confirmedAction: any = false;
+let confirmationsEnabled: boolean = true;
 
 
 const [state, setState] = createStore({
@@ -82,8 +83,9 @@ const [state, setState] = createStore({
     addBookmarkNotification: null,
     homeNotification: null
   },
-  newCollectionParentId
-  
+  newCollectionParentId,
+  confirmedAction,
+  confirmationsEnabled
 });
 
 export const useAppState = () => {

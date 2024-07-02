@@ -15,14 +15,17 @@ import useUser from "./state/actions/user-actions";
 import Login from "./components/views/login";
 import useCommon from "./state/actions/common-actions";
 import Error from "./components/atoms/error";
-import AreYouSure from "./components/views/arey-you-sure.tsx/are-you-sure";
+import AreYouSure from "./components/views/are-you-sure.tsx/are-you-sure";
 import ExportImport from "./components/views/settings/export-import";
 import Profile from "./components/views/profile";
 import Sync from "./components/views/settings/sync";
+import useContent from "./state/actions/content-actions";
 
 const App: Component = () => {
   const common = useCommon();
   const userProps = useUser();
+  const content = useContent();
+
   onMount(() => {
     userProps.identifyUser(null);
     userProps.initRender();
@@ -33,7 +36,7 @@ const App: Component = () => {
       <Router>
         <div class="flex w-full h-screen justify-center overflow-hidden">
           <div
-          
+
             class="bg-gradient-to-b from-lightCompliment to-primaryLight  dark:bg-gradient-to-b dark:from-darkCompliment dark:to-primaryDark to-20% transition-colors h-screen relative"
             style={{ width: "400px" }}
           >
@@ -58,6 +61,9 @@ const App: Component = () => {
 
                 </Routes>
               </Show>
+            </Show>
+            <Show when={content.confirmedAction()}>
+              <AreYouSure onYes={content.confirmedAction()} close={() => content.setConfirmedAction(false)} />
             </Show>
 
             <div class="fixed bottom-0" style={{ width: "inherit" }}>

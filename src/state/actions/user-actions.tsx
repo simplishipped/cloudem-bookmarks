@@ -149,10 +149,11 @@ const useUser = () => {
 
           } else {
             setState(() => {
-              return { ...app.state, user, connectedToBlockchain: false, authed: true, blockchainEnabled: false }
+              return { ...app.state, user, connectedToBlockchain: false, authed: true, blockchainEnabled: false, confirmationsEnabled: user.confirmations_enabled }
             })
           }
           setStartView(user.start_view);
+          
         } else {
           log.error({ function: 'identifyUser', error: 'No user data returned', user_id: user.id, user_email: user.email, timestamp: new Date(), log_id: 'user-actions-4' });
           // common.setError('No user found.', 'globalError');
@@ -292,6 +293,24 @@ const useUser = () => {
       common.setError('Error updating user.', 'globalError');
 
     }
+  }
+
+  const enableConfirmations = async () => {
+    await updateUser({confirmations_enabled: true});
+    setState(() => {
+      return {
+        ...app.state, confirmationsEnabled: true
+      }
+    })
+  }
+
+  const disableConfirmations = async () => {
+    await updateUser({confirmations_enabled: false});
+    setState(() => {
+      return {
+        ...app.state, confirmationsEnabled: false
+      }
+    })
   }
 
   return {

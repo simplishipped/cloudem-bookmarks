@@ -17,6 +17,7 @@ const useSettings = () => {
   const connectedToBlockchain = () => app.state.connectedToBlockchain;
   const startView = () => app.state.startView;
   const blockchainEnabled = () => app.state.blockchainEnabled;
+  const confirmationsEnabled = () => app.state.confirmationsEnabled;
   const user = () => app.state.user;
   const common = useCommon();
   const userProps = useUser();
@@ -202,6 +203,15 @@ const useSettings = () => {
 
   }
 
+  const setConfirmationsEnabled = async () => {
+    await userProps.updateUser({ confirmations_enabled: confirmationsEnabled() ? false : true });
+    setState(() => {
+      return {
+        ...app.state, confirmationsEnabled: confirmationsEnabled() ? false : true
+      }
+    })
+  }
+
 
   return {
     setConnected,
@@ -214,7 +224,9 @@ const useSettings = () => {
     disableBlockchain,
     exportBookmarks,
     importBookmarks,
-    saveUserUpdate
+    saveUserUpdate,
+    setConfirmationsEnabled,
+    confirmationsEnabled
   };
 };
 

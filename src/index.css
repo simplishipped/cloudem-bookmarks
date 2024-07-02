@@ -151,3 +151,16 @@ select {
   transition: all ease-in-out .2s;
   color: rgb(99 102 241) !important;
 }
+
+.animate-up {
+  animation: animate-up ease-in-out .3s forwards;
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+@keyframes animate-up {
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}

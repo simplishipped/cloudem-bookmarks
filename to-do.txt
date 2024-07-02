@@ -1,4 +1,3 @@
-1.finish are you sure modal
-2.finish expport/import data
-3.finish theme colors
-4.try to get favicons
+2. Remove blockchain code.
+3. save bookmarks locally as well
+4. Fix bug where i select bookmarks, go to settings and go back

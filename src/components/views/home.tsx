@@ -21,7 +21,7 @@ const Home: Component = () => {
   const userProps = useUser();
   const settingsProps = useSettings();
   const common = useCommon();
-
+  const contentProps = useContent();
 
   function goToMintPage() {
     props.setMarkToMintAndNavToMintPage();
@@ -57,7 +57,7 @@ const Home: Component = () => {
         </Show>
         {props.marksView() === 'collections' ? <>
           <div class="flex items-center">
-            {props.checkedBookmarks().length > 0 ? <div onClick={props.deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
+            {props.checkedBookmarks().length > 0 ? <div onClick={() => contentProps.setConfirmedAction(props.deleteBookmarks)} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
               <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
             </div> : false}
 
