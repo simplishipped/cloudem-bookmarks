@@ -23,7 +23,7 @@ interface SelectProps {
 }
 
 const SubChoicesSelect: Component<SelectProps> = (props) => {
-  const [showChoices, setShowChoices] = createSignal(false);
+  const [showChoices, setShowChoices] = createSignal(true);
   const [search, setSearch] = createSignal("");
   const [choices, setChoices] = createSignal(props.options());
   const [selectedPath, setSelectedPath] = createSignal<string[]>([]);
@@ -52,7 +52,10 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   }
 
   const showOptions = () => {
-    setShowChoices(!showChoices());
+    if(selectedPath().length > 0 && showChoices()) {
+    } else {
+      setShowChoices(!showChoices());
+    }
     if (showChoices()) {
       input.focus();
     } else {
@@ -76,10 +79,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
     );
 
     setChoices(filteredChoices);
-  }
-
-  createEffect(on([search, selectedPath], filterChoices));
-  createEffect(on(props.options, filterChoices));
+  };
 
   const createSubCollection = (value: any) => {
     props.setValue(value.name);
@@ -118,13 +118,12 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   }
 
   const deleteCollection = async (choice: any) => {
-    
+
     if (props.deleteOp) {
-      async function deleteC () {
+      async function deleteC() {
         setShowChoices(false);
         //@ts-ignore
         let done = await props.deleteOp(choice);
-        console.log(props.value(), choice.name, selectedPath());
         if (done && props.value() === choice.name && selectedPath().length > 1) {
           props.setValue(selectedPath()[selectedPath().length - 2]);
         } else {
@@ -164,6 +163,9 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
     }
   }
 
+
+  createEffect(on([search, selectedPath], filterChoices));
+  createEffect(on(props.options, filterChoices));
 
   const ChoiceElement = (choice: any, index: number) => {
     return (
