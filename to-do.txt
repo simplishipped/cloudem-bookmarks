@@ -1,3 +1,2 @@
 2. Remove blockchain code.
 3. save bookmarks locally as well
-4. Fix bug where i select bookmarks, go to settings and go back

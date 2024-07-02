@@ -30,7 +30,8 @@ const Home: Component = () => {
 
   onMount(() => {
     props.getUserBookmarks();
-    props.getUserCollections()
+    props.getUserCollections();
+    props.resetBookmarksChecked();
     if (userProps.user() && userProps.user().start_view && !userProps.initRender()) {
       navigate('/index.html/add-bookmark');
       userProps.setInitRender(true);

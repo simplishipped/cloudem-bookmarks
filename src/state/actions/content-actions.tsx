@@ -53,6 +53,15 @@ const useContent = () => {
     })
   }
 
+  const resetBookmarksChecked = () => {
+    setState(() => {
+      return {
+        ...app.state,
+        checkedBookmarks: []
+      }
+    })
+  }
+
 
   const setAllBookmarksChecked = () => {
     setState(() => {
@@ -627,7 +636,8 @@ const useContent = () => {
     syncBookmarksFromBrowser,
     syncDatabaseToBrowser,
     confirmedAction,
-    setConfirmedAction
+    setConfirmedAction,
+    resetBookmarksChecked
   };
 };
 
