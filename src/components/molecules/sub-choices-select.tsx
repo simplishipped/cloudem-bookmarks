@@ -23,7 +23,7 @@ interface SelectProps {
 }
 
 const SubChoicesSelect: Component<SelectProps> = (props) => {
-  const [showChoices, setShowChoices] = createSignal(true);
+  const [showChoices, setShowChoices] = createSignal(false);
   const [search, setSearch] = createSignal("");
   const [choices, setChoices] = createSignal(props.options());
   const [selectedPath, setSelectedPath] = createSignal<string[]>([]);
