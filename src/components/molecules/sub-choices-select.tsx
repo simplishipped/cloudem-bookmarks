@@ -80,6 +80,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   const createSubCollection = (value: any) => {
     props.setValue(value.name);
     setSearch(capitalizeFirstLetter(value.name) + ' > ');
+    //@ts-ignore
     props.setParentValueId(value.id)
     input.focus();
     // if (value.children.length > 0) {
@@ -156,12 +157,15 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
           {capitalizeFirstLetter(choice.name)} {choice.children && choice.children.length > 0 ? `(${choice.children.length})` : ""}
         </div>
         <Show when={choice.children && choice.children.length > 0}>
-          <button class="mr-2" onClick={() => lookIntoSubCollection(choice)} title="Sub Collections" >
+          <button class=" p-2" onClick={() => lookIntoSubCollection(choice)} title="Sub Collections" >
             <TbSubtask size="20" class="text-primaryButtonLight dark:text-primaryButtonDark dark:hover:text-textDark hover:text-textLight" />
           </button>
         </Show>
         <Show when={props.deleteOp}>
-          <OcTrash2 onClick={() => deleteCollection(choice)} size="18" class="dark:hover:fill-textDark hover:fill-textLight fill-primaryButtonLight dark:fill-primaryButtonDark" />
+          <button class=" p-2" onClick={() => deleteCollection(choice)} title="Delete Collection" >
+            <OcTrash2 size="18" class="dark:hover:fill-textDark hover:fill-textLight fill-primaryButtonLight dark:fill-primaryButtonDark" />
+          </button>
+
         </Show>
 
         <Show when={!props.deleteOp && choice.children}>
@@ -190,8 +194,9 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
     <>
       <div onClick={showOptions} class="select-none relative mt-2 shadow text-textLight dark:text-textDark p-2 flex justify-center rounded-md cursor-pointer ">
         <Show when={selectedPath().length > 0 && showChoices()}>
-          <IoChevronBack onClick={goBack} size="20" class="absolute left-8 transform -translate-x-full top-1/2 -translate-y-1/2 fill-primaryButtonLight dark:fill-primaryButtonDark" />
-
+          <button class=" p-2 absolute left-8 transform -translate-x-full top-1/2 -translate-y-1/2" onClick={goBack} title="Go back">
+            <IoChevronBack  size="20" class=" fill-primaryButtonLight dark:fill-primaryButtonDark" />
+          </button>
         </Show>
         <input ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} 
         border-0 bg-transparent w-full active:border-0 focus:border-0 pl-2 text-center outline-none`} value={search()} type="text" />
@@ -199,6 +204,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
           <div style={{ 'margin-left': '6.5px' }} class="absolute">{capitalizeFirstLetter(props.value())}</div>
         </Show>
         <Show when={props.collectionParentId !== undefined}>
+          {/*@ts-ignore */}
           {props.collectionParentId() ? <IoCloseOutline onClick={cancelSubCollection} size={20} class="absolute right-10 top-1/2 -translate-y-1/2 z-0 cursor-pointer" /> : false}
         </Show>
         <RiArrowsArrowDropDownFill size={30} class="absolute right-2 top-1/2 -translate-y-1/2 z-0" />
