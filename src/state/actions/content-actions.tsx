@@ -407,45 +407,94 @@ const useContent = () => {
       const collections: Collection[] = collectionsResponse.data;
       const bookmarks: Bookmark[] = bookmarksResponse.data;
 
-      // Function to create a folder in Chrome
-      async function createFolder(name: string, parentId: string) {
-        return new Promise((resolve) => {
+      // Function to create a folder in Chrome or Firefox
+      async function createFolder(name: string, parentId: string): Promise<any> {
+        //@ts-ignore
+        if (window.chrome && window.chrome.bookmarks) {
+          return new Promise((resolve) => {
+            //@ts-ignore
+            window.chrome.bookmarks.create({ title: name, parentId: parentId }, (folder: any) => resolve(folder));
+          });
           //@ts-ignore
-          window.chrome.bookmarks.create({ title: name, parentId: parentId }, (folder: any) => resolve(folder));
-        });
+        } else if (window.browser && window.browser.bookmarks) {
+          //@ts-ignore
+          return window.browser.bookmarks.create({ title: name, parentId: parentId });
+        } else {
+          common.setError('Failed to sync bookmarks', 'globalError');
+          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-15' });
+          return false;
+        }
+
       }
 
-      // Function to create a bookmark in Chrome
-      async function createBookmark(name: string, url: string, parentId: string) {
-        return new Promise((resolve) => {
+      // Function to create a bookmark in Chrome or Firefox
+      async function createBookmark(name: string, url: string, parentId: string): Promise<any> {
+        //@ts-ignore
+        if (window.chrome && window.chrome.bookmarks) {
+          return new Promise((resolve) => {
+            //@ts-ignore
+            window.chrome.bookmarks.create({ title: name, url: url, parentId: parentId }, (bookmark: any) => resolve(bookmark));
+          });
           //@ts-ignore
-          window.chrome.bookmarks.create({ title: name, url: url, parentId: parentId }, (bookmark: any) => resolve(bookmark));
-        });
+        } else if (window.browser && window.browser.bookmarks) {
+          //@ts-ignore
+          return window.browser.bookmarks.create({ title: name, url: url, parentId: parentId });
+        } else {
+          common.setError('Failed to sync bookmarks', 'globalError');
+          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-16' });
+          return false;
+        }
       }
 
-      // Function to find a folder by name
+      // Function to find a folder by name in Chrome or Firefox
       async function findFolderByName(name: string, parentId: string) {
-        return new Promise((resolve) => {
-          //@ts-ignore
-          window.chrome.bookmarks.search({ title: name }, (results: any) => {
-            const folder = results.find((result: any) => result.parentId === parentId && result.url === undefined);
-            resolve(folder ? [folder] : []);
+        //@ts-ignore
+        if (window.chrome && window.chrome.bookmarks) {
+          return new Promise((resolve) => {
+            //@ts-ignore
+            window.chrome.bookmarks.search({ title: name }, (results: any) => {
+              const folder = results.find((result: any) => result.parentId === parentId && result.url === undefined);
+              resolve(folder ? [folder] : []);
+            });
           });
-        });
+          //@ts-ignore
+        } else if (window.browser && window.browser.bookmarks) {
+          //@ts-ignore
+          const results = await window.browser.bookmarks.search({ title: name });
+          const folder = results.find((result: any) => result.parentId === parentId && result.url === undefined);
+          return folder ? [folder] : [];
+        } else {
+          common.setError('Failed to sync bookmarks', 'globalError');
+          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-17' });
+          return false;
+        }
       }
 
-      // Function to find a bookmark by URL
+      // Function to find a bookmark by URL in Chrome or Firefox
       async function findBookmarkByUrl(url: string, parentId: string) {
-        return new Promise((resolve) => {
-          //@ts-ignore
-          window.chrome.bookmarks.search({ url: url }, (results: any) => {
-            const bookmark = results.find((result: any) => result.parentId === parentId);
-            resolve(bookmark ? [bookmark] : []);
+        //@ts-ignore
+        if (window.chrome && window.chrome.bookmarks) {
+          return new Promise((resolve) => {
+            //@ts-ignore
+            window.chrome.bookmarks.search({ url: url }, (results: any) => {
+              const bookmark = results.find((result: any) => result.parentId === parentId);
+              resolve(bookmark ? [bookmark] : []);
+            });
           });
-        });
+          //@ts-ignore
+        } else if (window.browser && window.browser.bookmarks) {
+          //@ts-ignore
+          const results = await window.browser.bookmarks.search({ url: url });
+          const bookmark = results.find((result: any) => result.parentId === parentId);
+          return bookmark ? [bookmark] : [];
+        } else {
+          common.setError('Failed to sync bookmarks', 'globalError');
+          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-18' });
+          return false;
+        }
       }
 
-      // Create folders in Chrome
+      // Create folders in Chrome or Firefox
       const collectionIdMap: { [key: number]: string } = {}; // Map to store the relation between collection IDs and created folder IDs
       for (const collection of collections) {
         const parentId = collection.parent_id ? collectionIdMap[collection.parent_id] : '1'; // '1' is the ID of the bookmarks bar
@@ -459,12 +508,11 @@ const useContent = () => {
         } else {
           folder = await createFolder(collection.name, parentId);
         }
-
         //@ts-ignore
         collectionIdMap[collection.id] = folder.id; // Store the relation
       }
 
-      // Create bookmarks in Chrome
+      // Create bookmarks in Chrome or Firefox
       for (const bookmark of bookmarks) {
         //@ts-ignore
         const parentId = collectionIdMap[bookmark.collection_id] || '1'; // Default to bookmarks bar if no parent
