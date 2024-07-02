@@ -53,7 +53,6 @@ const AddBookmark: Component<{}> = () => {
       user_id: userProps.user().id,
       favicon: favicon()
     });
-    console.log(done)
     if (done) {
       navigate('/index.html');
 

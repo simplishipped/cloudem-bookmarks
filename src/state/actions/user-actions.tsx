@@ -109,7 +109,6 @@ const useUser = () => {
           newProfile = await createProfile(user.id, user.email)
         }
 
-        console.log('wtf', newProfile)
         if ((userRes && userRes.data) || newProfile) {
           user = userRes.data || newProfile;
           if (user.blockchain_enabled) {

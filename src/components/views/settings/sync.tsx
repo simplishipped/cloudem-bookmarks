@@ -1,8 +1,9 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, Show } from "solid-js";
 import Button from "../../atoms/button";
 import useSettings from "../../../state/actions/settings-actions";
 import useContent from "../../../state/actions/content-actions";
 import Checkbox from "../../atoms/checkbox/checkbox";
+import Loader from "../../atoms/loader/loader";
 interface Props {
 
 }
@@ -10,32 +11,39 @@ interface Props {
 const Sync: Component<Props> = ({ }) => {
   const settings = useSettings();
   const content = useContent();
-  const [removeOtherBookmarks, setRemoveOtherBookmarks] = createSignal(false)
+  
+  const [loadingFromBrowser, setLoadingFromBrowser] = createSignal(false);
+  const [loadingToBrowser, setLoadingToBrowser] = createSignal(false);
 
 
-  const syncFromBrowser = () => {
-    content.syncBookmarksFromBrowser({removeOtherBookmarks: removeOtherBookmarks()})
+
+  const syncFromBrowser = async () => {
+    setLoadingFromBrowser(true);
+    await content.syncBookmarksFromBrowser();
+    setLoadingFromBrowser(false);
+  }
+
+  const syncToBrowser = async () => {
+    setLoadingToBrowser(true);
+    await content.syncDatabaseToBrowser();
+    setLoadingToBrowser(false);
   }
 
   return (
     <div class="px-4">
       <div class="shadow-xl p-2 rounded-md">
         <div class="flex items-center">
-          <div class="ml-2"><Checkbox id="holy-moly" checked={removeOtherBookmarks} check={setRemoveOtherBookmarks} /></div>
-          <div class="text-textLight dark:text-textDark ml-2">Remove chrome's "Other bookmarks" </div>
+
+
         </div>
-        <Button func={syncFromBrowser} title="From Browser" />
+        <Show when={loadingFromBrowser()} fallback={<Button func={syncFromBrowser} title="From Browser" />}>
+          <div class="flex justify-center"><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>
+        </Show>
 
+        <Show when={loadingToBrowser()} fallback={<Button func={syncToBrowser} title="To Browser" />}>
+          <div class="flex justify-center"><div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>
+        </Show>
       </div>
-
-      <div class="shadow-xl p-2 rounded-md">
-        <div class="flex items-center">
-          <label for="import-btn" class="cursor-pointer inline-block px-4 py-2 dark:border-textDark dark:text-textDark text-textLight dark:bg-primaryButtonDark bg-primaryButtonLight p-2 mt-6
-  font-bold w-full items-center rounded-md text-center hover:dark:bg-secondaryButtonDark hover:bg-secondaryButtonLight">To Browser</label>
-          <input id="import-btn" class="hidden" onChange={settings.importBookmarks} type="file" />
-        </div>
-      </div>
-
     </div>
   )
 

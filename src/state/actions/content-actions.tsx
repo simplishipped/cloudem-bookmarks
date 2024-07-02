@@ -274,7 +274,7 @@ const useContent = () => {
     }
   }
 
-  async function syncBookmarksToDatabase(params: any) {
+  async function syncBookmarksToDatabase() {
     try {
       let bookmarkTreeNodes: any;
       //@ts-ignore
@@ -284,41 +284,41 @@ const useContent = () => {
           ///@ts-ignore
           window.chrome.bookmarks.getTree(resolve);
         });
-  
-        if (params.removeOtherBookmarks) {
-          let children = bookmarkTreeNodes[0].children;
-          children[1].title = 'default';
-          bookmarkTreeNodes = [...children[0].children, children[1]];
-        } else {
-          bookmarkTreeNodes = bookmarkTreeNodes[0].children; // Use only the top-level folders
-        }
+
+        let children = bookmarkTreeNodes[0].children;
+        children[1].title = 'default';
+        bookmarkTreeNodes = [...children[0].children, children[1]];
+        //@ts-ignore
+      } else if (window.browser) {
+        // Firefox environment
+        //@ts-ignore
+        bookmarkTreeNodes = await browser.bookmarks.getTree();
       } else {
-        return; // Exit if not in a Chrome environment
+        return; // Exit if not in a Chrome or Firefox environment
       }
-  
       // Mapping from original IDs to new IDs from the database
       const collectionsIdMap = new Map();
-  
+
       async function processNode(node: any, parentCollectionId?: number, collectionName?: string) {
         const existingBookmarks = await bookmarksApi.getBookmarksByUser(user().id);
         const existingCollections = await bookmarksApi.getCollectionsByUser(user().id);
-  
-  
+
+
         if (node.children) {
           // It's a folder, create or find a collection
           const folderName = node.title.toLowerCase();
-  
+
           // Check if collection already exists (case-insensitive)
-  
+
           let collectionId = null;
           let existingCollection = null;
-  
+
           if (existingCollections.data) {
             existingCollection = existingCollections.data.find(
               (c) => c.name.toLowerCase() === folderName
             );
           }
-  
+
           if (!existingCollection) {
             const collection = {
               name: node.title,
@@ -332,7 +332,7 @@ const useContent = () => {
             collectionId = existingCollection.id;
             collectionsIdMap.set(node.id, collectionId); // Map original ID to existing collection ID
           }
-  
+
           // Process children
           for (const childNode of node.children) {
             await processNode(childNode, collectionId, folderName);
@@ -354,42 +354,42 @@ const useContent = () => {
           }
         }
       }
-  
+
       // Process the top-level nodes
       for (const node of bookmarkTreeNodes) {
         await processNode(node);
       }
-  
+
       return true;
       // Retrieve combined bookmarks with new IDs
-  
+
     } catch (error) {
       common.setError('Failed to fetch updated bookmarks', 'globalError');
       log.error({ function: 'syncBookmarsFromBrowser', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-13' });
       return false;
-    } 
+    }
 
   }
 
-  const syncBookmarksFromBrowser = async (params: any) => {
-    let done =  await syncBookmarksToDatabase(params);
+  const syncBookmarksFromBrowser = async () => {
+    let done = await syncBookmarksToDatabase();
     const collections = await bookmarksApi.getCollectionsByUser(user().id);
     const bookmarks = await bookmarksApi.getBookmarksByUser(user().id);
-    
-    if(!done) {
+
+    if (!done) {
       return false;
     }
-    
-    if(collections.data && bookmarks.data) {
-    //@ts-ignore
-    setState(() => {
-      return {
-        ...app.state,
-        collections: organizeCollectionsWithSubs(collections.data),
-        initCollections: collections.data,
-        bookmarks: bookmarks.data
-      };
-    });
+
+    if (collections.data && bookmarks.data) {
+      //@ts-ignore
+      setState(() => {
+        return {
+          ...app.state,
+          collections: organizeCollectionsWithSubs(collections.data),
+          initCollections: collections.data,
+          bookmarks: bookmarks.data
+        };
+      });
     } else {
       common.setError('Failed to fetch updated bookmarks', 'globalError');
       log.error({ function: 'syncBookmarsFromBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-13' });
@@ -397,6 +397,88 @@ const useContent = () => {
     }
 
   }
+
+  async function syncDatabaseToBrowser() {
+    // Fetch collections and bookmarks from the database
+    const collectionsResponse = await bookmarksApi.getCollectionsByUser(user().id);
+    const bookmarksResponse = await bookmarksApi.getBookmarksByUser(user().id);
+
+    if (collectionsResponse.data && bookmarksResponse.data) {
+      const collections: Collection[] = collectionsResponse.data;
+      const bookmarks: Bookmark[] = bookmarksResponse.data;
+
+      // Function to create a folder in Chrome
+      async function createFolder(name: string, parentId: string) {
+        return new Promise((resolve) => {
+          //@ts-ignore
+          window.chrome.bookmarks.create({ title: name, parentId: parentId }, (folder: any) => resolve(folder));
+        });
+      }
+
+      // Function to create a bookmark in Chrome
+      async function createBookmark(name: string, url: string, parentId: string) {
+        return new Promise((resolve) => {
+          //@ts-ignore
+          window.chrome.bookmarks.create({ title: name, url: url, parentId: parentId }, (bookmark: any) => resolve(bookmark));
+        });
+      }
+
+      // Function to find a folder by name
+      async function findFolderByName(name: string, parentId: string) {
+        return new Promise((resolve) => {
+          //@ts-ignore
+          window.chrome.bookmarks.search({ title: name }, (results: any) => {
+            const folder = results.find((result: any) => result.parentId === parentId && result.url === undefined);
+            resolve(folder ? [folder] : []);
+          });
+        });
+      }
+
+      // Function to find a bookmark by URL
+      async function findBookmarkByUrl(url: string, parentId: string) {
+        return new Promise((resolve) => {
+          //@ts-ignore
+          window.chrome.bookmarks.search({ url: url }, (results: any) => {
+            const bookmark = results.find((result: any) => result.parentId === parentId);
+            resolve(bookmark ? [bookmark] : []);
+          });
+        });
+      }
+
+      // Create folders in Chrome
+      const collectionIdMap: { [key: number]: string } = {}; // Map to store the relation between collection IDs and created folder IDs
+      for (const collection of collections) {
+        const parentId = collection.parent_id ? collectionIdMap[collection.parent_id] : '1'; // '1' is the ID of the bookmarks bar
+        const existingFolders = await findFolderByName(collection.name, parentId);
+
+        let folder;
+        //@ts-ignore
+        if (existingFolders.length > 0) {
+          //@ts-ignore
+          folder = existingFolders[0];
+        } else {
+          folder = await createFolder(collection.name, parentId);
+        }
+
+        //@ts-ignore
+        collectionIdMap[collection.id] = folder.id; // Store the relation
+      }
+
+      // Create bookmarks in Chrome
+      for (const bookmark of bookmarks) {
+        //@ts-ignore
+        const parentId = collectionIdMap[bookmark.collection_id] || '1'; // Default to bookmarks bar if no parent
+
+        const existingBookmarks = await findBookmarkByUrl(bookmark.url, parentId);
+        //@ts-ignore
+        if (existingBookmarks.length === 0) {
+          await createBookmark(bookmark.name, bookmark.url, parentId);
+        }
+      }
+    }
+  }
+
+
 
 
   const setCategory = (category: string) => {
@@ -485,6 +567,7 @@ const useContent = () => {
     setNewCollectionParentId,
     newCollectionParentId,
     syncBookmarksFromBrowser,
+    syncDatabaseToBrowser
   };
 };
 
