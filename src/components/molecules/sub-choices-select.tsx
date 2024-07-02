@@ -7,6 +7,7 @@ import { IoCloseOutline } from 'solid-icons/io';
 import { IoChevronBack } from 'solid-icons/io';
 import { TbSubtask } from 'solid-icons/tb'
 import useContent from "../../state/actions/content-actions";
+import useSettings from "../../state/actions/settings-actions";
 
 interface SelectProps {
   options: () => any[],
@@ -28,6 +29,8 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   const [selectedPath, setSelectedPath] = createSignal<string[]>([]);
   const [focusedChoice, setFocusedChoice] = createSignal<number>();
   const contentProps = useContent();
+  const settingsProps = useSettings();
+
   let input: any;
 
   const makeChoice = (value: any) => {
@@ -115,14 +118,24 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   }
 
   const deleteCollection = async (choice: any) => {
+    
     if (props.deleteOp) {
-      setShowChoices(false);
-      let done = await props.deleteOp(choice);
-      console.log(props.value(), choice.name, selectedPath());
-      if (done && props.value() === choice.name && selectedPath().length > 1) {
-        props.setValue(selectedPath()[selectedPath().length - 2]);
+      async function deleteC () {
+        setShowChoices(false);
+        //@ts-ignore
+        let done = await props.deleteOp(choice);
+        console.log(props.value(), choice.name, selectedPath());
+        if (done && props.value() === choice.name && selectedPath().length > 1) {
+          props.setValue(selectedPath()[selectedPath().length - 2]);
+        } else {
+          props.setValue('default');
+        }
+      }
+
+      if (settingsProps.confirmationsEnabled()) {
+        contentProps.setConfirmedAction(deleteC)
       } else {
-        props.setValue('default');
+        await deleteC();
       }
     }
   }
@@ -168,7 +181,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
           </button>
         </Show>
         <Show when={props.deleteOp}>
-          <button class=" p-2" onClick={() => contentProps.setConfirmedAction(() => deleteCollection(choice))} title="Delete Collection" >
+          <button class=" p-2" onClick={() => deleteCollection(choice)} title="Delete Collection" >
             <OcTrash2 size="18" class="dark:hover:fill-textDark hover:fill-textLight fill-primaryButtonLight dark:fill-primaryButtonDark" />
           </button>
 
@@ -201,7 +214,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
       <div onClick={showOptions} class="select-none relative mt-2 shadow text-textLight dark:text-textDark p-2 flex justify-center rounded-md cursor-pointer ">
         <Show when={selectedPath().length > 0 && showChoices()}>
           <button class=" p-2 absolute left-8 transform -translate-x-full top-1/2 -translate-y-1/2" onClick={goBack} title="Go back">
-            <IoChevronBack  size="20" class=" fill-primaryButtonLight dark:fill-primaryButtonDark" />
+            <IoChevronBack size="20" class=" fill-primaryButtonLight dark:fill-primaryButtonDark" />
           </button>
         </Show>
         <input ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} 

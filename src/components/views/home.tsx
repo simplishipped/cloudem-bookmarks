@@ -37,6 +37,13 @@ const Home: Component = () => {
     }
   })
 
+  const deleteBookmarks = async () => {
+    if(settingsProps.confirmationsEnabled()) {
+      contentProps.setConfirmedAction(props.deleteBookmarks)
+    } else {
+      await props.deleteBookmarks()
+    }
+  }
 
   return (
     <div class="px-4 relative">
@@ -57,7 +64,7 @@ const Home: Component = () => {
         </Show>
         {props.marksView() === 'collections' ? <>
           <div class="flex items-center">
-            {props.checkedBookmarks().length > 0 ? <div onClick={() => contentProps.setConfirmedAction(props.deleteBookmarks)} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
+            {props.checkedBookmarks().length > 0 ? <div onClick={deleteBookmarks} title="Delete bookmarks." class="w-2/12 flex items-center mt-1 justify-center cursor-pointer">
               <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
             </div> : false}
 
