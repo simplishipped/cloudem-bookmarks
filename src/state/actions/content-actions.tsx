@@ -223,7 +223,17 @@ const useContent = () => {
     try {
       if (bookmarks().length === 0) {
         setLoading('bookmarks', true);
+        //@ts-ignore
+        let localMarks = localStorage.getItem('bookmarks');
+        if (localMarks) {
+          setLoading('bookmarks', false);
+          setState(() => {
+            return { ...app.state, bookmarks: JSON.parse(localMarks)}
+          })
+        }
+        
         const marks = await bookmarksApi.getBookmarksByUser(user().id);
+        localStorage.setItem('bookmarks', JSON.stringify(marks.data));
         setLoading('bookmarks', false);
         if (marks.data) {
           setState(() => {
@@ -244,11 +254,24 @@ const useContent = () => {
     if (collections().length === 0) {
       setLoading('collections', true);
       let collections: any = [];
+      const localCollections = localStorage.getItem('collections');
+      if (localCollections) {
+        setLoading('collections', false);
+        setState(() => {
+          return {
+            ...app.state,
+            collections: organizeCollectionsWithSubs(JSON.parse(localCollections)),
+            initCollections: JSON.parse(localCollections)
+          }
+        })
+      }
       if (user().email) {
         collections = await bookmarksApi.getCollectionsByUser(user().id);
       } else {
         collections = await bookmarksApi.getCollectionsByUserWalletAddr(user().walletaddr_arb);
       }
+
+      localStorage.setItem('collections', JSON.stringify(collections));
       setLoading('collections', false);
       if (collections.data) {
         const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
@@ -593,7 +616,7 @@ const useContent = () => {
   const setConfirmedAction = (confirmation: any) => {
     setState(() => {
       return {
-        ...app.state, 
+        ...app.state,
         confirmedAction: confirmation
       }
     })
