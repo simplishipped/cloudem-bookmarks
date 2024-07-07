@@ -271,7 +271,7 @@ const useContent = () => {
         collections = await bookmarksApi.getCollectionsByUserWalletAddr(user().walletaddr_arb);
       }
 
-      localStorage.setItem('collections', JSON.stringify(collections));
+      localStorage.setItem('collections', JSON.stringify(collections.data));
       setLoading('collections', false);
       if (collections.data) {
         const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
@@ -568,9 +568,9 @@ const useContent = () => {
     })
   }
 
-  const setCollection = (collection: string) => {
+  const setCollection = (collection: string, collectionId?: number) => {
     setState(() => {
-      return { ...app.state, collection }
+      return { ...app.state, collection, collectionId }
     })
   }
 

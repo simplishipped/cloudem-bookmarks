@@ -14,7 +14,9 @@ const AddBookmark: Component<{}> = () => {
   const [bookmark, setBookmark] = createSignal(window.location.href);
   const [favicon, setFavicon] = createSignal('');
   const userProps = useUser();
-  const common = useCommon()
+  const common = useCommon();
+
+
   // const [category, setCategory] = createSignal('Category');
 
   // onMount(() => {

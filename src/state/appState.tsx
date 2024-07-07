@@ -38,6 +38,7 @@ let collections: Collection[] = [];
 let initCollections: Collection[] = [];
 let confirmedAction: any = false;
 let confirmationsEnabled: boolean = true;
+let collectionId: number | undefined;
 
 
 const [state, setState] = createStore({
@@ -85,7 +86,8 @@ const [state, setState] = createStore({
   },
   newCollectionParentId,
   confirmedAction,
-  confirmationsEnabled
+  confirmationsEnabled,
+  collectionId
 });
 
 export const useAppState = () => {

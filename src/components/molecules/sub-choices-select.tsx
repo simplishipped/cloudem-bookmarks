@@ -13,7 +13,7 @@ interface SelectProps {
   options: () => any[],
   name: string,
   value: () => string,
-  setValue: (value: string) => void
+  setValue: (value: string, id?: number) => void
   color?: string,
   loading?: boolean,
   deleteOp?: (collection: any) => Promise<boolean>
@@ -34,7 +34,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   let input: any;
 
   const makeChoice = (value: any) => {
-    props.setValue(value.name);
+    props.setValue(value.name, value.id);
     setShowChoices(false);
     // if (value.children && value.children.length > 0) {
     //   setSelectedPath([...selectedPath(), value.name]);
