@@ -1,19 +1,15 @@
-import { Component, Setter, createSignal, Show, onMount } from "solid-js";
+import { Component, createSignal, Show, onMount } from "solid-js";
 import Input from "../atoms/input";
-import useSettings from "../../state/actions/settings-actions";
-import Loading from "./loading/loading";
 import useUser from "../../state/actions/user-actions";
-import useCommon from "../../state/actions/common-actions";
+import { A } from "@solidjs/router";
 
 
 const Login: Component<{}> = () => {
-  const [error, setError]: [() => null | string, Setter<null | string>] = createSignal(null);
   const [email, setEmail] = createSignal('');
   const [password, setPassword] = createSignal('');
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [signUp, setSignUp] = createSignal(false);
-  const { globalLoader } = useCommon();
-  const { connect, signInWithEmail, signUpNewUser } = useUser();
+  const { signInWithEmail, signUpNewUser } = useUser();
   const [listenerForMetaMask, setListenerForMetaMask] = createSignal(false);
   const [signedUp, setSignedUp] = createSignal(false);
 
@@ -54,12 +50,10 @@ const Login: Component<{}> = () => {
 
   })
 
+  
 
   return (
     <div class="px-4">
-      {error() ? <div class=" bg-red-500 p-4 rounded-md flex items-center justify-center dark:text-white text-black">{error()}</div> : false}
-      
-
       <Show when={signedUp()} fallback={
         <>
           <Show when={signUp()} fallback={
@@ -88,8 +82,8 @@ const Login: Component<{}> = () => {
           </Show>
 
           <Show when={signUp()} fallback={
-            <h1 onClick={() => setSignUp(true)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-primaryButtonDark text-primaryButtonLight text-md">Are you new?
-              <span class="text-white">&nbsp;Sign Up!</span></h1>
+            <A target="_blank" href="https://bookmarksextension.com/#pricing" class="cursor-pointer flex justify-center mb-2 mt-3 font-bold dark:text-primaryButtonDark text-primaryButtonLight text-md">Are you new?
+              <span class="text-white">&nbsp;Sign Up!</span></A>
           }>
             <h1 onClick={() => setSignUp(false)} class="cursor-pointer text-center mb-2 mt-3 font-bold dark:text-primaryButtonDark text-primaryButtonLight text-md">Already a member?
               <span class="text-white">&nbsp;Sign In!</span>

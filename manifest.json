@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "blockmarks",
+  "name": "Bookmarks+",
   "version": "1.0.0",
   "action": {
     "default_popup": "index.html",
-    "default_title": "Blockmarks",
+    "default_title": "Bookmarks+",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -13,44 +13,11 @@
   },
   "permissions": [
     "activeTab",
-    "tabs",
-    "storage",
-    "webRequest",
-    "cookies",
-    "notifications",
-    "scripting",
     "bookmarks"
   ],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  "background": {
-    "service_worker": "background.js",
-    "type": "module"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "run_at": "document_start"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "injected.js"
-      ],
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ]
-    }
-  ]
+  }
 }

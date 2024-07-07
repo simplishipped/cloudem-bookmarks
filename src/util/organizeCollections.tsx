@@ -1,7 +1,6 @@
 import { Collection } from "../types/types";
 export function organizeCollectionsWithSubs(folders: Collection[]) {
 
-  console.log(folders)
   // Create a map to store folders by their ids
   const folderMap = new Map();
 
