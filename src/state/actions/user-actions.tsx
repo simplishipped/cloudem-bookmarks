@@ -1,12 +1,8 @@
 import { useSelector } from "../../store";
-import { ethers, id } from "ethers";
-import userApi, { getUserByWalletAddr } from "../../api/user-api";
+import userApi from "../../api/user-api";
 import useCommon from "./common-actions";
-import { User } from "../../types/types";
 import log from "../../util/logger";
-import { onMount, createSignal } from "solid-js";
 
-const provider = new ethers.BrowserProvider((window as any).ethereum);
 
 
 const useUser = () => {

@@ -4,12 +4,9 @@ import Header from "./components/organisms/header";
 import Settings from "./components/views/settings/settings";
 import Home from "./components/views/home";
 import { Router, Route, Routes } from "@solidjs/router";
-import { Show, createEffect, onMount } from "solid-js";
+import { Show, onMount } from "solid-js";
 import { StoreProvider } from "./store";
-import Networks from "./components/views/settings/networks";
 import AddBookmark from "./components/views/add-bookmark";
-import Market from "./components/views/market";
-import Mint from "./components/views/mint";
 import Loading from "./components/views/loading/loading";
 import useUser from "./state/actions/user-actions";
 import Login from "./components/views/login";
@@ -52,9 +49,6 @@ const App: Component = () => {
                   <Route path="/index.html" component={Home} />
                   <Route path="/index.html/add-bookmark" component={AddBookmark} />
                   <Route path="/index.html/account" component={Settings} />
-                  <Route path="/index.html/account/networks" component={Networks} />
-                  <Route path="/index.html/market" component={Market} />
-                  <Route path="/index.html/mint" component={Mint} />
                   <Route path="/index.html/account/export-import" component={ExportImport} />
                   <Route path="/index.html/account/profile" component={Profile} />
                   <Route path="/index.html/account/sync" component={Sync} />

@@ -1,6 +1,4 @@
 import { useSelector } from "../../store";
-import { Bookmark, Nftmark } from "../../types/types";
-import bookmarksApi from "../../api/bookmarks-api";
 
 const useCommon = () => {
   const { app } = useSelector();

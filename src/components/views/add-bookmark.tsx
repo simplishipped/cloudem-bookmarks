@@ -1,4 +1,4 @@
-import { Component, createEffect, createSignal, onMount, Show } from "solid-js";
+import { Component, createSignal, onMount, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import Select from "../molecules/sub-choices-select";
 import Input from '../atoms/input';
