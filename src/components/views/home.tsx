@@ -2,10 +2,8 @@ import { Component, Show, createEffect, onMount, on } from "solid-js";
 import { RowList } from "../organisms/row-list";
 import Select from "../molecules/sub-choices-select";
 import useContent from "../../state/actions/content-actions";
-import Login from "./login";
 import Loader from "../atoms/loader/loader";
 import { BookmarkRow } from "../molecules/bookmark-row";
-import { TbFaceIdError } from 'solid-icons/tb'
 import { BiSolidMagicWand } from 'solid-icons/bi'
 import { useNavigate } from "@solidjs/router";
 import { OcTrash2 } from 'solid-icons/oc'

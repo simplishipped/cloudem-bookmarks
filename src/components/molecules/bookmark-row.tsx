@@ -33,8 +33,9 @@ export const BookmarkRow: Component<BookmarkProps> = (props) => {
         <div class="flex items-center">
           {props.row().favicon ? <img class="rounded-full w-4 h-4 mr-2" src={props.row().favicon} /> :
             <FiBookmark size={16} class="dark:!text-textDark text-textLight mr-2" />}
+            {/*@ts-ignore*/}
           <Checkbox id={props.row().id} checked={props.row().checked} check={contentProps.setBookmarkChecked} row={props.row} />
-          <div class="ml-2 transition-all">{props.row().name.slice(0, 23) + '...'}</div>
+          <div class="ml-2 transition-all">{props.row().name.slice(0, 23) + (props.row().name.length > 23 ? '...' : '')}</div>
 
         </div>
         <div class="flex items-center">
@@ -57,7 +58,7 @@ export const BookmarkRow: Component<BookmarkProps> = (props) => {
       {dropdown() ?
         <div class="dropdown flex justify-between items-center mt-1 cursor-pointer">
           <div onClick={copyToClipboard} class="text-textLight 
-    dark:text-textDark border-b-2 border-b-primaryButtonLight dark:border-b-primaryButtonDark pb-1">{props.row().url.slice(0, 40) + '...'}</div>
+    dark:text-textDark border-b-2 border-b-primaryButtonLight dark:border-b-primaryButtonDark pb-1">{props.row().url.slice(0, 40) + (props.row().name.length > 40 ? '...' : '')}</div>
 
         </div> : false}
     </div>
