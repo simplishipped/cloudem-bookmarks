@@ -1,2 +1,0 @@
-2. Remove blockchain code.
-3. save bookmarks locally as well

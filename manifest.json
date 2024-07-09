@@ -13,7 +13,8 @@
   },
   "permissions": [
     "activeTab",
-    "bookmarks"
+    "bookmarks",
+    "https://plausible.io/*"
   ],
   "icons": {
     "16": "icons/icon16.png",

@@ -1,9 +1,8 @@
 import { useSelector } from "../../store";
-import { Bookmark, Collection, Nftmark, SelectChoice } from "../../types/types";
+import { Bookmark, Collection, Nftmark } from "../../types/types";
 import bookmarksApi from "../../api/bookmarks-api";
 import log from "../../util/logger";
 import useCommon from "./common-actions";
-import capitalizeFirstLetter from "../../util/capitalize-word";
 import { organizeCollectionsWithSubs } from "../../util/organizeCollections";
 
 const useContent = () => {
@@ -126,13 +125,13 @@ const useContent = () => {
 
           } else {
             common.setError('Failed to add bookmark', 'addBookmarkError');
-            log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-1' });
+            log.error(JSON.stringify({ function: 'addBookmark', error: bk.error, user_id: user().id, timestamp: new Date() }));
             return false;
           }
 
         } else {
           common.setError('Failed to add bookmark', 'addBookmarkError');
-          log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-2' });
+          log.error(JSON.stringify({ function: 'addBookmark', error: newCollection.error, user_id: user().id, timestamp: new Date() }));
           return false;
         }
 
@@ -155,7 +154,7 @@ const useContent = () => {
               return true;
             } else {
               common.setError('Failed to add bookmark', 'addBookmarkError');
-              log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-3' });
+              log.error(JSON.stringify({ function: 'addBookmark', error: bk.error, user_id: user().id, timestamp: new Date() }));
               return false;
             }
           }
@@ -168,7 +167,7 @@ const useContent = () => {
             return true;
           } else {
             common.setError('Failed to add bookmark', 'addBookmarkError');
-            log.error({ function: 'addBookmark', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-3' });
+            log.error(JSON.stringify({ function: 'addBookmark', error: bk.error, user_id: user().id, timestamp: new Date() }));
             return false;
           }
         }
@@ -178,7 +177,7 @@ const useContent = () => {
 
     } catch (error) {
       common.setError('Failed to add bookmark', 'addBookmarkError');
-      log.error({ function: 'addBookmark', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-4' });
+      log.error(JSON.stringify({ function: 'addBookmark', error: error, user_id: user().id, timestamp: new Date() }));
       return false;
 
     }
@@ -196,13 +195,13 @@ const useContent = () => {
           })
         } else {
           common.setError('Failed to delete bookmark', 'homeError');
-          log.error({ function: 'deleteBookmarks', error: res.error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-5' });
+          log.error(JSON.stringify({ function: 'deleteBookmarks', error: res.error, user_id: user().id, timestamp: new Date() }));
         }
       }
 
     } catch (error) {
       common.setError('Failed to delete bookmark', 'homeError');
-      log.error({ function: 'deleteBookmarks', error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-11' });
+      log.error(JSON.stringify({ function: 'deleteBookmarks', error, user_id: user().id, timestamp: new Date()}));
     }
   }
 
@@ -225,7 +224,8 @@ const useContent = () => {
         setLoading('bookmarks', true);
         //@ts-ignore
         let localMarks = localStorage.getItem('bookmarks');
-        if (localMarks) {
+        localMarks = localMarks!=="undefined" && localMarks!=="null" ? localMarks : "[]"
+        if (localMarks && localMarks!==undefined) {
           setLoading('bookmarks', false);
           setState(() => {
             return { ...app.state, bookmarks: JSON.parse(localMarks)}
@@ -241,12 +241,12 @@ const useContent = () => {
           })
         } else {
           common.setError('Failed to fetch user bookmarks', 'homeError');
-          log.error({ function: 'getUserBookmarks', error: 'Failed to fetch bookmarks', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-6' });
+          log.error(JSON.stringify({ function: 'getUserBookmarks', error: marks.error, user_id: user().id, timestamp: new Date() }));
         }
       }
     } catch (error) {
       common.setError('Failed to fetch user bookmarks', 'homeError');
-      log.error({ function: 'getUserBookmarks', error: 'Failed to fetch bookmarks', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-7' });
+      log.error(JSON.stringify({ function: 'getUserBookmarks', error, user_id: user().id, timestamp: new Date() }));
     }
   }
 
@@ -254,7 +254,8 @@ const useContent = () => {
     if (collections().length === 0) {
       setLoading('collections', true);
       let collections: any = [];
-      const localCollections = localStorage.getItem('collections');
+      let localCollections = localStorage.getItem('collections')
+      localCollections = localCollections!=="undefined" && localCollections!=="null" ? localCollections : "[]"
       if (localCollections) {
         setLoading('collections', false);
         setState(() => {
@@ -280,7 +281,7 @@ const useContent = () => {
         })
       } else {
         common.setError('Failed get user collections', 'globalError');
-        log.error({ function: 'getUserCollections', error: 'Failed to fetch collections', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-8' });
+        log.error(JSON.stringify({ function: 'getUserCollections', error: collections.error, user_id: user().id, timestamp: new Date() }));
       }
     }
   }
@@ -297,12 +298,12 @@ const useContent = () => {
         return true;
       } else {
         common.setError('Failed to delete collection', 'globalError');
-        log.error({ function: 'deleteCollection', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-9' });
+        log.error(JSON.stringify({ function: 'deleteCollection', error: res.error, user_id: user().id, timestamp: new Date() }));
         return false;
       }
     } catch (error) {
       common.setError('Failed to delete collection', 'globalError');
-      log.error({ function: 'deleteCollection', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-10' });
+      log.error(JSON.stringify({ function: 'deleteCollection', error, user_id: user().id, timestamp: new Date() }));
       return false;
     }
   }
@@ -398,7 +399,7 @@ const useContent = () => {
 
     } catch (error) {
       common.setError('Failed to fetch updated bookmarks', 'globalError');
-      log.error({ function: 'syncBookmarsFromBrowser', error: error, user_id: user().id, timestamp: new Date(), log_id: 'content-actions-13' });
+      log.error(JSON.stringify({ function: 'syncBookmarsFromBrowser', error: error, user_id: user().id, timestamp: new Date()}));
       return false;
     }
 
@@ -424,8 +425,12 @@ const useContent = () => {
         };
       });
     } else {
+      let errors = {
+        collections: collections.error,
+        bookmarks: bookmarks.error
+      }
       common.setError('Failed to fetch updated bookmarks', 'globalError');
-      log.error({ function: 'syncBookmarsFromBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-13' });
+      log.error(JSON.stringify({ function: 'syncBookmarsFromBrowser', error: errors, user_id: user().id, timestamp: new Date() }));
       return false;
     }
 
@@ -454,7 +459,7 @@ const useContent = () => {
           return window.browser.bookmarks.create({ title: name, parentId: parentId });
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-15' });
+          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
           return false;
         }
 
@@ -474,7 +479,7 @@ const useContent = () => {
           return window.browser.bookmarks.create({ title: name, url: url, parentId: parentId });
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-16' });
+          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
           return false;
         }
       }
@@ -498,7 +503,7 @@ const useContent = () => {
           return folder ? [folder] : [];
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-17' });
+          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
           return false;
         }
       }
@@ -522,7 +527,7 @@ const useContent = () => {
           return bookmark ? [bookmark] : [];
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error({ function: 'syncDatabaseToBrowser', error: '', user_id: user().id, timestamp: new Date(), log_id: 'content-actions-18' });
+          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
           return false;
         }
       }

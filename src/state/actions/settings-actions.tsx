@@ -43,22 +43,22 @@ const useSettings = () => {
   //               }
   //             })
   //           } else {
-  //             log.error({ function: 'enableBlockchain', error: 'Failed to enable blockchain', timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-2' })
+  //             log.error(JSON.stringify({ function: 'enableBlockchain', error: 'Failed to enable blockchain', timestamp: new Date(), user_id: user().id })
   //             common.setError('Error enabling blockchain.', 'settingsError');
   //           }
   //         } else {
-  //           log.error({ function: 'enableBlockchain', error: 'Failed to enable blockchain', timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-3' })
+  //           log.error(JSON.stringify({ function: 'enableBlockchain', error: 'Failed to enable blockchain', timestamp: new Date(), user_id: user().id })
   //           common.setError('Error enabling blockchain.', 'settingsError');
   //         }
   //       } else {
-  //         log.error({ function: 'enableBlockchain', error: 'Failed to enable blockchain', timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-4' })
+  //         log.error(JSON.stringify({ function: 'enableBlockchain', error: 'Failed to enable blockchain', timestamp: new Date(), user_id: user().id })
   //         common.setError('Could not access you blockchain wallet', 'settingsError');
   //       }
   //     } else {
   //       disableBlockchain(user().id);
   //     }
   //   } catch (error) {
-  //     log.error({ function: 'enableBlockchain', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-1' })
+  //     log.error(JSON.stringify({ function: 'enableBlockchain', error, timestamp: new Date(), user_id: user().id })
   //     common.setError('Error enabling blockchain.', 'settingsError');
   //   }
   // }
@@ -74,7 +74,7 @@ const useSettings = () => {
   //         }
   //       })
   //     } else {
-  //       log.error({ function: 'disableBlockchain', error: done.error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-6' });
+  //       log.error(JSON.stringify({ function: 'disableBlockchain', error: done.error, timestamp: new Date(), user_id: user().id });
   //       common.setError('Error disabling blockchain.', 'settingsError');
   //       setState(() => {
   //         return {
@@ -83,7 +83,7 @@ const useSettings = () => {
   //       })
   //     }
   //   } catch (error) {
-  //     log.error({ function: 'disableBlockchain', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-5' });
+  //     log.error(JSON.stringify({ function: 'disableBlockchain', error, timestamp: new Date(), user_id: user().id });
   //     common.setError('Error disabling blockchain.', 'settingsError');
   //   }
   // }
@@ -129,7 +129,7 @@ const useSettings = () => {
       a.click();
       document.body.removeChild(a);
     } catch (error) {
-      log.error({ function: 'exportBookmarks', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-6' });
+      log.error(JSON.stringify({ function: 'exportBookmarks', error, timestamp: new Date(), user_id: user().id }));
       common.setError('Error exporting bookmarks.', 'settingsError');
     }
   }
@@ -172,11 +172,11 @@ const useSettings = () => {
               }
             })
           } else {
-            log.error({ function: 'importBookmarks', error: 'Failed to import bookmarks', timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-8' });
+            log.error(JSON.stringify({ function: 'importBookmarks', error: 'Failed to import bookmarks', timestamp: new Date(), user_id: user().id }));
             common.setError('Error importing bookmarks.', 'settingsError');
           }
         } catch (error) {
-          log.error({ function: 'importBookmarks', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-7' });
+          log.error(JSON.stringify({ function: 'importBookmarks', error, timestamp: new Date(), user_id: user().id }));
           common.setError('Error importing bookmarks.', 'settingsError');
         }
       }
@@ -195,7 +195,7 @@ const useSettings = () => {
       await userProps.updateUser(user);
       common.setGlobalLoader(false);
     } catch (error) {
-      log.error({ function: 'saveUserUpdate', error, timestamp: new Date(), user_id: user().id, log_id: 'settings-actions-9' });
+      log.error(JSON.stringify({ function: 'saveUserUpdate', error, timestamp: new Date(), user_id: user().id }));
       common.setError('Error saving user update.', 'settingsError');
     }
 

@@ -1,6 +1,5 @@
 import { createStore } from "solid-js/store";
-import nftMarksApi from "../api/bookmarks-api";
-import { User, Bookmark, Nftmark, Collection  } from "../types/types";
+import { Bookmark, Nftmark, Collection  } from "../types/types";
 let theme: boolean = true;
 
 if ("theme" in localStorage) {
