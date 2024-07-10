@@ -11,9 +11,6 @@ import { } from "solid-icons/fa";
 import useTheme from "../../../state/actions/theme-actions";
 import SettingsNavRow from "../../molecules/settings-nav-row";
 import SettingsBoolRow from "../../molecules/settings-bool-row";
-import { ImCloudDownload } from 'solid-icons/im'
-import { AiOutlineBlock } from 'solid-icons/ai'
-import { ImBlocked } from 'solid-icons/im'
 import { RiMediaPlayListAddFill } from 'solid-icons/ri'
 import useSettings from "../../../state/actions/settings-actions";
 import useCommon from "../../../state/actions/common-actions";
@@ -38,6 +35,7 @@ const Settings: Component<{}> = () => {
       <SettingsBoolRow IconTrue={FaRegularMoon} IconFalse={FaSolidSun} titles={["Dark Theme", "Light Theme"]} setter={setTheme} value={theme} />
       <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Start App Into Adding', 'Start App Into List']} setter={settingsProps.setStartView} value={settingsProps.startView} />
       <SettingsBoolRow IconTrue={AiFillEye} IconFalse={AiFillEyeInvisible} titles={['Enable Confirmations', 'Disable Confirmations']} setter={settingsProps.setConfirmationsEnabled} value={settingsProps.confirmationsEnabled} />
+      
 
       {/* <SettingsBoolRow IconTrue={ImBlocked} IconFalse={AiOutlineBlock} titles={['Enable Blockchain', 'Disable Blockchain']} setter={settingsProps.enableBlockchain} value={settingsProps.blockchainEnabled} /> */}
       {/* <Show when={settingsProps.blockchainEnabled()}>

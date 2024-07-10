@@ -17,16 +17,6 @@ const AddBookmark: Component<{}> = () => {
   const common = useCommon();
 
 
-  // const [category, setCategory] = createSignal('Category');
-
-  // onMount(() => {
-  //   if(chrome) {
-  //     chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
-  //       let url = tabs[0].url;
-  //       // use `url` here inside the callback because it's asynchronous!
-  //   });
-  //   }
-  // })
   //@ts-ignore
   async function getUrl() {
     //@ts-ignore
@@ -38,12 +28,13 @@ const AddBookmark: Component<{}> = () => {
       const title = tabs[0].title;
       setName(title)
       setFavicon(favicon);
-      setBookmark(url)
+      setBookmark(url);
     }
   }
 
   onMount(() => {
-    getUrl()
+    getUrl();
+    props.setNewCollection(props.collection());
   });
 
   const addBookmark = async () => {
@@ -57,7 +48,6 @@ const AddBookmark: Component<{}> = () => {
     });
     if (done) {
       navigate('/index.html');
-
     }
   }
 

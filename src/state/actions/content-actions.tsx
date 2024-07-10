@@ -13,6 +13,7 @@ const useContent = () => {
   const loading = () => app.state.loading;
   const marksView = () => app.state.marksView;
   const collection = () => app.state.collection;
+  const collectionId = () => app.state.collectionId;
   const initCollections = () => app.state.initCollections;
   const collections = () => app.state.collections;
   const markToMint = () => app.state.markToMint;
@@ -159,6 +160,9 @@ const useContent = () => {
             }
           }
         } else {
+          console.log('here')
+          bookmark.collection_id = collectionId();
+          console.log(bookmark)
           const bk = await bookmarksApi.addBookmark(bookmark);
           if (bk.data) {
             setState(() => {
@@ -201,7 +205,7 @@ const useContent = () => {
 
     } catch (error) {
       common.setError('Failed to delete bookmark', 'homeError');
-      log.error(JSON.stringify({ function: 'deleteBookmarks', error, user_id: user().id, timestamp: new Date()}));
+      log.error(JSON.stringify({ function: 'deleteBookmarks', error, user_id: user().id, timestamp: new Date() }));
     }
   }
 
@@ -224,14 +228,14 @@ const useContent = () => {
         setLoading('bookmarks', true);
         //@ts-ignore
         let localMarks = localStorage.getItem('bookmarks');
-        localMarks = localMarks!=="undefined" && localMarks!=="null" ? localMarks : "[]"
-        if (localMarks && localMarks!==undefined) {
+        localMarks = localMarks !== "undefined" && localMarks !== "null" ? localMarks : "[]"
+        if (localMarks && localMarks !== undefined) {
           setLoading('bookmarks', false);
           setState(() => {
-            return { ...app.state, bookmarks: JSON.parse(localMarks)}
+            return { ...app.state, bookmarks: JSON.parse(localMarks) }
           })
         }
-        
+
         const marks = await bookmarksApi.getBookmarksByUser(user().id);
         localStorage.setItem('bookmarks', JSON.stringify(marks.data));
         setLoading('bookmarks', false);
@@ -254,15 +258,25 @@ const useContent = () => {
     if (collections().length === 0) {
       setLoading('collections', true);
       let collections: any = [];
-      let localCollections = localStorage.getItem('collections')
-      localCollections = localCollections!=="undefined" && localCollections!=="null" ? localCollections : "[]"
+      let localCollectionsStr = localStorage.getItem('collections')
+      localCollectionsStr = localCollectionsStr !== "undefined" && localCollectionsStr !== "null" && localCollectionsStr ? localCollectionsStr : "[]";
+      let localCollections = JSON.parse(localCollectionsStr);
+      let mainCollection: Collection;
+
       if (localCollections) {
+        if (user().main_collection) {
+          mainCollection = localCollections.find((c: Collection) => c.id = user().main_collection);
+        } else {
+          mainCollection = localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')
+        }
+        console.log(localCollections)
         setLoading('collections', false);
         setState(() => {
           return {
             ...app.state,
-            collections: organizeCollectionsWithSubs(JSON.parse(localCollections)),
-            initCollections: JSON.parse(localCollections)
+            collections: organizeCollectionsWithSubs(localCollections),
+            initCollections: localCollections,
+            collectionId: mainCollection.id
           }
         })
       }
@@ -275,9 +289,23 @@ const useContent = () => {
       localStorage.setItem('collections', JSON.stringify(collections.data));
       setLoading('collections', false);
       if (collections.data) {
+
         const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
+
+        if (user().main_collection) {
+          mainCollection = collections.data.find((c: any) => c.id = user().main_collection);
+        } else {
+          mainCollection = collections.data.find((c: Collection) => c.name.toLowerCase() === 'default')
+        }
+
         setState(() => {
-          return { ...app.state, collections: collectionsOrganized, initCollections: collections.data }
+          return {
+            ...app.state,
+            collections: collectionsOrganized,
+            initCollections: collections.data,
+            collection: mainCollection.name,
+            collectionId: mainCollection.id
+          }
         })
       } else {
         common.setError('Failed get user collections', 'globalError');
@@ -399,7 +427,7 @@ const useContent = () => {
 
     } catch (error) {
       common.setError('Failed to fetch updated bookmarks', 'globalError');
-      log.error(JSON.stringify({ function: 'syncBookmarsFromBrowser', error: error, user_id: user().id, timestamp: new Date()}));
+      log.error(JSON.stringify({ function: 'syncBookmarsFromBrowser', error: error, user_id: user().id, timestamp: new Date() }));
       return false;
     }
 
@@ -665,7 +693,8 @@ const useContent = () => {
     syncDatabaseToBrowser,
     confirmedAction,
     setConfirmedAction,
-    resetBookmarksChecked
+    resetBookmarksChecked,
+    collectionId
   };
 };
 
