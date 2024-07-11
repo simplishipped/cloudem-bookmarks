@@ -22,9 +22,9 @@ let nftmarkName: string = '';
 let nftmarks: Nftmark[] = [];
 let bookmarks: Bookmark[] = [];
 let nftCategory: string = 'Default';
-let collection: string = 'Default'
+let collection: Collection
 let newCollectionParentId: number | undefined;
-let newCollection: string = 'Default'
+let newCollection: Collection;
 let globalLoader: boolean = false;
 let chainName: string = 'ethereum';
 let connectedToBlockchain: boolean = false;
@@ -47,6 +47,7 @@ const [state, setState] = createStore({
   nftmarkName,
   bookmarks,
   nftCategory,
+  //@ts-ignore
   collection,
   // blockchain,
   startView,

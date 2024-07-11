@@ -83,30 +83,32 @@ const useContent = () => {
 
   const addBookmark = async (bookmark: Bookmark) => {
     try {
+      setLoading('bookmarks', true);
+
       const collections = await bookmarksApi.getCollectionsByUser(bookmark.user_id);
       let exists = false;
       let collectionName: string;
       if (newCollectionParentId()) {
-        collectionName = bookmark.collection.split('>')[1].trim()
-        bookmark.collection = collectionName
+        collectionName = bookmark.collection.name.split('>')[1].trim()
+        bookmark.collection = { name: collectionName }
       }
       if (collections.data) {
         //@ts-ignore
-        exists = collections.data.find(c => c.name.toLowerCase() === bookmark.collection.toLowerCase());
+        exists = collections.data.find(c => c.name.toLowerCase() === bookmark.collection.name.toLowerCase());
       }
       if (!exists) {
         let newCollection: any;
         if (!newCollectionParentId()) {
           let collection = {
-            name: bookmark.collection,
+            name: bookmark.collection.name,
             user_id: bookmark.user_id,
             is_root: true
           }
-          collectionName = bookmark.collection;
+          collectionName = bookmark.collection.name;
           newCollection = await bookmarksApi.createCollection(collection);
         } else {
           let collection = {
-            name: bookmark.collection,
+            name: bookmark.collection.name,
             user_id: bookmark.user_id,
             is_root: false,
             parent_id: newCollectionParentId()
@@ -114,14 +116,26 @@ const useContent = () => {
           newCollection = await bookmarksApi.createCollection(collection);
         }
         if (newCollection.data) {
-          const bk = await bookmarksApi.addBookmark(bookmark);
+          let dbRdyBookmark = {
+            ...bookmark,
+            collection_id: newCollection.data.id,
+            collection: bookmark.collection.name
+          }
+          const bk = await bookmarksApi.addBookmark(dbRdyBookmark);
           if (bk.data) {
+            //@ts-ignore
             setState(() => {
               return {
-                ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collections: organizeCollectionsWithSubs([newCollection.data, ...initCollections()]),
-                collection: bookmark.collection, initCollections: [newCollection.data, ...initCollections()]
+                ...app.state,
+                bookmarks: [bk.data, ...app.state.bookmarks],
+                collections: organizeCollectionsWithSubs([newCollection.data, ...initCollections()]),
+                collection: newCollection.data,
+                initCollections: [newCollection.data, ...initCollections()],
+                newCollectionParentId: null
               }
             })
+            setLoading('bookmarks', false);
+
             return true;
 
           } else {
@@ -147,10 +161,17 @@ const useContent = () => {
           if (exists.parent_id === newCollectionParentId() && collectionName === exists.name) {
             common.setError('Collection already exists.', 'globalError')
           } else {
-            const bk = await bookmarksApi.addBookmark(bookmark);
+            let dbRdyBookmark = {
+              ...bookmark,
+              collection_id: bookmark.collection.id,
+              collection: bookmark.collection.name
+            }
+            const bk = await bookmarksApi.addBookmark(dbRdyBookmark);
             if (bk.data) {
+              setLoading('bookmarks', false);
+
               setState(() => {
-                return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: bk.data.collection }
+                return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: newCollection() }
               })
               return true;
             } else {
@@ -160,13 +181,17 @@ const useContent = () => {
             }
           }
         } else {
-          console.log('here')
-          bookmark.collection_id = collectionId();
-          console.log(bookmark)
-          const bk = await bookmarksApi.addBookmark(bookmark);
+          let dbRdyBookmark = {
+            ...bookmark,
+            collection_id: bookmark.collection.id,
+            collection: bookmark.collection.name
+          }
+          const bk = await bookmarksApi.addBookmark(dbRdyBookmark);
           if (bk.data) {
+            setLoading('bookmarks', false);
+
             setState(() => {
-              return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: bk.data.collection }
+              return { ...app.state, bookmarks: [bk.data, ...app.state.bookmarks], collection: newCollection() }
             })
             return true;
           } else {
@@ -175,11 +200,9 @@ const useContent = () => {
             return false;
           }
         }
-
       }
-
-
     } catch (error) {
+      console.log(error)
       common.setError('Failed to add bookmark', 'addBookmarkError');
       log.error(JSON.stringify({ function: 'addBookmark', error: error, user_id: user().id, timestamp: new Date() }));
       return false;
@@ -194,8 +217,12 @@ const useContent = () => {
         const res = await bookmarksApi.deleteBookmarks(app.state.checkedBookmarks);
         if (!res.error) {
           setState(() => {
-            //@ts-ignore
-            return { ...app.state, bookmarks: app.state.bookmarks.filter(b => !app.state.checkedBookmarks.includes(b.id)), checkedBookmarks: [] }
+            return {
+              ...app.state,
+              //@ts-ignore
+              bookmarks: app.state.bookmarks.filter(b => !app.state.checkedBookmarks.includes(b.id)),
+              checkedBookmarks: []
+            }
           })
         } else {
           common.setError('Failed to delete bookmark', 'homeError');
@@ -209,18 +236,18 @@ const useContent = () => {
     }
   }
 
-  const setMarkToMintAndNavToMintPage = () => {
-    const nftmark = {
-      bookmarks: bookmarks().filter(b => b.collection === app.state.collection),
-      name: app.state.collection,
-      userId: app.state.user.id,
-      category: nftCategory()
-    }
-    setState(() => {
-      return { ...app.state, markToMint: nftmark }
-    })
-    // props.setMarkToMint(nftmark);
-  }
+  // const setMarkToMintAndNavToMintPage = () => {
+  //   const nftmark = {
+  //     bookmarks: bookmarks().filter(b => b.collection === app.state.collection),
+  //     name: app.state.collection,
+  //     userId: app.state.user.id,
+  //     category: nftCategory()
+  //   }
+  //   setState(() => {
+  //     return { ...app.state, markToMint: nftmark }
+  //   })
+  //   // props.setMarkToMint(nftmark);
+  // }
 
   const getUserBookmarks = async () => {
     try {
@@ -263,22 +290,24 @@ const useContent = () => {
       let localCollections = JSON.parse(localCollectionsStr);
       let mainCollection: Collection;
 
-      if (localCollections) {
+      if (localCollections && localCollections.length > 0) {
         if (user().main_collection) {
           mainCollection = localCollections.find((c: Collection) => c.id = user().main_collection);
         } else {
           mainCollection = localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')
         }
-        console.log(localCollections)
         setLoading('collections', false);
         setState(() => {
           return {
             ...app.state,
             collections: organizeCollectionsWithSubs(localCollections),
             initCollections: localCollections,
-            collectionId: mainCollection.id
+            collectionId: mainCollection.id,
+            collection: mainCollection
           }
         })
+
+
       }
       if (user().email) {
         collections = await bookmarksApi.getCollectionsByUser(user().id);
@@ -303,8 +332,9 @@ const useContent = () => {
             ...app.state,
             collections: collectionsOrganized,
             initCollections: collections.data,
-            collection: mainCollection.name,
-            collectionId: mainCollection.id
+            collectionId: mainCollection.id,
+            collection: mainCollection
+
           }
         })
       } else {
@@ -321,7 +351,7 @@ const useContent = () => {
         let removedFromCollections = initCollections().filter(c => c.id !== collection.id);
         let reorganized = organizeCollectionsWithSubs(removedFromCollections);
         setState(() => {
-          return { ...app.state, collections: reorganized }
+          return { ...app.state, collections: reorganized, initCollections: removedFromCollections }
         })
         return true;
       } else {
@@ -601,13 +631,13 @@ const useContent = () => {
     })
   }
 
-  const setCollection = (collection: string, collectionId?: number) => {
+  const setCollection = (collection: Collection, collectionId?: number) => {
     setState(() => {
       return { ...app.state, collection, collectionId }
     })
   }
 
-  const setNewCollection = (newCollection: string) => {
+  const setNewCollection = (newCollection: Collection) => {
     setState(() => {
       return { ...app.state, newCollection }
     })
@@ -676,7 +706,7 @@ const useContent = () => {
     setBookmarkChecked,
     setAllBookmarksChecked,
     deleteBookmarks,
-    setMarkToMintAndNavToMintPage,
+    // setMarkToMintAndNavToMintPage,
     getUserBookmarks,
     search,
     setSearch,

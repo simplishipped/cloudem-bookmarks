@@ -1,12 +1,12 @@
 import { Component, For, Index, JSXElement, Show, ValidComponent, createEffect, createSignal, on, onMount } from "solid-js";
 import { Dynamic } from "solid-js/web"
 import { FaRegularFaceSadTear } from 'solid-icons/fa'
-import { Bookmark } from "../../types/types"
+import { Bookmark, Collection } from "../../types/types"
 import useContent from "../../state/actions/content-actions";
 export interface ListProps {
   list: () => Bookmark[]
   RowComponent: ValidComponent
-  filter: () => string
+  filter: () => Collection
   filterKey: string
   search: () => string
   checkedBookmarks?: () => number[]
@@ -21,7 +21,7 @@ export const RowList: Component<ListProps> = (props) => {
   function filterRows(rows: Bookmark[]) {
     const list = rows.filter(
       //@ts-ignore
-      (row: Bookmark) => row[props.filterKey].toLowerCase() === props.filter()?.toLowerCase() && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
+      (row: Bookmark) => row[props.filterKey] === props.filter().id && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
 
     return list;
   }
@@ -39,6 +39,7 @@ export const RowList: Component<ListProps> = (props) => {
   createEffect(on(contentProps.checkedBookmarks, (bks) => {
     if (props.checkedBookmarks) {
       const list = rows().map((row) => {
+        //@ts-ignore
         row.checked = bks.includes(row.id);
         return row
       })

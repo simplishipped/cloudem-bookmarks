@@ -95,7 +95,7 @@ const useUser = () => {
 
           //@ts-ignore
           setState(() => {
-            return { ...app.state, connectedToBlockchain: false, authed: false }
+            return { ...app.state, authed: false }
           })
         }
       }
@@ -103,11 +103,11 @@ const useUser = () => {
       common.setLoading(false, 'user');
 
     } catch (error: any) {
+      console.log(error)
       common.setLoading(false, 'user');
 
       log.error(JSON.stringify({ function: 'identifyUser', error: error.message, user_id: user.id, user_email: user.email, timestamp: new Date()}));
       common.setError('Error identifying user.', 'globalError');
-
     }
     common.setLoading(false, 'user');
   }

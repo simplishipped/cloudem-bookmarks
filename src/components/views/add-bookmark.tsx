@@ -42,7 +42,7 @@ const AddBookmark: Component<{}> = () => {
     const done = await props.addBookmark({
       name: name(),
       url: bookmark(),
-      collection: props.newCollection() === 'Default' ? 'Default' : props.newCollection(),
+      collection: props.newCollection(),
       user_id: userProps.user().id,
       favicon: favicon()
     });
@@ -60,8 +60,8 @@ const AddBookmark: Component<{}> = () => {
         </div>
       </Show>
       {/*@ts-ignore*/}
-      <Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection}
-        name="Category" options={props.collections} />
+      {props. newCollection() ?<Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection}
+        name="Category" options={props.collections} /> : false }
 
       <div class="mt-4">
         <Input value={name} name="NFTmarkName" placeholder="Bookmark Name" setValue={setName} />

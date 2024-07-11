@@ -15,7 +15,7 @@ export interface Bookmark {
   name: string
   url: string
   id?: number
-  collection: string
+  collection: any
   user_id: string
   checked?: boolean,
   favicon?: string

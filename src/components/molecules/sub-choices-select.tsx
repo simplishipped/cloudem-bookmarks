@@ -8,12 +8,13 @@ import { IoChevronBack } from 'solid-icons/io';
 import { TbSubtask } from 'solid-icons/tb'
 import useContent from "../../state/actions/content-actions";
 import useSettings from "../../state/actions/settings-actions";
+import { Collection } from "../../types/types";
 
 interface SelectProps {
   options: () => any[],
   name: string,
-  value: () => string,
-  setValue: (value: string, id?: number) => void
+  value: () => any,
+  setValue: (value: any, id?: number) => void
   color?: string,
   loading?: boolean,
   deleteOp?: (collection: any) => Promise<boolean>
@@ -34,7 +35,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   let input: any;
 
   const makeChoice = (value: any) => {
-    props.setValue(value.name, value.id);
+    props.setValue(value, value.id);
     setShowChoices(false);
     // if (value.children && value.children.length > 0) {
     //   setSelectedPath([...selectedPath(), value.name]);
@@ -52,7 +53,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   }
 
   const showOptions = () => {
-    if(selectedPath().length > 0 && showChoices()) {
+    if (selectedPath().length > 0 && showChoices()) {
     } else {
       setShowChoices(!showChoices());
     }
@@ -64,21 +65,27 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
   }
 
   const filterChoices = () => {
-    const path = selectedPath();
-    let currentChoices = props.options();
+    try {
+      const path = selectedPath();
 
-    path.forEach((name) => {
-      const foundChoice = currentChoices.find((choice: any) => choice.name === name);
-      if (foundChoice && foundChoice.children) {
-        currentChoices = foundChoice.children;
-      }
-    });
+      let currentChoices = props.options();
+      path.forEach((name) => {
+        const foundChoice = currentChoices.find((choice: any) => choice.name === name);
 
-    const filteredChoices = currentChoices.filter((choice: any) =>
-      choice.name.toLowerCase().includes(search().toLowerCase())
-    );
+        if (foundChoice && foundChoice.children) {
+          currentChoices = foundChoice.children;
+        }
+      });
 
-    setChoices(filteredChoices);
+      const filteredChoices = currentChoices.filter((choice: any) =>
+        choice.name.toLowerCase().includes(search().toLowerCase())
+      );
+
+      setChoices(filteredChoices);
+    } catch (err) {
+      console.log(err)
+    }
+
   };
 
   const createSubCollection = (value: any) => {
@@ -163,7 +170,6 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
     }
   }
 
-
   createEffect(on([search, selectedPath], filterChoices));
   createEffect(on(props.options, filterChoices));
 
@@ -222,7 +228,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
         <input ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} 
         border-0 bg-transparent w-full active:border-0 focus:border-0 pl-2 text-center outline-none`} value={search()} type="text" />
         <Show when={!showChoices()}>
-          <div style={{ 'margin-left': '6.5px' }} class="absolute">{capitalizeFirstLetter(props.value())}</div>
+          <div style={{ 'margin-left': '6.5px' }} class="absolute">{capitalizeFirstLetter(props.value().name)}</div>
         </Show>
         <Show when={props.collectionParentId !== undefined}>
           {/*@ts-ignore */}
