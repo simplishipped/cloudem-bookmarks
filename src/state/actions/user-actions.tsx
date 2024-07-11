@@ -36,12 +36,11 @@ const useUser = () => {
           return { ...app.state, user: data }
         })
       } else {
-        //@ts-ignore
-        log.error(JSON.stringify({ function: 'updateUser', error: error.message, user_id: user.id, timestamp: new Date() }));
+        log.error('update-user');
         common.setError('Error updating user.', 'globalError');
       }
     } catch (error: any) {
-      log.error(JSON.stringify({ function: 'updateUser', error: error.message, user_id: user.id, timestamp: new Date()}))
+      log.error('update-user');
     }
   }
 
@@ -103,10 +102,9 @@ const useUser = () => {
       common.setLoading(false, 'user');
 
     } catch (error: any) {
-      console.log(error)
       common.setLoading(false, 'user');
 
-      log.error(JSON.stringify({ function: 'identifyUser', error: error.message, user_id: user.id, user_email: user.email, timestamp: new Date()}));
+      log.error('identify-user');
       common.setError('Error identifying user.', 'globalError');
     }
     common.setLoading(false, 'user');
@@ -177,8 +175,7 @@ const useUser = () => {
           if (data) {
             return true;
           } else {
-            //@ts-ignore
-            log.error(JSON.stringify({ function: 'signUpNewUser', error: error, user_email: email, timestamp: new Date()}));
+            log.error('sign-up-new-user');
             common.setError('Failed to sign up with email', 'globalError');
             return false
           }
@@ -189,7 +186,7 @@ const useUser = () => {
 
       }
     } catch (error: any) {
-      log.error(JSON.stringify({ function: 'signUpNewUser', error: error.message, user_email: email, timestamp: new Date() }));
+      log.error('sign-up-new-user');
       common.setError('Error updating user.', 'globalError');
       return false
     }
@@ -209,7 +206,7 @@ const useUser = () => {
         common.setGlobalLoader(false)
       }
     } catch (error) {
-      log.error(JSON.stringify({ function: 'signInWithEmail', error: error, user_email: email, timestamp: new Date()}));
+      log.error('sign-in-with-email');
       common.setError('Error updating user.', 'globalError');
 
     }

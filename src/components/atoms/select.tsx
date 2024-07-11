@@ -17,7 +17,7 @@ interface SelectProps {
   deleteOp?: (collection: any) => Promise<void>
   enablePlus?: boolean,
   setParentValueId?: (id: number | undefined) => void
-  collectionParentId?: number | undefined
+  collectionParentId?: () => number | undefined
 }
 
 const Select: Component<SelectProps> = (props) => {
@@ -123,7 +123,7 @@ const Select: Component<SelectProps> = (props) => {
         </Show>
         
         <Show when={props.collectionParentId !== undefined}>
-          {props.collectionParentId() ? <IoCloseOutline onClick={cancelSubCollection} size={20} class="absolute right-10 top-1/2 -translate-y-1/2 z-0 cursor-pointer" /> : false}
+          {props.collectionParentId && props.collectionParentId() ? <IoCloseOutline onClick={cancelSubCollection} size={20} class="absolute right-10 top-1/2 -translate-y-1/2 z-0 cursor-pointer" /> : false}
 
         </Show>
         <RiArrowsArrowDropDownFill size={30} class="absolute right-2 top-1/2 -translate-y-1/2 z-0" />

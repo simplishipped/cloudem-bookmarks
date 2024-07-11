@@ -2,8 +2,8 @@ import { Component, createSignal, Show } from "solid-js";
 import Button from "../../atoms/button";
 import useSettings from "../../../state/actions/settings-actions";
 import useContent from "../../../state/actions/content-actions";
-import Checkbox from "../../atoms/checkbox/checkbox";
-import Loader from "../../atoms/loader/loader";
+// import Checkbox from "../../atoms/checkbox/checkbox";
+// import Loader from "../../atoms/loader/loader";
 interface Props {
 
 }

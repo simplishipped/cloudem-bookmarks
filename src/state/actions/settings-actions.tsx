@@ -129,7 +129,7 @@ const useSettings = () => {
       a.click();
       document.body.removeChild(a);
     } catch (error) {
-      log.error(JSON.stringify({ function: 'exportBookmarks', error, timestamp: new Date(), user_id: user().id }));
+      log.error('export-bookmarks');
       common.setError('Error exporting bookmarks.', 'settingsError');
     }
   }
@@ -172,11 +172,11 @@ const useSettings = () => {
               }
             })
           } else {
-            log.error(JSON.stringify({ function: 'importBookmarks', error: 'Failed to import bookmarks', timestamp: new Date(), user_id: user().id }));
+            log.error('import-bookmarks');
             common.setError('Error importing bookmarks.', 'settingsError');
           }
         } catch (error) {
-          log.error(JSON.stringify({ function: 'importBookmarks', error, timestamp: new Date(), user_id: user().id }));
+          log.error('import-bookmarks');
           common.setError('Error importing bookmarks.', 'settingsError');
         }
       }
@@ -195,7 +195,7 @@ const useSettings = () => {
       await userProps.updateUser(user);
       common.setGlobalLoader(false);
     } catch (error) {
-      log.error(JSON.stringify({ function: 'saveUserUpdate', error, timestamp: new Date(), user_id: user().id }));
+      log.error('save-user-update');
       common.setError('Error saving user update.', 'settingsError');
     }
 

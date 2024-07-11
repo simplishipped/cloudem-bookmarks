@@ -8,7 +8,7 @@ import { IoChevronBack } from 'solid-icons/io';
 import { TbSubtask } from 'solid-icons/tb'
 import useContent from "../../state/actions/content-actions";
 import useSettings from "../../state/actions/settings-actions";
-import { Collection } from "../../types/types";
+import sortByKey from "../../util/sortByKey";
 
 interface SelectProps {
   options: () => any[],
@@ -26,7 +26,7 @@ interface SelectProps {
 const SubChoicesSelect: Component<SelectProps> = (props) => {
   const [showChoices, setShowChoices] = createSignal(false);
   const [search, setSearch] = createSignal("");
-  const [choices, setChoices] = createSignal(props.options());
+  const [choices, setChoices] = createSignal(sortByKey(props.options(), 'name'));
   const [selectedPath, setSelectedPath] = createSignal<string[]>([]);
   const [focusedChoice, setFocusedChoice] = createSignal<number>();
   const contentProps = useContent();
@@ -81,7 +81,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
         choice.name.toLowerCase().includes(search().toLowerCase())
       );
 
-      setChoices(filteredChoices);
+      setChoices(sortByKey(filteredChoices, 'name'));
     } catch (err) {
       console.log(err)
     }

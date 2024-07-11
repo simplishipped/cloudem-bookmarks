@@ -3,6 +3,7 @@ import { Dynamic } from "solid-js/web"
 import { FaRegularFaceSadTear } from 'solid-icons/fa'
 import { Bookmark, Collection } from "../../types/types"
 import useContent from "../../state/actions/content-actions";
+import sortByKey from "../../util/sortByKey";
 export interface ListProps {
   list: () => Bookmark[]
   RowComponent: ValidComponent
@@ -28,12 +29,12 @@ export const RowList: Component<ListProps> = (props) => {
 
   createEffect(on([props.search, props.filter], (a, b) => {
     const list = filterRows(props.list());
-    setRows(list)
+    setRows(sortByKey(list, 'name'))
   }, { defer: true }));
 
   onMount(() => {
     const list = filterRows(props.list());
-    setRows(list)
+    setRows(sortByKey(list, 'name'))
   })
 
   createEffect(on(contentProps.checkedBookmarks, (bks) => {
@@ -44,14 +45,14 @@ export const RowList: Component<ListProps> = (props) => {
         return row
       })
       
-      setRows(list)
+      setRows(sortByKey(list, 'name'))
     }
   }, { defer: true }));
 
 
   createEffect(on(props.list, (list) => {
     list = filterRows(list);
-    setRows(list)
+    setRows(sortByKey(list, 'name'))
   }, { defer: true }));
 
 

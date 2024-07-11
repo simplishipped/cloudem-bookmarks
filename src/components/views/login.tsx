@@ -10,7 +10,6 @@ const Login: Component<{}> = () => {
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [signUp, setSignUp] = createSignal(false);
   const { signInWithEmail, signUpNewUser } = useUser();
-  const [listenerForMetaMask, setListenerForMetaMask] = createSignal(false);
   const [signedUp, setSignedUp] = createSignal(false);
 
 
@@ -30,27 +29,7 @@ const Login: Component<{}> = () => {
 
   async function signIn() {
     signInWithEmail(email(), password());
-  }
-
-  onMount(() => {
-    //@ts-ignore
-    if (window.chrome && window.chrome.runtime && !listenerForMetaMask()) {
-      setListenerForMetaMask(true);
-      //@ts-ignore
-      window.chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: any) => {
-        if (message.type === 'METAMASK_RESULT') {
-          if (message.success) {
-            return true;
-          } else {
-            return true;
-          }
-        }
-      });
-    }
-
-  })
-
-  
+  }  
 
   return (
     <div class="px-4">

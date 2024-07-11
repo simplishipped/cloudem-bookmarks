@@ -140,13 +140,13 @@ const useContent = () => {
 
           } else {
             common.setError('Failed to add bookmark', 'addBookmarkError');
-            log.error(JSON.stringify({ function: 'addBookmark', error: bk.error, user_id: user().id, timestamp: new Date() }));
+            log.error('add-bookmark');
             return false;
           }
 
         } else {
           common.setError('Failed to add bookmark', 'addBookmarkError');
-          log.error(JSON.stringify({ function: 'addBookmark', error: newCollection.error, user_id: user().id, timestamp: new Date() }));
+          log.error('add-bookmark');
           return false;
         }
 
@@ -176,7 +176,7 @@ const useContent = () => {
               return true;
             } else {
               common.setError('Failed to add bookmark', 'addBookmarkError');
-              log.error(JSON.stringify({ function: 'addBookmark', error: bk.error, user_id: user().id, timestamp: new Date() }));
+              log.error('add-bookmark');
               return false;
             }
           }
@@ -196,15 +196,14 @@ const useContent = () => {
             return true;
           } else {
             common.setError('Failed to add bookmark', 'addBookmarkError');
-            log.error(JSON.stringify({ function: 'addBookmark', error: bk.error, user_id: user().id, timestamp: new Date() }));
+            log.error('add-bookmark');
             return false;
           }
         }
       }
     } catch (error) {
-      console.log(error)
       common.setError('Failed to add bookmark', 'addBookmarkError');
-      log.error(JSON.stringify({ function: 'addBookmark', error: error, user_id: user().id, timestamp: new Date() }));
+      log.error('add-bookmark');
       return false;
 
     }
@@ -226,13 +225,13 @@ const useContent = () => {
           })
         } else {
           common.setError('Failed to delete bookmark', 'homeError');
-          log.error(JSON.stringify({ function: 'deleteBookmarks', error: res.error, user_id: user().id, timestamp: new Date() }));
+          log.error('delete-bookmarks');
         }
       }
 
     } catch (error) {
       common.setError('Failed to delete bookmark', 'homeError');
-      log.error(JSON.stringify({ function: 'deleteBookmarks', error, user_id: user().id, timestamp: new Date() }));
+      log.error('delete-bookmark');
     }
   }
 
@@ -272,74 +271,79 @@ const useContent = () => {
           })
         } else {
           common.setError('Failed to fetch user bookmarks', 'homeError');
-          log.error(JSON.stringify({ function: 'getUserBookmarks', error: marks.error, user_id: user().id, timestamp: new Date() }));
+          log.error('get-user-bookmarks');
         }
       }
     } catch (error) {
       common.setError('Failed to fetch user bookmarks', 'homeError');
-      log.error(JSON.stringify({ function: 'getUserBookmarks', error, user_id: user().id, timestamp: new Date() }));
+      log.error('get-user-bookmarks');
     }
   }
 
   const getUserCollections = async () => {
     if (collections().length === 0) {
-      setLoading('collections', true);
-      let collections: any = [];
-      let localCollectionsStr = localStorage.getItem('collections')
-      localCollectionsStr = localCollectionsStr !== "undefined" && localCollectionsStr !== "null" && localCollectionsStr ? localCollectionsStr : "[]";
-      let localCollections = JSON.parse(localCollectionsStr);
-      let mainCollection: Collection;
-
-      if (localCollections && localCollections.length > 0) {
-        if (user().main_collection) {
-          mainCollection = localCollections.find((c: Collection) => c.id = user().main_collection);
-        } else {
-          mainCollection = localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')
+      try {
+        setLoading('collections', true);
+        let collections: any = [];
+        let localCollectionsStr = localStorage.getItem('collections')
+        localCollectionsStr = localCollectionsStr !== "undefined" && localCollectionsStr !== "null" && localCollectionsStr ? localCollectionsStr : "[]";
+        let localCollections = JSON.parse(localCollectionsStr);
+        let mainCollection: Collection;
+  
+        if (localCollections && localCollections.length > 0) {
+          if (user().main_collection) {
+            mainCollection = localCollections.find((c: Collection) => c.id = user().main_collection);
+          } else {
+            mainCollection = localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')
+          }
+          setLoading('collections', false);
+          setState(() => {
+            return {
+              ...app.state,
+              collections: organizeCollectionsWithSubs(localCollections),
+              initCollections: localCollections,
+              collectionId: mainCollection.id,
+              collection: mainCollection
+            }
+          })
+  
+  
         }
+        if (user().email) {
+          collections = await bookmarksApi.getCollectionsByUser(user().id);
+        } else {
+          collections = await bookmarksApi.getCollectionsByUserWalletAddr(user().walletaddr_arb);
+        }
+  
+        localStorage.setItem('collections', JSON.stringify(collections.data));
         setLoading('collections', false);
-        setState(() => {
-          return {
-            ...app.state,
-            collections: organizeCollectionsWithSubs(localCollections),
-            initCollections: localCollections,
-            collectionId: mainCollection.id,
-            collection: mainCollection
+        if (collections.data) {
+  
+          const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
+  
+          if (user().main_collection) {
+            mainCollection = collections.data.find((c: any) => c.id = user().main_collection);
+          } else {
+            mainCollection = collections.data.find((c: Collection) => c.name.toLowerCase() === 'default')
           }
-        })
-
-
-      }
-      if (user().email) {
-        collections = await bookmarksApi.getCollectionsByUser(user().id);
-      } else {
-        collections = await bookmarksApi.getCollectionsByUserWalletAddr(user().walletaddr_arb);
-      }
-
-      localStorage.setItem('collections', JSON.stringify(collections.data));
-      setLoading('collections', false);
-      if (collections.data) {
-
-        const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
-
-        if (user().main_collection) {
-          mainCollection = collections.data.find((c: any) => c.id = user().main_collection);
+  
+          setState(() => {
+            return {
+              ...app.state,
+              collections: collectionsOrganized,
+              initCollections: collections.data,
+              collectionId: mainCollection.id,
+              collection: mainCollection
+  
+            }
+          })
         } else {
-          mainCollection = collections.data.find((c: Collection) => c.name.toLowerCase() === 'default')
+          common.setError('Failed get user collections', 'globalError');
+          log.error('get-user-collections');
         }
-
-        setState(() => {
-          return {
-            ...app.state,
-            collections: collectionsOrganized,
-            initCollections: collections.data,
-            collectionId: mainCollection.id,
-            collection: mainCollection
-
-          }
-        })
-      } else {
+      } catch (err) {
+        log.error('get-user-collections');
         common.setError('Failed get user collections', 'globalError');
-        log.error(JSON.stringify({ function: 'getUserCollections', error: collections.error, user_id: user().id, timestamp: new Date() }));
       }
     }
   }
@@ -356,12 +360,12 @@ const useContent = () => {
         return true;
       } else {
         common.setError('Failed to delete collection', 'globalError');
-        log.error(JSON.stringify({ function: 'deleteCollection', error: res.error, user_id: user().id, timestamp: new Date() }));
+        log.error('delete-collection');
         return false;
       }
     } catch (error) {
       common.setError('Failed to delete collection', 'globalError');
-      log.error(JSON.stringify({ function: 'deleteCollection', error, user_id: user().id, timestamp: new Date() }));
+      log.error('delete-collection');
       return false;
     }
   }
@@ -457,7 +461,7 @@ const useContent = () => {
 
     } catch (error) {
       common.setError('Failed to fetch updated bookmarks', 'globalError');
-      log.error(JSON.stringify({ function: 'syncBookmarsFromBrowser', error: error, user_id: user().id, timestamp: new Date() }));
+      log.error('sync-bookmarks-to-database');
       return false;
     }
 
@@ -483,18 +487,15 @@ const useContent = () => {
         };
       });
     } else {
-      let errors = {
-        collections: collections.error,
-        bookmarks: bookmarks.error
-      }
       common.setError('Failed to fetch updated bookmarks', 'globalError');
-      log.error(JSON.stringify({ function: 'syncBookmarsFromBrowser', error: errors, user_id: user().id, timestamp: new Date() }));
+      log.error('sync-bookmarks-from-browser');
       return false;
     }
 
   }
 
   async function syncDatabaseToBrowser() {
+    try {
     // Fetch collections and bookmarks from the database
     const collectionsResponse = await bookmarksApi.getCollectionsByUser(user().id);
     const bookmarksResponse = await bookmarksApi.getBookmarksByUser(user().id);
@@ -517,7 +518,7 @@ const useContent = () => {
           return window.browser.bookmarks.create({ title: name, parentId: parentId });
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
+          log.error('sync-database-to-browser');
           return false;
         }
 
@@ -537,7 +538,7 @@ const useContent = () => {
           return window.browser.bookmarks.create({ title: name, url: url, parentId: parentId });
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
+          log.error('sync-database-to-browser');
           return false;
         }
       }
@@ -561,7 +562,7 @@ const useContent = () => {
           return folder ? [folder] : [];
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
+          log.error('sync-database-to-browser');
           return false;
         }
       }
@@ -585,7 +586,7 @@ const useContent = () => {
           return bookmark ? [bookmark] : [];
         } else {
           common.setError('Failed to sync bookmarks', 'globalError');
-          log.error(JSON.stringify({ function: 'syncDatabaseToBrowser', error: 'Failed to access browser bookmarks', user_id: user().id, timestamp: new Date() }));
+          log.error('sync-database-to-browser');
           return false;
         }
       }
@@ -620,6 +621,10 @@ const useContent = () => {
         }
       }
     }
+    } catch (err) {
+      log.error('sync-database-to-browser');
+    }
+
   }
 
 

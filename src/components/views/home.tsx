@@ -4,7 +4,7 @@ import Select from "../molecules/sub-choices-select";
 import useContent from "../../state/actions/content-actions";
 import Loader from "../atoms/loader/loader";
 import { BookmarkRow } from "../molecules/bookmark-row";
-import { BiSolidMagicWand } from 'solid-icons/bi'
+// import { BiSolidMagicWand } from 'solid-icons/bi'
 import { useNavigate } from "@solidjs/router";
 import { OcTrash2 } from 'solid-icons/oc'
 import useUser from "../../state/actions/user-actions";
