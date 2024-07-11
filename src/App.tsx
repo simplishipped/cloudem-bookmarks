@@ -17,6 +17,7 @@ import ExportImport from "./components/views/settings/export-import";
 import Profile from "./components/views/profile";
 import Sync from "./components/views/settings/sync";
 import useContent from "./state/actions/content-actions";
+import Button from "./components/atoms/button";
 
 const App: Component = () => {
   const common = useCommon();
@@ -42,27 +43,38 @@ const App: Component = () => {
                 <Error close={() => common.setError(null, 'globalError')} error={common.error().globalError} />
               </div>
             </Show>
-            <Header />
             <Show when={!common.loading().user}>
               <Show when={userProps.authed()} fallback={<Login />}>
-                <Routes>
-                  <Route path="/index.html" component={Home} />
-                  <Route path="/index.html/add-bookmark" component={AddBookmark} />
-                  <Route path="/index.html/account" component={Settings} />
-                  <Route path="/index.html/account/export-import" component={ExportImport} />
-                  <Route path="/index.html/account/profile" component={Profile} />
-                  <Route path="/index.html/account/sync" component={Sync} />
+                <Show when={userProps.user() && userProps.user().has_access} fallback={
+                  window ?
+                    <div class="py-4 px-8">
+                      <Button title="Get Bookmarks+"
+                        // @ts-ignore
+                        func={() => window && window.open('https://bookmarksextension.com/#pricing', '_blank').focus()} />
+                    </div> : false}
+                >
+                  <Header />
 
-                </Routes>
+                  <Routes>
+                    <Route path="/index.html" component={Home} />
+                    <Route path="/index.html/add-bookmark" component={AddBookmark} />
+                    <Route path="/index.html/account" component={Settings} />
+                    <Route path="/index.html/account/export-import" component={ExportImport} />
+                    <Route path="/index.html/account/profile" component={Profile} />
+                    <Route path="/index.html/account/sync" component={Sync} />
+
+                  </Routes>
+
+                  <Show when={content.confirmedAction()}>
+                    <AreYouSure onYes={content.confirmedAction()} close={() => content.setConfirmedAction(false)} />
+                  </Show>
+
+                  <div class="fixed bottom-0" style={{ width: "inherit" }}>
+                    <Footer />
+                  </div>
+                </Show>
               </Show>
             </Show>
-            <Show when={content.confirmedAction()}>
-              <AreYouSure onYes={content.confirmedAction()} close={() => content.setConfirmedAction(false)} />
-            </Show>
-
-            <div class="fixed bottom-0" style={{ width: "inherit" }}>
-              <Footer />
-            </div>
             {common.globalLoader() || common.loading().user ? <Loading /> : false}
             {/* <AreYouSure onYes={() =>{}} onNo={() => {}} /> */}
 
