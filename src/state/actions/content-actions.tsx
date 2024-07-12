@@ -13,7 +13,6 @@ const useContent = () => {
   const loading = () => app.state.loading;
   const marksView = () => app.state.marksView;
   const collection = () => app.state.collection;
-  const collectionId = () => app.state.collectionId;
   const initCollections = () => app.state.initCollections;
   const collections = () => app.state.collections;
   const markToMint = () => app.state.markToMint;
@@ -293,8 +292,10 @@ const useContent = () => {
         if (localCollections && localCollections.length > 0) {
           if (user().main_collection) {
             mainCollection = localCollections.find((c: Collection) => c.id = user().main_collection);
-          } else {
+          } else if(localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')) {
             mainCollection = localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')
+          } else {
+            mainCollection = localCollections[0]
           }
           setLoading('collections', false);
           setState(() => {
@@ -302,18 +303,13 @@ const useContent = () => {
               ...app.state,
               collections: organizeCollectionsWithSubs(localCollections),
               initCollections: localCollections,
-              collectionId: mainCollection.id,
               collection: mainCollection
             }
           })
   
   
         }
-        if (user().email) {
-          collections = await bookmarksApi.getCollectionsByUser(user().id);
-        } else {
-          collections = await bookmarksApi.getCollectionsByUserWalletAddr(user().walletaddr_arb);
-        }
+        collections = await bookmarksApi.getCollectionsByUser(user().id);
   
         localStorage.setItem('collections', JSON.stringify(collections.data));
         setLoading('collections', false);
@@ -323,16 +319,17 @@ const useContent = () => {
   
           if (user().main_collection) {
             mainCollection = collections.data.find((c: any) => c.id = user().main_collection);
-          } else {
+          } else if(collections.data.find((c: Collection) => c.name.toLowerCase() === 'default')) {
             mainCollection = collections.data.find((c: Collection) => c.name.toLowerCase() === 'default')
+          } else {
+            mainCollection = collections.data[0]
           }
-  
+
           setState(() => {
             return {
               ...app.state,
               collections: collectionsOrganized,
               initCollections: collections.data,
-              collectionId: mainCollection.id,
               collection: mainCollection
   
             }
@@ -729,7 +726,6 @@ const useContent = () => {
     confirmedAction,
     setConfirmedAction,
     resetBookmarksChecked,
-    collectionId
   };
 };
 

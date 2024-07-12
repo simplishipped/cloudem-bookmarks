@@ -37,12 +37,13 @@ const Home: Component = () => {
   })
 
   const deleteBookmarks = async () => {
-    if(settingsProps.confirmationsEnabled()) {
+    if (settingsProps.confirmationsEnabled()) {
       contentProps.setConfirmedAction(props.deleteBookmarks)
     } else {
       await props.deleteBookmarks()
     }
   }
+
 
   return (
     <div class="px-4 relative">
@@ -67,19 +68,24 @@ const Home: Component = () => {
               <OcTrash2 size="26" class="fill-primaryButtonLight dark:fill-primaryButtonDark roll-in-left" />
             </div> : false}
 
-            <div class={`${props.checkedBookmarks().length > 0 && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
-              {props.collection() ? <Select deleteOp={props.deleteCollection} value={props.collection} setValue={props.setCollection} name="Collection" options={props.collections} /> : false} 
-            </div>
+            <Show when={props.collections().length > 0 && props.collection()}>
+              <div class={`${props.checkedBookmarks().length > 0 && settingsProps.blockchainEnabled() ? 'w-8/12' : settingsProps.blockchainEnabled() ? 'w-10/12' : 'w-full'} transition-all`}>
+                <Select deleteOp={props.deleteCollection} value={props.collection} setValue={props.setCollection} name="Collection" options={props.collections} />
+              </div>
+            </Show>
+
             {/* <Show when={settingsProps.blockchainEnabled()}>
               <div title="Mint collection to NFT!" onClick={goToMintPage} class="w-2/12 flex items-center mt-1 justify-center cursor-pointer hover:animate-spin">
                 <BiSolidMagicWand size="30" class="fill-primaryButtonLight dark:fill-primaryButtonDark" />
               </div>
             </Show> */}
           </div>
+          <Show when={props.collections().length > 0}>
+            <div class="mt-2">
+              <RowList checkedBookmarks={props.checkedBookmarks} filterKey="collection_id" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks} search={props.search} />
+            </div>
+          </Show>
 
-          <div class="mt-2">
-            <RowList checkedBookmarks={props.checkedBookmarks} filterKey="collection_id" RowComponent={BookmarkRow} filter={props.collection} list={props.bookmarks} search={props.search} />
-          </div>
         </> :
           <>
             {/* <Select value={props.nftmarkName} setValue={props.setCollection} name="Collection" options={props.collections} /> */}

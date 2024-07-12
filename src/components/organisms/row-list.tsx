@@ -22,7 +22,8 @@ export const RowList: Component<ListProps> = (props) => {
   function filterRows(rows: Bookmark[]) {
     const list = rows.filter(
       //@ts-ignore
-      (row: Bookmark) => row[props.filterKey] === props.filter().id && (row.name.toLowerCase().includes(props.search().toLowerCase()) || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
+      (row: Bookmark) => row[props.filterKey] === props.filter().id && (row.name.toLowerCase().includes(props.search().toLowerCase())
+       || row.url.toLowerCase().includes(props.search().toLocaleLowerCase())));
 
     return list;
   }

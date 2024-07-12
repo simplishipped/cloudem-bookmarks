@@ -26,7 +26,7 @@ interface SelectProps {
 const SubChoicesSelect: Component<SelectProps> = (props) => {
   const [showChoices, setShowChoices] = createSignal(false);
   const [search, setSearch] = createSignal("");
-  const [choices, setChoices] = createSignal(sortByKey(props.options(), 'name'));
+  const [choices, setChoices] = createSignal(sortByKey(props.options().slice(0), 'name'));
   const [selectedPath, setSelectedPath] = createSignal<string[]>([]);
   const [focusedChoice, setFocusedChoice] = createSignal<number>();
   const contentProps = useContent();

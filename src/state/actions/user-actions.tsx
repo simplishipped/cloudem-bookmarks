@@ -103,7 +103,6 @@ const useUser = () => {
 
     } catch (error: any) {
       common.setLoading(false, 'user');
-
       log.error('identify-user');
       common.setError('Error identifying user.', 'globalError');
     }
