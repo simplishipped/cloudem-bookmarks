@@ -48,7 +48,7 @@ const App: Component = () => {
                 <Show when={userProps.user() && userProps.user().has_access} fallback={
                   window ?
                     <div class="py-4 px-8">
-                      <Button title="Get Bookmarks+"
+                      <Button title="Get Cloudem Bookmarks"
                         // @ts-ignore
                         func={() => window && window.open('https://bookmarksextension.com/#pricing', '_blank').focus()} />
                     </div> : false}

@@ -165,10 +165,10 @@ const useSettings = () => {
           const inserted = await bookmarksApi.addBookmarks(bookmarks);
           const insertedCollections = await bookmarksApi.createCollections(collections);
 
-          if (inserted && insertedCollections) {
+          if (Array.isArray(inserted) && Array.isArray(insertedCollections)) {
             setState(() => {
               return {
-                ...app.state, bookmarks: [...app.state.bookmarks, ...bookmarks], collections: [...app.state.collections, ...collections]
+                ...app.state, bookmarks: [...app.state.bookmarks, ...inserted], collections: [...app.state.collections, ...collections]
               }
             })
           } else {

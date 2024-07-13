@@ -4,13 +4,25 @@ import supabase from "./supabase";
 
 
 const addBookmark = async (bookmark: Bookmark) => {
+  const user_id = bookmark.user_id;
   const { data, error }  = await supabase.from('bookmarks').insert(bookmark).select('*');
-  return data ? { data: data[0] } : { error };
+  if(data) {
+    const decrypted = await supabase.from('decrypted_bookmarks').select("*").eq('user_id', user_id).eq('id', data[0].id).single();
+    return decrypted.data ? { data: decrypted.data } : { error: decrypted.error };
+  } else {
+    return { error };
+  }
 }
 
 const addBookmarks = async (bookmarks: Bookmark[]) => {
   const { data, error }  = await supabase.from('bookmarks').insert(bookmarks).select('*');
-  return data ? { data } : { error };
+  const user_id = bookmarks[0].user_id;
+  if(data) {
+    const decrypted = await supabase.from('decrypted_bookmarks').select("*").eq('user_id', user_id).in('id', data.map((b: any) => b.id));
+    return decrypted.data ? { data: decrypted.data } : { error: decrypted.error };
+  } else {
+    return { error };
+  }
 }
 
 const deleteBookmarks = async (ids: number[]) => {
@@ -19,12 +31,12 @@ const deleteBookmarks = async (ids: number[]) => {
 }
 
 const getBookmarks = async () => {
-  const { data, error } = await supabase.from('bookmarks').select('*').eq('id', 1);
+  const { data, error } = await supabase.from('decrypted_bookmarks').select('*').eq('id', 1);
   return data ? { data: data } : { error };
 }
 
 const getBookmarksByUser = async (userId: string) => {
-  const { data, error }  = await supabase.from('bookmarks').select('*').eq('user_id', userId);
+  const { data, error }  = await supabase.from('decrypted_bookmarks').select('*').eq('user_id', userId);
   return data ? { data: data } : { error };
 }
 
