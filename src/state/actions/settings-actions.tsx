@@ -5,6 +5,7 @@ import log from "../../util/logger";
 import useCommon from "./common-actions";
 import { Bookmark, Collection } from "../../types/types";
 import useUser from "./user-actions";
+import Toggler from "../../components/atoms/toggler";
 
 
 
@@ -18,6 +19,7 @@ const useSettings = () => {
   const confirmationsEnabled = () => app.state.confirmationsEnabled;
   const user = () => app.state.user;
   const mainCollection = () => app.state.mainCollection;
+  const tempBookmarksEnabled = () => app.state.tempBookmarksEnabled;
   const common = useCommon();
   const userProps = useUser();
 
@@ -233,6 +235,14 @@ const useSettings = () => {
 
   }
 
+  const enableTemporaryBookmarks = async() => {
+    await userProps.updateUser({ temp_bookmarks_enabled: tempBookmarksEnabled() ? false : true });
+    setState(() => {
+      return {
+        ...app.state, tempBookmarksEnabled: tempBookmarksEnabled() ? false : true
+      }
+    })
+  }
 
   return {
     setConnected,
@@ -249,7 +259,9 @@ const useSettings = () => {
     setConfirmationsEnabled,
     confirmationsEnabled,
     setMainCollection,
-    mainCollection
+    mainCollection,
+    enableTemporaryBookmarks,
+    tempBookmarksEnabled
   };
 };
 

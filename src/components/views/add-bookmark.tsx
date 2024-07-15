@@ -6,6 +6,7 @@ import useContent from "../../state/actions/content-actions";
 import useCommon from "../../state/actions/common-actions";
 import Error from "../atoms/error";
 import useUser from "../../state/actions/user-actions";
+import Toggler from "../atoms/toggler";
 
 const AddBookmark: Component<{}> = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const AddBookmark: Component<{}> = () => {
   const [favicon, setFavicon] = createSignal('');
   const userProps = useUser();
   const common = useCommon();
+  const [temporary, setTemporary] = createSignal(false);
+
 
 
   //@ts-ignore
@@ -44,13 +47,13 @@ const AddBookmark: Component<{}> = () => {
       url: bookmark(),
       collection: props.newCollection(),
       user_id: userProps.user().id,
-      favicon: favicon()
+      favicon: favicon(),
+      temporary: temporary()
     });
     if (done) {
       navigate('/index.html');
     }
   }
-
 
   return (
     <div class="px-4 text-textLight dark:text-textDark">
@@ -60,8 +63,8 @@ const AddBookmark: Component<{}> = () => {
         </div>
       </Show>
       {/*@ts-ignore*/}
-      {props. newCollection() ?<Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection}
-        name="Category" options={props.collections} /> : false }
+      {props.newCollection() ? <Select collectionParentId={props.newCollectionParentId} setParentValueId={props.setNewCollectionParentId} value={props.newCollection} setValue={props.setNewCollection}
+        name="Category" options={props.collections} /> : false}
 
       <div class="mt-4">
         <Input value={name} name="NFTmarkName" placeholder="Bookmark Name" setValue={setName} />
@@ -69,6 +72,12 @@ const AddBookmark: Component<{}> = () => {
       <div class="mt-4">
         <Input value={bookmark} name="NFTmarkName" placeholder="Bookmark" setValue={setBookmark} />
       </div>
+      <Show when={userProps.user().temp_bookmarks_enabled}>
+        <div class="flex mt-4 px-2 items-center font-bold">
+          <Toggler enabled={temporary()} switch={setTemporary} />
+          <div class="ml-4">{temporary() ? 'Temporary (1 month)' : 'Permanent'}  </div>
+        </div>
+      </Show>
       <div class="mt-4">
         <div class="px-1">
           <button id="nft-mark" class={`dark:border-textDark 

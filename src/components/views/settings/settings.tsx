@@ -18,6 +18,9 @@ import Error from "../../atoms/error";
 import { IoSyncCircleOutline } from 'solid-icons/io'
 import { AiFillEye, AiFillEyeInvisible } from 'solid-icons/ai';
 import { BsCollectionFill } from 'solid-icons/bs'
+import { WiTime2 } from 'solid-icons/wi';
+import { IoInfinite } from 'solid-icons/io'
+
 const Settings: Component<{}> = () => {
   const { theme, setTheme } = useTheme();
   const settingsProps = useSettings()
@@ -37,7 +40,8 @@ const Settings: Component<{}> = () => {
       <SettingsBoolRow IconTrue={FaRegularMoon} IconFalse={FaSolidSun} titles={["Dark Theme", "Light Theme"]} setter={setTheme} value={theme} />
       <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Start App Into Adding', 'Start App Into List']} setter={settingsProps.setStartView} value={settingsProps.startView} />
       <SettingsBoolRow IconTrue={AiFillEye} IconFalse={AiFillEyeInvisible} titles={['Enable Confirmations', 'Disable Confirmations']} setter={settingsProps.setConfirmationsEnabled} value={settingsProps.confirmationsEnabled} />
-      
+      <SettingsBoolRow IconTrue={IoInfinite} IconFalse={WiTime2} titles={['Enable Temp Bookmarks', 'Disable Temp Bookmarks']} setter={settingsProps.enableTemporaryBookmarks} value={settingsProps.tempBookmarksEnabled} />
+
 
       {/* <SettingsBoolRow IconTrue={ImBlocked} IconFalse={AiOutlineBlock} titles={['Enable Blockchain', 'Disable Blockchain']} setter={settingsProps.enableBlockchain} value={settingsProps.blockchainEnabled} /> */}
       {/* <Show when={settingsProps.blockchainEnabled()}>

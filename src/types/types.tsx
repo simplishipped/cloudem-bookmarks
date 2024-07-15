@@ -20,6 +20,7 @@ export interface Bookmark {
   checked?: boolean,
   favicon?: string
   collection_id?: number,
+  temporary?: boolean
 }
 
 export interface Nftmark {

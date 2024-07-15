@@ -84,7 +84,7 @@ const useUser = () => {
           user = userRes.data || newProfile;
 
           setState(() => {
-            return { ...app.state, user, authed: true }
+            return { ...app.state, user, authed: true, tempBookmarksEnabled: user.temp_bookmarks_enabled }
           })
 
           setStartView(user.start_view);

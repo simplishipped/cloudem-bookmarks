@@ -38,6 +38,7 @@ let initCollections: Collection[] = [];
 let confirmedAction: any = false;
 let confirmationsEnabled: boolean = true;
 let mainCollection: Collection;
+let tempBookmarksEnabled: boolean = false;
 
 
 const [state, setState] = createStore({
@@ -89,7 +90,8 @@ const [state, setState] = createStore({
   confirmedAction,
   confirmationsEnabled,
   //@ts-ignore
-  mainCollection
+  mainCollection,
+  tempBookmarksEnabled
 });
 
 export const useAppState = () => {
