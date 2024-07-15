@@ -28,9 +28,9 @@ export const BookmarkRow: Component<BookmarkProps> = (props) => {
     <div class="deep-hover-transition-one text-primaryButtonLight dark:text-primaryButtonDark  dark:hover:text-textDark py-2 mt-2 px-4 font-bold  
     btn-hover-one cursor-default fill-textLight dark:fill-textDark border-textLight dark:border-textDark  rounded-3xl">
 
-      {copied() ? <div class="dark:bg-darkCompliment text-textDark p-2 rounded-md text-center">Copied to clipboard!</div> : false}
+      {copied() ? <div class="dark:bg-secondaryButtonDark text-textDark p-2 rounded-md text-center">Copied to clipboard!</div> : false}
       <div class="flex justify-between items-center">
-        <div class="flex items-center">
+        <div onClick={() => setDropdown(dropdown() ? false : true)} class="flex items-center cursor-pointer">
           {props.row().favicon ? <img class="rounded-full w-4 h-4 mr-2" src={props.row().favicon} /> :
             <FiBookmark size={16} class="dark:!text-textDark text-textLight mr-2" />}
             {/*@ts-ignore*/}
@@ -42,11 +42,6 @@ export const BookmarkRow: Component<BookmarkProps> = (props) => {
           <a href={props.row().url} target="_blank">
             <FiLink2 size={20} class="mr-2 cursor-pointer text-textLight dark:text-textDark" />
           </a>
-          {/* <BsClipboard2CheckFill
-            size={16}
-            onClick={() => navigator.clipboard.writeText(props.row().url)}
-            class="mr-2 cursor-pointer"
-          /> */}
           <RiArrowsArrowDropDownFill
             onClick={() => setDropdown(dropdown() ? false : true)}
             size={30}

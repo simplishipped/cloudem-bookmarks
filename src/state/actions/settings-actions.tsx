@@ -17,6 +17,7 @@ const useSettings = () => {
   const blockchainEnabled = () => app.state.blockchainEnabled;
   const confirmationsEnabled = () => app.state.confirmationsEnabled;
   const user = () => app.state.user;
+  const mainCollection = () => app.state.mainCollection;
   const common = useCommon();
   const userProps = useUser();
 
@@ -97,14 +98,16 @@ const useSettings = () => {
   }
 
   const setStartView = async (startView: boolean) => {
-    //@ts-ignore
-    const data = await userApi.updateUser(app.state.user.id, { start_view: startView });
+    const { data, error } = await userApi.updateUser(app.state.user.id, { start_view: startView });
     if (data) {
       setState(() => {
         return {
           ...app.state, startView,
         }
       })
+    } else {
+      common.setError('Error updating start view.', 'settingsError');
+      log.error('set-start-view');
     }
 
   }
@@ -210,6 +213,26 @@ const useSettings = () => {
     })
   }
 
+  const setMainCollection = async (collection: Collection) => {
+    try {
+      // common.setGlobalLoader(true);
+      let { data } = await userApi.updateUser(user().id, { main_collection: collection.id });
+      if (data) {
+        setState(() => {
+          return { ...app.state, mainCollection: collection }
+        })
+      } else {
+        common.setError('Error updating main collection.', 'settingsError');
+        log.error('set-main-collection');
+      }
+
+    } catch (err) {
+      common.setError('Error updating main collection.', 'settingsError');
+      log.error('set-main-collection');
+    }
+
+  }
+
 
   return {
     setConnected,
@@ -224,7 +247,9 @@ const useSettings = () => {
     importBookmarks,
     saveUserUpdate,
     setConfirmationsEnabled,
-    confirmationsEnabled
+    confirmationsEnabled,
+    setMainCollection,
+    mainCollection
   };
 };
 

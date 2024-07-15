@@ -291,19 +291,21 @@ const useContent = () => {
   
         if (localCollections && localCollections.length > 0) {
           if (user().main_collection) {
-            mainCollection = localCollections.find((c: Collection) => c.id = user().main_collection);
+            mainCollection = localCollections.find((c: Collection) => c.id === user().main_collection);
           } else if(localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')) {
             mainCollection = localCollections.find((c: Collection) => c.name.toLowerCase() === 'default')
           } else {
             mainCollection = localCollections[0]
           }
           setLoading('collections', false);
+
           setState(() => {
             return {
               ...app.state,
               collections: organizeCollectionsWithSubs(localCollections),
               initCollections: localCollections,
-              collection: mainCollection
+              collection: mainCollection,
+              mainCollection: mainCollection
             }
           })
   
@@ -318,7 +320,7 @@ const useContent = () => {
           const collectionsOrganized = organizeCollectionsWithSubs(collections.data);
   
           if (user().main_collection) {
-            mainCollection = collections.data.find((c: any) => c.id = user().main_collection);
+            mainCollection = collections.data.find((c: any) => c.id === user().main_collection);
           } else if(collections.data.find((c: Collection) => c.name.toLowerCase() === 'default')) {
             mainCollection = collections.data.find((c: Collection) => c.name.toLowerCase() === 'default')
           } else {
@@ -330,8 +332,9 @@ const useContent = () => {
               ...app.state,
               collections: collectionsOrganized,
               initCollections: collections.data,
-              collection: mainCollection
-  
+              collection: mainCollection,
+              mainCollection: mainCollection
+
             }
           })
         } else {
@@ -627,6 +630,7 @@ const useContent = () => {
 
 
 
+
   const setCategory = (category: string) => {
     setState(() => {
       return { ...app.state, category }
@@ -686,6 +690,7 @@ const useContent = () => {
       }
     })
   }
+  
   // const setLoading = app.setLoading;
 
   return {
@@ -726,6 +731,7 @@ const useContent = () => {
     confirmedAction,
     setConfirmedAction,
     resetBookmarksChecked,
+    initCollections
   };
 };
 
