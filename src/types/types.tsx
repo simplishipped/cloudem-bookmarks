@@ -41,6 +41,7 @@ export interface Collection {
   parent_id?: number
   is_root?: boolean
   has_children?: boolean
+  children?: Collection[]
 }
 
 export interface Log {

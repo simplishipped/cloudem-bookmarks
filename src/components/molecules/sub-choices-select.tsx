@@ -152,15 +152,17 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
     const focusedChoiceIndex = options.findIndex(option => option.id === focusedChoice);
     if (e.key === 'Enter' || e.key === 'Tab') {
       makeChoice({ name: search() });
-    } else if (e.key === 'ArrowDown') {
-      let nextIndex = (focusedChoiceIndex + 1) % options.length;
-      let nextId = options[nextIndex].id;
-      setFocusedChoice(nextId);
-    } else if (e.key === 'ArrowUp') {
-      let prevIndex = (focusedChoiceIndex - 1 + options.length) % options.length;
-      let prevId = options[prevIndex].id;
-      setFocusedChoice(prevId);
-    } else {
+    } 
+    // else if (e.key === 'ArrowDown') {
+    //   let nextIndex = (focusedChoiceIndex + 1) % options.length;
+    //   let nextId = options[nextIndex].id;
+    //   setFocusedChoice(nextId);
+    // } else if (e.key === 'ArrowUp') {
+    //   let prevIndex = (focusedChoiceIndex - 1 + options.length) % options.length;
+    //   let prevId = options[prevIndex].id;
+    //   setFocusedChoice(prevId);
+    // } 
+    else {
       if (e.key === 'Backspace' && search().includes('>')) {
         let lastCharacterIsArrow = search().slice(search().length - 3, search().length - 1) === ' >';
         if (lastCharacterIsArrow) {
@@ -222,7 +224,7 @@ const SubChoicesSelect: Component<SelectProps> = (props) => {
       <div onClick={showOptions} class="select-none relative mt-2 shadow text-textLight dark:text-textDark p-2 flex justify-center rounded-md cursor-pointer ">
         <Show when={selectedPath().length > 0 && showChoices()}>
           <button class=" p-2 absolute left-8 transform -translate-x-full top-1/2 -translate-y-1/2" onClick={goBack} title="Go back">
-            <IoChevronBack size="20" class=" fill-primaryButtonLight dark:fill-primaryButtonDark" />
+            <IoChevronBack size="20"  />
           </button>
         </Show>
         <input ref={input} onKeyDown={onEnter} onInput={(e) => setSearch(e.target.value)} class={`${showChoices() ? '' : 'text-transparent'} 

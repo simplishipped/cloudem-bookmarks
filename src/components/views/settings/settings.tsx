@@ -17,7 +17,7 @@ import useCommon from "../../../state/actions/common-actions";
 import Error from "../../atoms/error";
 import { IoSyncCircleOutline } from 'solid-icons/io'
 import { AiFillEye, AiFillEyeInvisible } from 'solid-icons/ai';
-
+import { BsCollectionFill } from 'solid-icons/bs'
 const Settings: Component<{}> = () => {
   const { theme, setTheme } = useTheme();
   const settingsProps = useSettings()
@@ -32,6 +32,8 @@ const Settings: Component<{}> = () => {
         </div>
       </Show>
       <SettingsNavRow navTo={'/index.html/account/profile'} title="Profile" Icon={FaSolidUserAstronaut} />
+      <SettingsNavRow navTo={'/index.html/account/main-collection'} title="Main Collection" Icon={BsCollectionFill} />
+
       <SettingsBoolRow IconTrue={FaRegularMoon} IconFalse={FaSolidSun} titles={["Dark Theme", "Light Theme"]} setter={setTheme} value={theme} />
       <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Start App Into Adding', 'Start App Into List']} setter={settingsProps.setStartView} value={settingsProps.startView} />
       <SettingsBoolRow IconTrue={AiFillEye} IconFalse={AiFillEyeInvisible} titles={['Enable Confirmations', 'Disable Confirmations']} setter={settingsProps.setConfirmationsEnabled} value={settingsProps.confirmationsEnabled} />
