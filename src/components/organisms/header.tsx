@@ -43,7 +43,7 @@ const Header = () => {
 
   return (
     <Show when={userProps.authed()}>
-      <Show when={showSearch()}>
+      <Show when={showSearch() && location.pathname === '/index.html'}>
         <div class="flex justify-center absolute w-full mt-2 z-20">
           <div class={`transition-all duration-300 ease-in-out pt-1 ${animation() ? 'w-8/12 opacity-1' : 'w-0 opacity-0'}`}>
             <Input onBlur={() => setShowSearch(false)} type="text" placeholder="Search" value={contentProps.search} setValue={contentProps.setSearch} autofocus={true} />
@@ -57,9 +57,13 @@ const Header = () => {
             <TbCurrencyDollar size="28" />
           </div>
         </Show> */}
-        <div class="cursor-pointer z-30" onClick={() => setShowSearch(showSearch() ? false : true)}>
-          <FiSearch size="26" />
-        </div>
+
+        <Show when={location.pathname === '/index.html'}>
+          <div class="cursor-pointer z-30" onClick={() => setShowSearch(showSearch() ? false : true)}>
+            <FiSearch size="26" />
+          </div>
+        </Show>
+
         <div class="cursor-pointer">
           {location.pathname.includes('/index.html/market') ?
             <A href="/" title="My Bookmarks">

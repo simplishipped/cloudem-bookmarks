@@ -43,7 +43,7 @@ const Settings: Component<{}> = () => {
 
       <SettingsBoolRow IconTrue={FaRegularMoon} IconFalse={FaSolidSun} titles={["Dark Theme", "Light Theme"]} setter={setTheme} value={theme} />
       <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Start App Into Adding', 'Start App Into List']} setter={settingsProps.setStartView} value={settingsProps.startView} />
-      <SettingsBoolRow IconTrue={AiFillEye} IconFalse={AiFillEyeInvisible} titles={['Enable Confirmations', 'Disable Confirmations']} setter={settingsProps.setConfirmationsEnabled} value={settingsProps.confirmationsEnabled} />
+      <SettingsBoolRow IconTrue={AiFillEyeInvisible} IconFalse={AiFillEye} titles={['Enable Confirmations', 'Disable Confirmations']} setter={settingsProps.setConfirmationsEnabled} value={settingsProps.confirmationsEnabled} />
       <SettingsBoolRow IconTrue={IoInfinite} IconFalse={WiTime2} titles={['Enable Temp Bookmarks', 'Disable Temp Bookmarks']} setter={settingsProps.enableTemporaryBookmarks} value={settingsProps.tempBookmarksEnabled} />
       <SettingsNavRow navTo={'/index.html/account/sync'} title="Sync Bookmarks" Icon={IoSyncCircleOutline} />
       <Row Icon={AiOutlineLogout} func={userProps.signOutUser} value={() => "Log out"} />
@@ -52,10 +52,7 @@ const Settings: Component<{}> = () => {
         <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       </Show> */}
       {/* <SettingsNavRow navTo={'/index.html/account/export-import'} title="Export/Import" Icon={ImCloudDownload} /> */}
-   
-
-
-
+  
     </div>
   );
 };

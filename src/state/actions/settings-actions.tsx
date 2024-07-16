@@ -221,7 +221,7 @@ const useSettings = () => {
       let { data } = await userApi.updateUser(user().id, { main_collection: collection.id });
       if (data) {
         setState(() => {
-          return { ...app.state, mainCollection: collection }
+          return { ...app.state, mainCollection: collection, collection }
         })
       } else {
         common.setError('Error updating main collection.', 'settingsError');
