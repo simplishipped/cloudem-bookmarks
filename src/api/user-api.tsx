@@ -70,6 +70,11 @@ const getUserByEmail = async (email: string) => {
   return data ? { data: data } : { error };
 }
 
+const signOutUser = async () => {
+  const response = await supabase.auth.signOut();
+  return response;
+}
+
 
 export default {
   getUser,
@@ -81,5 +86,6 @@ export default {
   signUpUser,
   signInUser,
   updateAuth,
-  getUserByEmail
+  getUserByEmail,
+  signOutUser
 }

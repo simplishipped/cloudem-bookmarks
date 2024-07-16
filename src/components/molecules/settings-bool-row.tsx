@@ -21,7 +21,7 @@ const SettingsBoolRow: Component<SettingsBoolRowProps> = ({ titles, value, sette
   return (
     <div class={`dark:hover:text-secondaryButtonDark deep-hover-transition-three p-2 px-4 mt-2 flex font-medium justify-between w-full items-center cursor-default rounded-3xl btn-hover-one`}>
       <div class="flex">
-        {value() ? <IconTrue class="fill-textLight dark:fill-textDark" size={25} /> : <IconFalse size={25} class="fill-textLight dark:fill-textDark dark:text-textDark" />}
+        {value() ? <IconTrue class="fill-textLight dark:fill-textDark text-textLight dark:text-textDark" size={25} /> : <IconFalse size={25} class="text-textLight fill-textLight dark:fill-textDark dark:text-textDark" />}
         <div class={` text-lg ml-3`}>{title()}</div>
       </div>
       <Toggler enabled={value()} switch={setter} />

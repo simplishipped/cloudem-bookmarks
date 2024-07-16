@@ -211,7 +211,19 @@ const useUser = () => {
     }
   }
 
-
+  async function signOutUser() {
+    const { error } = await userApi.signOutUser();
+    if (error) {
+      common.setError('Error updating user.', 'globalError');
+      log.error('sign-out-user');
+    } else {
+      if(window) {
+        window.location.href = '/index.html'
+      }
+    }
+  }
+  
+  
 
   return {
     user,
@@ -224,7 +236,8 @@ const useUser = () => {
     initRender,
     setInitRender,
     signUpNewUser,
-    signInWithEmail
+    signInWithEmail,
+    signOutUser
   };
 };
 

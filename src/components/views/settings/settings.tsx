@@ -20,10 +20,14 @@ import { AiFillEye, AiFillEyeInvisible } from 'solid-icons/ai';
 import { BsCollectionFill } from 'solid-icons/bs'
 import { WiTime2 } from 'solid-icons/wi';
 import { IoInfinite } from 'solid-icons/io'
+import Row from "../../atoms/row";
+import { AiOutlineLogout } from 'solid-icons/ai'
+import useUser from "../../../state/actions/user-actions";
 
 const Settings: Component<{}> = () => {
   const { theme, setTheme } = useTheme();
-  const settingsProps = useSettings()
+  const settingsProps = useSettings();
+  const userProps = useUser();
   const common = useCommon();
 
 
@@ -41,14 +45,15 @@ const Settings: Component<{}> = () => {
       <SettingsBoolRow IconTrue={FaSolidListUl} IconFalse={RiMediaPlayListAddFill} titles={['Start App Into Adding', 'Start App Into List']} setter={settingsProps.setStartView} value={settingsProps.startView} />
       <SettingsBoolRow IconTrue={AiFillEye} IconFalse={AiFillEyeInvisible} titles={['Enable Confirmations', 'Disable Confirmations']} setter={settingsProps.setConfirmationsEnabled} value={settingsProps.confirmationsEnabled} />
       <SettingsBoolRow IconTrue={IoInfinite} IconFalse={WiTime2} titles={['Enable Temp Bookmarks', 'Disable Temp Bookmarks']} setter={settingsProps.enableTemporaryBookmarks} value={settingsProps.tempBookmarksEnabled} />
-
-
+      <SettingsNavRow navTo={'/index.html/account/sync'} title="Sync Bookmarks" Icon={IoSyncCircleOutline} />
+      <Row Icon={AiOutlineLogout} func={userProps.signOutUser} value={() => "Log out"} />
       {/* <SettingsBoolRow IconTrue={ImBlocked} IconFalse={AiOutlineBlock} titles={['Enable Blockchain', 'Disable Blockchain']} setter={settingsProps.enableBlockchain} value={settingsProps.blockchainEnabled} /> */}
       {/* <Show when={settingsProps.blockchainEnabled()}>
         <SettingsNavRow navTo={"/account/networks"} title="Network" Icon={FaSolidNetworkWired} />
       </Show> */}
       {/* <SettingsNavRow navTo={'/index.html/account/export-import'} title="Export/Import" Icon={ImCloudDownload} /> */}
-      <SettingsNavRow navTo={'/index.html/account/sync'} title="Sync Bookmarks" Icon={IoSyncCircleOutline} />
+   
+
 
 
     </div>
